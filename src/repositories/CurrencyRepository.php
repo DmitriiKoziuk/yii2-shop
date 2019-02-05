@@ -6,6 +6,15 @@ use DmitriiKoziuk\yii2Shop\entities\Currency;
 
 final class CurrencyRepository extends EntityRepository
 {
+    /**
+     * @return Currency[]
+     */
+    public function getAllCurrencies(): array
+    {
+        $currencies = Currency::find()->all();
+        return $currencies;
+    }
+
     public function getCurrencyById($id): ?Currency
     {
         /** @var Currency $currency */

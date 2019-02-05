@@ -16,6 +16,7 @@ use DmitriiKoziuk\yii2Shop\ShopModule;
  * @var $currencyList \DmitriiKoziuk\yii2Shop\entities\Currency[]
  * @var $productInputForm \DmitriiKoziuk\yii2Shop\forms\product\ProductInputForm
  * @var $productSkuInputForms \DmitriiKoziuk\yii2Shop\forms\product\ProductSkuInputForm[]
+ * @var $productSkusSuppliers \DmitriiKoziuk\yii2Shop\data\SupplierProductSkuData[][]
  * @var $fileWebHelper \DmitriiKoziuk\yii2FileManager\helpers\FileWebHelper
  */
 
@@ -96,6 +97,7 @@ $this->params['breadcrumbs'][] = $product->name;
           'currencyList' => $currencyList ,
           'product' => $product,
           'productSkuInputForms' => $productSkuInputForms,
+          'productSkusSuppliers' => $productSkusSuppliers,
           'fileWebHelper' => $fileWebHelper,
       ]) ?>
 

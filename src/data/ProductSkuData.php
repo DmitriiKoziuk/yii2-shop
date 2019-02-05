@@ -24,7 +24,12 @@ class ProductSkuData
 
     public function getId(): int
     {
-        return (int) $this->_productSku->id;
+        return $this->_productSku->id;
+    }
+
+    public function getProductId(): int
+    {
+        return $this->_productSku->product_id;
     }
 
     public function getMainImage(): ?File

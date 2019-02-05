@@ -2,12 +2,18 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use DmitriiKoziuk\yii2Shop\ShopModule;
 
 /**
  * @var $this \yii\web\View
  * @var $suppliers \DmitriiKoziuk\yii2Shop\data\SupplierData[]
+ * @var $productSkuData \DmitriiKoziuk\yii2Shop\data\ProductSkuData
  */
 
+$this->title = Yii::t(ShopModule::TRANSLATION_SUPPLIER, 'Add suppliers to product sku data:') . ' ' . $productSkuData->getFullName();
+$this->params['breadcrumbs'][] = ['label' => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Products'), 'url' => ['product/index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t(ShopModule::TRANSLATION_PRODUCT, $productSkuData->getFullName()), 'url' => ['product/update', 'id' => $productSkuData->getProductId()]];
+$this->params['breadcrumbs'][] = 'Add suppliers';
 ?>
 
 <div class="row">

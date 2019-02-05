@@ -1,5 +1,4 @@
 <?php
-
 namespace DmitriiKoziuk\yii2Shop\controllers\backend;
 
 use Yii;
@@ -10,6 +9,9 @@ use yii\filters\VerbFilter;
 use DmitriiKoziuk\yii2Shop\entities\Supplier;
 use DmitriiKoziuk\yii2Shop\entities\search\SupplierSearch;
 use DmitriiKoziuk\yii2Shop\services\supplier\SupplierService;
+use DmitriiKoziuk\yii2Shop\services\currency\CurrencyService;
+use DmitriiKoziuk\yii2Shop\services\product\ProductService;
+use DmitriiKoziuk\yii2Shop\forms\supplier\SupplierProductSkuCompositeUpdateForm;
 
 /**
  * SupplierController implements the CRUD actions for Supplier model.
@@ -21,14 +23,28 @@ final class SupplierController extends Controller
      */
     private $_supplierService;
 
+    /**
+     * @var CurrencyService
+     */
+    private $_currencyService;
+
+    /**
+     * @var ProductService
+     */
+    private $_productService;
+
     public function __construct(
         string $id,
         Module $module,
         SupplierService $supplierService,
+        CurrencyService $currencyService,
+        ProductService $productService,
         array $config = []
     ) {
         parent::__construct($id, $module, $config);
         $this->_supplierService = $supplierService;
+        $this->_currencyService = $currencyService;
+        $this->_productService = $productService;
     }
 
     /**
@@ -123,11 +139,37 @@ final class SupplierController extends Controller
     {
         if (Yii::$app->request->isPost) {
             $suppliers = Yii::$app->request->post('selected');
-            $this->_supplierService->addProductSkuToSuppliers($suppliers, $product_sku_id);
+            if (! empty($suppliers)) {
+                $this->_supplierService->addProductSkuToSuppliers($suppliers, $product_sku_id);
+            }
+            $this->redirect(['supplier/update-product-sku-data', 'product_sku_id' => $product_sku_id]);
         }
         $suppliers = $this->_supplierService->getNonSelectedSuppliers($product_sku_id);
+        $productSkuData = $this->_productService->getProductSkuById($product_sku_id);
         return $this->render('add-product-sku', [
             'suppliers' => $suppliers,
+            'productSkuData' => $productSkuData,
+        ]);
+    }
+
+    public function actionUpdateProductSkuData(int $product_sku_id)
+    {
+        if (Yii::$app->request->isPost) {
+            $compositeForm = new SupplierProductSkuCompositeUpdateForm();
+            if (
+                $compositeForm->load(Yii::$app->request->post('SupplierProductSkuUpdateForm')) &&
+                $compositeForm->validate()
+            ) {
+                $this->_supplierService->updateSupplierProductSkuData($compositeForm);
+            }
+        }
+        $suppliersProductSkuData = $this->_supplierService->getProductSkuSuppliersData($product_sku_id);
+        $allCurrencies = $this->_currencyService->getAllCurrencies();
+        $productSkuData = $this->_productService->getProductSkuById($product_sku_id);
+        return $this->render('update-product-sku-data', [
+            'suppliersProductSkuData' => $suppliersProductSkuData,
+            'allCurrencies' => $allCurrencies,
+            'productSkuData' => $productSkuData,
         ]);
     }
 
