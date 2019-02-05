@@ -18,6 +18,7 @@ use DmitriiKoziuk\yii2Shop\ShopModule;
  * @property int    $category_id
  * @property int    $type_id
  * @property int    $main_sku_id
+ * @property int    $brand_id
  *
  * @property ProductSku[] $skus
  * @property Currency     $currency
@@ -56,17 +57,24 @@ class Product extends ActiveRecord
             [['url'], 'string', 'max' => 255],
             ['url', 'unique'],
             [['name', 'slug', 'url'], 'trim'],
-            [['category_id', 'type_id', 'main_sku_id'], 'integer'],
-            [['category_id', 'type_id', 'main_sku_id'], 'filter', 'filter' => function ($value) {
+            [['category_id', 'type_id', 'main_sku_id', 'brand_id'], 'integer'],
+            [['category_id', 'type_id', 'main_sku_id', 'brand_id'], 'filter', 'filter' => function ($value) {
                 return empty($value) ? null : intval($value);
             }],
-            [['category_id', 'type_id', 'main_sku_id'], 'default', 'value' => NULL],
+            [['category_id', 'type_id', 'main_sku_id', 'brand_id'], 'default', 'value' => NULL],
             [
                 'main_sku_id',
                 'exist',
                 'skipOnError' => true,
                 'targetClass' => ProductSku::class,
                 'targetAttribute' => ['main_sku_id' => 'id']
+            ],
+            [
+                'brand_id',
+                'exist',
+                'skipOnError' => true,
+                'targetClass' => Brand::class,
+                'targetAttribute' => ['brand_id' => 'id']
             ],
         ];
     }
@@ -86,6 +94,7 @@ class Product extends ActiveRecord
             'category_id' => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Category'),
             'type_id'     => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Type'),
             'main_sku_id' => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Main sku id'),
+            'brand_id'    => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Brand id'),
         ];
     }
 

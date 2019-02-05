@@ -17,6 +17,7 @@ use DmitriiKoziuk\yii2Shop\ShopModule;
  * @var $productInputForm \DmitriiKoziuk\yii2Shop\forms\product\ProductInputForm
  * @var $productSkuInputForms \DmitriiKoziuk\yii2Shop\forms\product\ProductSkuInputForm[]
  * @var $productSkusSuppliers \DmitriiKoziuk\yii2Shop\data\SupplierProductSkuData[][]
+ * @var $brands \DmitriiKoziuk\yii2Shop\data\BrandData[]
  * @var $fileWebHelper \DmitriiKoziuk\yii2FileManager\helpers\FileWebHelper
  */
 
@@ -72,6 +73,20 @@ $this->params['breadcrumbs'][] = $product->name;
       </div>
 
       <div class="row">
+        <div class="col-md-2">
+            <?= $form->field($productInputForm, 'brand_id')->widget(
+                Select2::class,
+                [
+                    'data' => ArrayHelper::map($brands, 'id', 'name'),
+                    'options' => [
+                        'placeholder' => 'Select a product brand ...',
+                    ],
+                    'pluginOptions' => [
+                        'allowClear' => true
+                    ],
+                ]
+            )->label('Product brand'); ?>
+        </div>
         <div class="col-md-4">
             <?= $form->field($productInputForm, 'slug')
                 ->textInput(['maxlength' => true])

@@ -17,6 +17,7 @@ use DmitriiKoziuk\yii2Shop\helpers\CategoryHelper;
  * @var $productTypes     \DmitriiKoziuk\yii2Shop\entities\ProductType[]
  * @var $productSkuSearch \DmitriiKoziuk\yii2Shop\entities\search\ProductSkuSearch
  * @var $categories       \DmitriiKoziuk\yii2Shop\entities\Category[]
+ * @var $brands           \DmitriiKoziuk\yii2Shop\data\BrandData[]
  * @var $fileRepository   FileRepository
  * @var $fileWebHelper    FileWebHelper
  */
@@ -119,6 +120,32 @@ $this->params['breadcrumbs'][] = $this->title;
                     }
                     return null;
                 }
+            ],
+            [
+                'attribute' => 'Brand',
+                'content'   => function ($model) use ($brands) {
+                    /** @var $model \DmitriiKoziuk\yii2Shop\entities\ProductSku */
+                    if (empty($model->getBrandId())) {
+                        return '';
+                    } else {
+                        return $brands[ $model->getBrandId() ]->getName();
+                    }
+                },
+                'filter'    => Select2::widget([
+                    'model' => $productSkuSearch,
+                    'attribute' => 'brand_id',
+                    'data' => ArrayHelper::map(
+                        $brands,
+                        'id',
+                        'name'
+                    ),
+                    'options' => [
+                        'placeholder' => 'Select a brand ...',
+                    ],
+                    'pluginOptions' => [
+                        'allowClear' => true
+                    ],
+                ]),
             ],
             [
                 'attribute' => 'product_name',
