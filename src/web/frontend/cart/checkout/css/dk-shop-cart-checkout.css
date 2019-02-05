@@ -1,0 +1,20 @@
+.cart-checkout {
+  background: #fff;
+  padding: 20px;
+  margin-top: 20px;
+}
+.cart-checkout .row {
+  margin-top: 3rem;
+}
+.cart-checkout .label {
+  font-size: 1.5rem;
+  vertical-align: middle;
+}
+.cart-checkout input {
+  width: 100%;
+  border: 1px solid #e5e5e5;
+  border-radius: .5rem;
+  box-shadow: none;
+  font-size: 1.4rem;
+  padding: .75rem 1rem;
+}

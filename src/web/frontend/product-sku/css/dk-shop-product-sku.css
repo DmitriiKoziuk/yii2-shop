@@ -1,0 +1,35 @@
+.product-sku {
+  background-color: #fff;
+}
+.product-sku .title {
+  border-bottom: 1px solid #ededed;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+.product-sku .image-section {
+  text-align: center;
+}
+.product-sku .image-section img {
+  max-height: 500px;
+  max-width: 500px;
+}
+.product-sku .buy-section {
+
+}
+.product-sku .price {
+  margin-top: 20px;
+  font-size: 2em;
+}
+.product-sku .currency {
+  font-size: 0.7em;
+  color: #666;
+}
+.product-sku .buttons {
+  margin-top: 15px;
+}
+.product-sku .buy-button {
+  padding: 10px 45px;
+  font-size: 2em;
+  color: #fff;
+  background-color: #ff671f;
+}

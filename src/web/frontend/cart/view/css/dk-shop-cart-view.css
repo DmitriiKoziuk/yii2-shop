@@ -1,0 +1,19 @@
+.cart {
+  background: #fff;
+  margin-top: 20px;
+  border: 1px solid #ddd;
+}
+.cart .products {
+  padding: 20px;
+}
+.cart .products .main-image-wrapper {
+  text-align: center;
+}
+.cart .products .main-image {
+  max-width: 150px;
+  max-height: 150px;
+}
+.cart .actions {
+  padding: 20px;
+  border-left: 1px solid #ddd;
+}
