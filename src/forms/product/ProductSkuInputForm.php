@@ -100,4 +100,22 @@ class ProductSkuInputForm extends Model
             ],
         ];
     }
+
+    public function getUpdatedAttributes()
+    {
+        return $this->getAttributes([
+            'name',
+            'slug',
+            'url',
+            'stock_status',
+            'sell_price',
+            'old_price',
+            'sell_price_strategy',
+            'meta_title',
+            'meta_description',
+            'short_description',
+            'description',
+            'currency_id',
+        ]);
+    }
 }

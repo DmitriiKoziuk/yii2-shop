@@ -8,13 +8,13 @@ use DmitriiKoziuk\yii2CustomUrls\forms\UrlCreateForm;
 use DmitriiKoziuk\yii2CustomUrls\forms\UrlUpdateForm;
 use DmitriiKoziuk\yii2CustomUrls\services\UrlService;
 use DmitriiKoziuk\yii2Shop\ShopModule;
-use DmitriiKoziuk\yii2Shop\forms\product\ProductInputForm;
-use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuInputForm;
 use DmitriiKoziuk\yii2Shop\helpers\UrlHelper;
 use DmitriiKoziuk\yii2Shop\entities\Product;
 use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 use DmitriiKoziuk\yii2Shop\entities\ProductType;
 use DmitriiKoziuk\yii2Shop\data\ProductSkuData;
+use DmitriiKoziuk\yii2Shop\forms\product\ProductInputForm;
+use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuInputForm;
 use DmitriiKoziuk\yii2Shop\repositories\ProductRepository;
 use DmitriiKoziuk\yii2Shop\repositories\ProductSkuRepository;
 use DmitriiKoziuk\yii2Shop\repositories\CurrencyRepository;
@@ -148,7 +148,7 @@ class ProductService extends EntityActionService
         }
     }
 
-    public function getProductSkuById(int $productSkuId)
+    public function getProductSkuById(int $productSkuId): ProductSkuData
     {
         $sku = $this->_productSkuRepository->getById($productSkuId);
         return new ProductSkuData($sku);
@@ -297,7 +297,7 @@ class ProductService extends EntityActionService
         ProductSkuInputForm $productSkuInputForm
     ): array {
         // Slug depends form name, but do not update slug if user change it itself.
-        $productSku->setAttributes($productSkuInputForm->getAttributes());
+        $productSku->setAttributes($productSkuInputForm->getUpdatedAttributes());
         if ($productSku->isAttributeChanged('name')) {
             if (! $productSku->isAttributeChanged('slug')) {
                 $productSku->slug = $this->_defineSlug($productSku->name);
