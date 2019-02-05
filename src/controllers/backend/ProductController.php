@@ -21,6 +21,7 @@ use DmitriiKoziuk\yii2Shop\forms\product\ProductInputForm;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuInputForm;
 use DmitriiKoziuk\yii2Shop\services\product\ProductService;
 use DmitriiKoziuk\yii2Shop\services\supplier\SupplierService;
+use DmitriiKoziuk\yii2Shop\services\brand\BrandService;
 
 /**
  * ProductController implements the CRUD actions for Product model.
@@ -38,6 +39,11 @@ final class ProductController extends Controller
     private $_supplierService;
 
     /**
+     * @var BrandService
+     */
+    private $_brandService;
+
+    /**
      * @var FileRepository
      */
     private $_fileRepository;
@@ -52,6 +58,7 @@ final class ProductController extends Controller
         Module $module,
         ProductService $productService,
         SupplierService $supplierService,
+        BrandService $brandService,
         FileRepository $fileRepository,
         FileWebHelper $fileWebHelper,
         array $config = []
@@ -59,6 +66,7 @@ final class ProductController extends Controller
         parent::__construct($id, $module, $config);
         $this->_productService = $productService;
         $this->_supplierService = $supplierService;
+        $this->_brandService = $brandService;
         $this->_fileRepository = $fileRepository;
         $this->_fileWebHelper = $fileWebHelper;
     }
@@ -88,12 +96,14 @@ final class ProductController extends Controller
         $dataProvider = $productSkuSearch->by(Yii::$app->request->queryParams);
         $productTypes = ProductType::find()->all();
         $categories = Category::find()->all();
+        $brands = $this->_brandService->getAllBrands();
 
         return $this->render('index', [
             'productSkuSearch' => $productSkuSearch,
             'dataProvider' => $dataProvider,
             'productTypes' => $productTypes,
             'categories' => $categories,
+            'brands' => $brands,
             'fileRepository' => $this->_fileRepository,
             'fileWebHelper' => $this->_fileWebHelper,
         ]);
@@ -193,6 +203,7 @@ final class ProductController extends Controller
         }
         $productSkuIds = ArrayHelper::map($productSkuInputForms, 'id', 'id');
         $productSkusSuppliers = $this->_supplierService->getProductSkusSuppliers($productSkuIds);
+        $brands = $this->_brandService->getAllBrands();
         return $this->render('update', [
             'product' => $product,
             'categories' => $categories,
@@ -201,6 +212,7 @@ final class ProductController extends Controller
             'productInputForm' => $productInputForm,
             'productSkuInputForms' => $productSkuInputForms,
             'productSkusSuppliers' => $productSkusSuppliers,
+            'brands' => $brands,
             'fileWebHelper' => $this->_fileWebHelper,
         ]);
     }

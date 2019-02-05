@@ -27,7 +27,7 @@ class m190101_155340_create_dk_shop_product_skus_table extends Migration
             'slug' => $this->string(65)->notNull()
                 ->comment('Depends from name.'),
             'url' => $this->string(355)->notNull()
-                ->comment('Depends from slug and shop_products.url.'),
+                ->comment('Depends from slug and parent product url.'),
             'stock_status' => $this->integer()->unsigned()->notNull(),
             'sell_price_strategy' => $this->integer()->unsigned()->notNull(),
             'sell_price' => $this->money(10,2)

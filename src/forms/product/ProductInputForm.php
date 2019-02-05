@@ -13,6 +13,7 @@ class ProductInputForm extends Model
     public $url;
     public $category_id;
     public $type_id;
+    public $brand_id;
 
     public function rules()
     {
@@ -27,7 +28,7 @@ class ProductInputForm extends Model
             [['url'], 'string', 'max' => 255,       'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]],
             [['url'], 'trim',                       'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]],
             [['category_id', 'type_id'], 'integer', 'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]],
-            [['category_id', 'type_id'], 'filter', 'filter' => function ($value) {
+            [['category_id', 'type_id', 'brand_id'], 'filter', 'filter' => function ($value) {
                     return empty($value) ? null : intval($value);
                 },
                 'on' => [self::SCENARIO_UPDATE]

@@ -217,6 +217,11 @@ class ProductSku extends ActiveRecord
         return null;
     }
 
+    public function getBrandId(): ?int
+    {
+        return $this->product->brand_id;
+    }
+
     public static function getStockVariation($key = null)
     {
         $variation = [

@@ -13,11 +13,12 @@ class ProductSkuSearch extends ProductSku
     public $sku_name;
     public $type_id;
     public $category_id;
+    public $brand_id;
 
     public function rules()
     {
         return [
-            [['id', 'type_id', 'category_id', 'stock_status', 'currency_id'], 'integer'],
+            [['id', 'type_id', 'category_id', 'stock_status', 'currency_id', 'brand_id'], 'integer'],
             [['product_name', 'sku_name'], 'string'],
         ];
     }
@@ -67,7 +68,8 @@ class ProductSkuSearch extends ProductSku
 
         if (! empty($this->type_id)     ||
             ! empty($this->category_id) ||
-            ! empty($this->product_name)
+            ! empty($this->product_name) ||
+            ! empty($this->brand_id)
         ) {
             $on[ Product::tableName() . '.id' ] = new Expression(ProductSku::tableName() . '.product_id');
             $params = [];
@@ -86,6 +88,10 @@ class ProductSkuSearch extends ProductSku
                         ['like', Product::tableName(). '.name', $part]
                     );
                 }
+            }
+            if (! empty($this->brand_id)) {
+                $on[ Product::tableName() . '.brand_id' ] = new Expression(':brandID');
+                $params[':brandID'] = $this->brand_id;
             }
             $query->innerJoin(
                 Product::tableName(),
