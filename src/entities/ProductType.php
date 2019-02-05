@@ -19,8 +19,7 @@ use DmitriiKoziuk\yii2Shop\ShopModule;
  * @property int     $created_at
  * @property int     $updated_at
  *
- * @property Product[]           $products
- * @property ProductTypeMargin[] $margins
+ * @property Product[] $products
  */
 class ProductType extends ActiveRecord
 {
@@ -80,44 +79,6 @@ class ProductType extends ActiveRecord
     public function getProducts()
     {
         return $this->hasMany(Product::class, ['type_id' => 'id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getMargins()
-    {
-        return $this->hasMany(ProductTypeMargin::class, ['product_type_id' => 'id'])
-            ->indexBy('currency_id');
-    }
-
-    public function isMarginSet(int $currencyID): bool
-    {
-        return isset($this->margins[ $currencyID ]);
-    }
-
-    public function getSellPrice(float $purchasePrice, int $currencyID)
-    {
-        $sellPrice = (float) $purchasePrice;
-        if (
-            ! empty($this->margins)              &&
-            isset($this->margins[ $currencyID ]) &&
-            $sellPrice > 0
-        ) {
-            $margin = $this->margins[ $currencyID ];
-
-            switch ($margin->type) {
-                case ProductTypeMargin::MARGIN_TYPE_SUM:
-                    $sellPrice += (float) $margin->value;
-                    break;
-                case ProductTypeMargin::MARGIN_TYPE_PERCENT:
-                    $sellPrice = $sellPrice + (($purchasePrice / 100) * $margin->value);
-                    break;
-                default:
-                    break;
-            }
-        }
-        return $sellPrice;
     }
 
     public function getProductNumber()
