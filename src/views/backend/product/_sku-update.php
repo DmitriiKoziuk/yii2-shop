@@ -16,6 +16,7 @@ use DmitriiKoziuk\yii2FileManager\helpers\FileWebHelper;
  * @var $currencyList Currency[]
  * @var $product Product
  * @var $productSkuInputForms \DmitriiKoziuk\yii2Shop\forms\product\ProductSkuInputForm[]
+ * @var $productSkusSuppliers \DmitriiKoziuk\yii2Shop\data\SupplierProductSkuData[][]
  * @var $fileWebHelper FileWebHelper
  */
 
@@ -227,37 +228,54 @@ $this->registerAssetBundle(ProductAsset::class);
                     <div class="row">
                       <div class="col-md-12">
                         <table class="table table-bordered">
+                          <caption>Suppliers data</caption>
                           <thead>
                             <tr>
                               <td>Name</td>
                               <td>Phone number</td>
+                              <td>Unique id</td>
                               <td>Quantity</td>
                               <td>Currency</td>
                               <td>Purchase price</td>
                               <td>Recommended price</td>
-                              <td>Profit</td>
+                              <td>Recommended profit</td>
+                              <td>Actual profit</td>
                             </tr>
                           </thead>
                           <tbody>
+                            <?php if (isset($productSkusSuppliers[ $productSkuInputForm->id ])): ?>
+                            <?php foreach ($productSkusSuppliers[ $productSkuInputForm->id ] as $supplier): ?>
                             <tr>
-                              <td>mcg</td>
-                              <td>+3897248974323</td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
+                              <td><?= $supplier->getSuppliedData()->getName() ?></td>
+                              <td><?= $supplier->getSuppliedData()->getPhoneNumber() ?></td>
+                              <td><?= $supplier->getUniqueId() ?></td>
+                              <td><?= $supplier->getQuantity() ?></td>
+                              <td><?= $supplier->getCurrencyName() ?></td>
+                              <td><?= $supplier->getPurchasePrice() ?></td>
+                              <td><?= $supplier->getRecommendedSellPrice() ?></td>
+                              <td><?= $supplier->getRecommendedProfit() ?></td>
+                              <td><?= $supplier->getActualProfit($productSkuInputForm->sell_price) ?></td>
                             </tr>
+                            <?php endforeach; ?>
+                            <?php endif; ?>
                           </tbody>
                         </table>
                         <?= Html::a(
-                            'Add supplier',
+                            'Add supplier to this product sku',
                             Url::to([
                                 'supplier/add-product-sku',
                                 'product_sku_id' => $productSkuInputForm->id,
                             ]),
-                            ['class' => 'btn btn-success']
+                            ['class' => 'btn btn-default']
                         ) ?>
+                          <?= Html::a(
+                              'Update supplier data',
+                              Url::to([
+                                  'supplier/update-product-sku-data',
+                                  'product_sku_id' => $productSkuInputForm->id,
+                              ]),
+                              ['class' => 'btn btn-default']
+                          ) ?>
                       </div>
                     </div>
                   </div>

@@ -24,4 +24,9 @@ class SupplierData
     {
         return $this->_supplier->name;
     }
+
+    public function getPhoneNumber()
+    {
+        return $this->_supplier->phone_number;
+    }
 }

@@ -5,8 +5,9 @@ use yii\db\Connection;
 use DmitriiKoziuk\yii2Base\services\EntityActionService;
 use DmitriiKoziuk\yii2Base\exceptions\EntityNotFoundException;
 use DmitriiKoziuk\yii2Shop\entities\Currency;
-use DmitriiKoziuk\yii2Shop\repositories\CurrencyRepository;
+use DmitriiKoziuk\yii2Shop\data\CurrencyData;
 use DmitriiKoziuk\yii2Shop\forms\currency\CurrencyInputForm;
+use DmitriiKoziuk\yii2Shop\repositories\CurrencyRepository;
 
 class CurrencyService extends EntityActionService
 {
@@ -64,5 +65,18 @@ class CurrencyService extends EntityActionService
     public function delete(Currency $currency): void
     {
 
+    }
+
+    /**
+     * @return CurrencyData[]
+     */
+    public function getAllCurrencies(): array
+    {
+        $currencyRecords = $this->_currencyRepository->getAllCurrencies();
+        $currencies = [];
+        foreach ($currencyRecords as $currencyRecord) {
+            $currencies[ $currencyRecord->id ] = new CurrencyData($currencyRecord);
+        }
+        return $currencies;
     }
 }

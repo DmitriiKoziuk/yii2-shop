@@ -8,6 +8,7 @@ use yii\web\Response;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 use DmitriiKoziuk\yii2Base\exceptions\DataNotValidException;
 use DmitriiKoziuk\yii2FileManager\helpers\FileWebHelper;
 use DmitriiKoziuk\yii2FileManager\repositories\FileRepository;
@@ -19,6 +20,7 @@ use DmitriiKoziuk\yii2Shop\entities\search\ProductSkuSearch;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductInputForm;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuInputForm;
 use DmitriiKoziuk\yii2Shop\services\product\ProductService;
+use DmitriiKoziuk\yii2Shop\services\supplier\SupplierService;
 
 /**
  * ProductController implements the CRUD actions for Product model.
@@ -29,6 +31,11 @@ final class ProductController extends Controller
      * @var ProductService
      */
     private $_productService;
+
+    /**
+     * @var SupplierService
+     */
+    private $_supplierService;
 
     /**
      * @var FileRepository
@@ -44,12 +51,14 @@ final class ProductController extends Controller
         string $id,
         Module $module,
         ProductService $productService,
+        SupplierService $supplierService,
         FileRepository $fileRepository,
         FileWebHelper $fileWebHelper,
         array $config = []
     ) {
         parent::__construct($id, $module, $config);
         $this->_productService = $productService;
+        $this->_supplierService = $supplierService;
         $this->_fileRepository = $fileRepository;
         $this->_fileWebHelper = $fileWebHelper;
     }
@@ -182,6 +191,8 @@ final class ProductController extends Controller
                 );
             }
         }
+        $productSkuIds = ArrayHelper::map($productSkuInputForms, 'id', 'id');
+        $productSkusSuppliers = $this->_supplierService->getProductSkusSuppliers($productSkuIds);
         return $this->render('update', [
             'product' => $product,
             'categories' => $categories,
@@ -189,6 +200,7 @@ final class ProductController extends Controller
             'currencyList' => $currencyList,
             'productInputForm' => $productInputForm,
             'productSkuInputForms' => $productSkuInputForms,
+            'productSkusSuppliers' => $productSkusSuppliers,
             'fileWebHelper' => $this->_fileWebHelper,
         ]);
     }

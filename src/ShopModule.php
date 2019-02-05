@@ -284,6 +284,8 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
                 );
             }
         );
+        /** @var CurrencyService $currencyService */
+        $currencyService = $this->diContainer->get(CurrencyService::class);
         $this->diContainer->setSingleton(
             CategoryClosureService::class,
             function () use ($categoryClosureRepository, $categoryRepository) {
@@ -434,11 +436,13 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
             function () use (
                 $supplierRepository,
                 $supplierProductSkuRepository,
+                $currencyService,
                 $app
             ) {
                 return new SupplierService(
                     $supplierRepository,
                     $supplierProductSkuRepository,
+                    $currencyService,
                     $app->db
                 );
             }
