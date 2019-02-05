@@ -127,29 +127,6 @@ final class ProductTypeController extends Controller
         return $this->redirect(['index']);
     }
 
-
-    /**
-     * @param $id
-     * @return string
-     * @throws NotFoundHttpException
-     */
-    public function actionMargin($id)
-    {
-        $productType = ProductType::findOne($id);
-        if (empty($productType)) {
-            throw new NotFoundHttpException("Product type with id {$id} not found.");
-        }
-        if (Yii::$app->request->isPost) {
-            $updateData = Yii::$app->request->post('ProductTypeMargin');
-            ProductTypeService::updateMargin($productType, $updateData);
-        }
-        $margins = ProductTypeService::getMarginsForUpdate($productType);
-        return $this->render('update-margin', [
-            'productType' => $productType,
-            'margins'     => $margins,
-        ]);
-    }
-
     /**
      * Finds the ProductType model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
