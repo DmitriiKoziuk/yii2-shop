@@ -2,23 +2,35 @@
 namespace DmitriiKoziuk\yii2Shop\services\product;
 
 use yii\db\Connection;
+use yii\queue\cli\Queue;
 use yii\helpers\Inflector;
 use DmitriiKoziuk\yii2Base\services\EntityActionService;
 use DmitriiKoziuk\yii2Shop\repositories\ProductTypeRepository;
 use DmitriiKoziuk\yii2Shop\entities\ProductType;
 use DmitriiKoziuk\yii2Shop\data\ProductTypeData;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductTypeInputForm;
+use DmitriiKoziuk\yii2Shop\jobs\UpdateProductSellPriceJob;
 
 class ProductTypeService extends EntityActionService
 {
+    /**
+     * @var ProductTypeRepository
+     */
     private $_productTypeRepository;
+
+    /**
+     * @var Queue
+     */
+    private $_queue;
 
     public function __construct(
         ProductTypeRepository $productTypeRepository,
+        Queue $queue,
         Connection $db = null
     ) {
         parent::__construct($db);
         $this->_productTypeRepository = $productTypeRepository;
+        $this->_queue = $queue;
     }
 
     /**
@@ -57,7 +69,16 @@ class ProductTypeService extends EntityActionService
             if ($productType->isAttributeChanged('name')) {
                 $productType->code = Inflector::slug($productType->name);
             }
+            $changedAttributes = $productType->getDirtyAttributes();
             $this->_productTypeRepository->save($productType);
+            if (
+                array_key_exists('margin_strategy', $changedAttributes) &&
+                $changedAttributes['margin_strategy'] != ProductType::MARGIN_STRATEGY_NOT_SET
+            ) {
+                $this->_queue->push(new UpdateProductSellPriceJob([
+                    'productTypeId' => $productType->id,
+                ]));
+            }
             return $productType;
         } catch (\Throwable $e) {
             throw $e;

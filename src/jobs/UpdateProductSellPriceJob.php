@@ -19,7 +19,7 @@ class UpdateProductSellPriceJob extends BaseObject implements JobInterface
     /**
      * @var int
      */
-    public $currencyId;
+    public $currencyId = null;
 
     /**
      * @param \yii\queue\Queue $queue
@@ -46,7 +46,9 @@ class UpdateProductSellPriceJob extends BaseObject implements JobInterface
     {
         $searchParams = new ProductSkuSearchParams();
         $searchParams->type_id = $this->productTypeId;
-        $searchParams->currency_id = $this->currencyId;
+        if (! empty($this->currencyId)) {
+            $searchParams->currency_id = $this->currencyId;
+        }
         $searchParams->sell_price_strategy = ProductSku::SELL_PRICE_STRATEGY_MARGIN;
         return $searchParams;
     }

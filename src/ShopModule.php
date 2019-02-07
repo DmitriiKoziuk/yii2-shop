@@ -354,10 +354,14 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
         );
         $this->diContainer->setSingleton(
             ProductTypeService::class,
-            function () use ($productTypeRepository) {
+            function () use (
+                $productTypeRepository,
+                $app
+            ) {
                 return new ProductTypeService(
                     $productTypeRepository,
-                    $this->dbConnection
+                    $this->queue,
+                    $app->db
                 );
             }
         );
