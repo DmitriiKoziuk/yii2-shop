@@ -139,8 +139,17 @@ class ProductService extends EntityActionService
             $this->_updateProductCategoryRelation($product, $productChangedAttributes);
             foreach ($productSkuInputForms as $productSkuInputForm) {
                 $productSku = $this->_productSkuRepository->getById($productSkuInputForm->id);
-                $this->_updateProductSku($product, $productSku, $productSkuInputForm);
-                $this->_updateProductSkuCategoryRelation($product, $productSku, $productChangedAttributes);
+                $this->_updateProductSku(
+                    $product,
+                    $productSku,
+                    $productSkuInputForm,
+                    $productChangedAttributes
+                );
+                $this->_updateProductSkuCategoryRelation(
+                    $product,
+                    $productSku,
+                    $productChangedAttributes
+                );
             }
             $this->commitTransaction();
             return $product; //TODO return ProductInputForm and ProductSkuInputForm[].
@@ -327,6 +336,7 @@ class ProductService extends EntityActionService
      * @param Product $product
      * @param ProductSku $productSku
      * @param ProductSkuInputForm $productSkuInputForm
+     * @param array $productChangedAttributes
      * @return array product sku changed attributes
      * @throws EntityNotFoundException
      * @throws \DmitriiKoziuk\yii2Base\exceptions\DataNotValidException
@@ -336,10 +346,11 @@ class ProductService extends EntityActionService
     private function _updateProductSku(
         Product $product,
         ProductSku $productSku,
-        ProductSkuInputForm $productSkuInputForm
+        ProductSkuInputForm $productSkuInputForm,
+        array $productChangedAttributes
     ): array {
-        // Slug depends form name, but do not update slug if user change it itself.
         $productSku->setAttributes($productSkuInputForm->getUpdatedAttributes());
+        // Slug depends form name, but do not update slug if user change it itself.
         if ($productSku->isAttributeChanged('name')) {
             if (! $productSku->isAttributeChanged('slug')) {
                 $productSku->slug = $this->_defineSlug($productSku->name);
@@ -358,21 +369,43 @@ class ProductService extends EntityActionService
                 ]));
             }
         }
-        // Change old_price field if is not changed and sell_price < old_price
-        if ($productSku->isAttributeChanged('sell_price')) {
-            if (
-                ! $productSku->isAttributeChanged('old_price') &&
-                $productSku->sell_price < $productSku->getOldAttribute('sell_price') &&
-                $productSku->old_price < $productSku->getOldAttribute('sell_price')
-            ) {
-                $productSku->old_price = $productSku->getOldAttribute('sell_price');
+        // user can change sell price only if strategy is static.
+        if (ProductSku::SELL_PRICE_STRATEGY_STATIC == $productSku->sell_price_strategy) {
+            // Change old_price field if is not changed and sell_price < old_price
+            if ($productSku->isAttributeChanged('sell_price')) {
+                if (
+                    ! $productSku->isAttributeChanged('old_price') &&
+                    $productSku->sell_price < $productSku->getOldAttribute('sell_price') &&
+                    $productSku->old_price < $productSku->getOldAttribute('sell_price')
+                ) {
+                    $productSku->old_price = $productSku->getOldAttribute('sell_price');
+                }
             }
+            // Change price on site if changed sell price
+            if (
+                $productSku->isAttributeChanged('sell_price') ||
+                $productSku->isAttributeChanged('currency_id', false)
+            ) {
+                $this->_defineProductSkuPriceOnSite($productSku);
+            }
+        } elseif ($productSku->isAttributeChanged('sell_price')) {
+            $productSku->sell_price = $productSku->getOldAttribute('sell_price');
         }
-        // Change price on site if changed sell price
+        // change sell price if sell price strategy is changed to margin
         if (
-            $productSku->isAttributeChanged('sell_price') ||
-            $productSku->isAttributeChanged('currency_id', false)
+            $productSku->isAttributeChanged('sell_price_strategy') &&
+            ProductSku::SELL_PRICE_STRATEGY_MARGIN == $productSku->sell_price_strategy
         ) {
+            $this->_defineProductSkuSellPrice($productSku);
+            $this->_defineProductSkuPriceOnSite($productSku);
+        }
+        // change sell price if product type is changed
+        if (
+            ProductSku::SELL_PRICE_STRATEGY_MARGIN == $productSku->sell_price_strategy &&
+            array_key_exists('type_id', $productChangedAttributes) &&
+            ! empty($productChangedAttributes['type_id'])
+        ) {
+            $this->_defineProductSkuSellPrice($productSku);
             $this->_defineProductSkuPriceOnSite($productSku);
         }
         $changedAttributes = $productSku->getDirtyAttributes();
@@ -514,7 +547,6 @@ class ProductService extends EntityActionService
                 $purchasePrice = (float) $supplierProductSkuData->getPurchasePrice();
             }
         }
-        $purchasePrice = $purchasePrice / count($supplierProductSkuDataList);
         return $purchasePrice;
     }
 
@@ -533,7 +565,6 @@ class ProductService extends EntityActionService
                 $purchasePrice = (float) $supplierProductSkuData->getPurchasePrice();
             }
         }
-        $purchasePrice = $purchasePrice / count($supplierProductSkuDataList);
         return $purchasePrice;
     }
 
