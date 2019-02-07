@@ -2,6 +2,7 @@
 namespace DmitriiKoziuk\yii2Shop\services\supplier;
 
 use yii\db\Connection;
+use yii\queue\cli\Queue;
 use DmitriiKoziuk\yii2Base\services\EntityActionService;
 use DmitriiKoziuk\yii2Shop\repositories\SupplierRepository;
 use DmitriiKoziuk\yii2Shop\repositories\SupplierProductSkuRepository;
@@ -10,6 +11,7 @@ use DmitriiKoziuk\yii2Shop\data\SupplierData;
 use DmitriiKoziuk\yii2Shop\data\SupplierProductSkuData;
 use DmitriiKoziuk\yii2Shop\forms\supplier\SupplierProductSkuCompositeUpdateForm;
 use DmitriiKoziuk\yii2Shop\services\currency\CurrencyService;
+use DmitriiKoziuk\yii2Shop\jobs\UpdateProductSellPriceJob;
 
 final class SupplierService extends EntityActionService
 {
@@ -28,16 +30,23 @@ final class SupplierService extends EntityActionService
      */
     private $_currencyService;
 
+    /**
+     * @var Queue
+     */
+    private $_queue;
+
     public function __construct(
         SupplierRepository $supplierRepository,
         SupplierProductSkuRepository $supplierProductSkuRepository,
         CurrencyService $currencyService,
+        Queue $queue,
         Connection $db = null
     ) {
         parent::__construct($db);
         $this->_supplierRepository = $supplierRepository;
         $this->_supplierProductSkuRepository = $supplierProductSkuRepository;
         $this->_currencyService = $currencyService;
+        $this->_queue = $queue;
     }
 
     /**
@@ -123,7 +132,16 @@ final class SupplierService extends EntityActionService
                 throw new \Exception('Supplier product sku do not exist.');
             }
             $supplierProductSkuRecord->setAttributes($form->getUpdatedAttributes());
+            $changedAttributes = $supplierProductSkuRecord->getDirtyAttributes();
             $this->_supplierProductSkuRepository->save($supplierProductSkuRecord);
+            if (
+                array_key_exists('purchase_price', $changedAttributes) &&
+                ! empty($changedAttributes['purchase_price'])
+            ) { //TODO optimize this
+                $this->_queue->push(new UpdateProductSellPriceJob([
+                    'productSkuId' => $form->product_sku_id,
+                ]));
+            }
         }
     }
 }

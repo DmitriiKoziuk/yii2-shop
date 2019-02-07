@@ -5,6 +5,7 @@ use yii\base\Model;
 
 class ProductSkuSearchParams extends Model
 {
+    public $product_sku_id;
     public $sell_price_strategy;
     public $currency_id;
     public $type_id;
@@ -12,7 +13,7 @@ class ProductSkuSearchParams extends Model
     public function rules()
     {
         return [
-            [['sell_price_strategy', 'currency_id', 'type_id'], 'integer'],
+            [['product_sku_id', 'sell_price_strategy', 'currency_id', 'type_id'], 'integer'],
         ];
     }
 }

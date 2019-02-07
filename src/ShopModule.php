@@ -398,6 +398,7 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
                     $supplierRepository,
                     $supplierProductSkuRepository,
                     $currencyService,
+                    $this->queue,
                     $app->db
                 );
             }
