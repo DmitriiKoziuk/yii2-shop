@@ -187,6 +187,15 @@ class ProductService extends EntityActionService
         }
     }
 
+    public function updateProductPriceOnSite(int $productSkuId): void
+    {
+        $productSkuRecord = $this->_productSkuRepository->getById($productSkuId);
+        if (! empty($productSkuRecord)) {
+            $this->_defineProductSkuPriceOnSite($productSkuRecord);
+            $this->_productSkuRepository->save($productSkuRecord);
+        }
+    }
+
     /**
      * @param Product $product
      * @param ProductSku $productSku
