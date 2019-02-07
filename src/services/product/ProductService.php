@@ -547,7 +547,6 @@ class ProductService extends EntityActionService
                 $purchasePrice = (float) $supplierProductSkuData->getPurchasePrice();
             }
         }
-        $purchasePrice = $purchasePrice / count($supplierProductSkuDataList);
         return $purchasePrice;
     }
 
@@ -566,7 +565,6 @@ class ProductService extends EntityActionService
                 $purchasePrice = (float) $supplierProductSkuData->getPurchasePrice();
             }
         }
-        $purchasePrice = $purchasePrice / count($supplierProductSkuDataList);
         return $purchasePrice;
     }
 
