@@ -152,6 +152,9 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
         }
     }
 
+    /**
+     * @param BaseApp $app
+     */
     private function _registerTranslation(BaseApp $app)
     {
         $app->i18n->translations[self::ID] = [
@@ -207,10 +210,11 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
     }
 
     /**
+     * @param BaseApp $app
      * @throws \yii\base\InvalidConfigException
      * @throws \yii\di\NotInstantiableException
      */
-    private function _registerClassesToDIContainer($app): void
+    private function _registerClassesToDIContainer(BaseApp $app): void
     {
         $this->diContainer->setSingleton(ProductRepository::class, function () {
             return new ProductRepository();
@@ -307,10 +311,14 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
 
         $this->diContainer->setSingleton(
             CurrencyService::class,
-            function () use ($currencyRepository) {
+            function () use (
+                $currencyRepository,
+                $app
+            ) {
                 return new CurrencyService(
                     $currencyRepository,
-                    $this->dbConnection
+                    $this->queue,
+                    $app->db
                 );
             }
         );
