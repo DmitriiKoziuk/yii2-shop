@@ -34,6 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'site_name',
             'product_title',
             'product_description',
+            'margin_strategy',
         ],
     ]) ?>
 

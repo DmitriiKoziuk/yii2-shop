@@ -4,8 +4,9 @@ namespace DmitriiKoziuk\yii2Shop\services\product;
 use yii\db\Connection;
 use yii\helpers\Inflector;
 use DmitriiKoziuk\yii2Base\services\EntityActionService;
-use DmitriiKoziuk\yii2Shop\entities\ProductType;
 use DmitriiKoziuk\yii2Shop\repositories\ProductTypeRepository;
+use DmitriiKoziuk\yii2Shop\entities\ProductType;
+use DmitriiKoziuk\yii2Shop\data\ProductTypeData;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductTypeInputForm;
 
 class ProductTypeService extends EntityActionService
@@ -66,5 +67,11 @@ class ProductTypeService extends EntityActionService
     public function delete(ProductType $productType)
     {
         //TODO make delete method.
+    }
+
+    public function getProductTypeById(int $productTypeId): ProductTypeData
+    {
+        $productTypeRecord = $this->_productTypeRepository->getProductTypeById($productTypeId);
+        return new ProductTypeData($productTypeRecord);
     }
 }

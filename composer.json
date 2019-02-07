@@ -17,6 +17,7 @@
   "require": {
     "php": ">=7.1.0",
     "yiisoft/yii2": "~2.0.0",
+    "yiisoft/yii2-queue": "~2.0",
     "kartik-v/yii2-widget-select2": "@dev",
     "dmitriikoziuk/yii2-base": "dev-master",
     "dmitriikoziuk/yii2-module-manager": "dev-master",

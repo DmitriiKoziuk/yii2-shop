@@ -77,13 +77,18 @@ class SupplierProductSkuData
         }
     }
 
-    public function getCurrencyName()
+    public function getCurrencyName(): string
     {
         if (empty($this->_currencyData)) {
             return '';
         } else {
             return $this->_currencyData->getName();
         }
+    }
+
+    public function getCurrencyId(): int
+    {
+        return $this->_supplierProductSku->currency_id;
     }
 
     public function getUpdateForm()

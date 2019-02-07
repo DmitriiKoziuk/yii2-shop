@@ -163,7 +163,7 @@ final class SupplierController extends Controller
                 $this->_supplierService->updateSupplierProductSkuData($compositeForm);
             }
         }
-        $suppliersProductSkuData = $this->_supplierService->getProductSkuSuppliersData($product_sku_id);
+        $suppliersProductSkuData = $this->_supplierService->getAllProductSkuSuppliers($product_sku_id);
         $allCurrencies = $this->_currencyService->getAllCurrencies();
         $productSkuData = $this->_productService->getProductSkuById($product_sku_id);
         return $this->render('update-product-sku-data', [

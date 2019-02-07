@@ -18,11 +18,17 @@ use DmitriiKoziuk\yii2Shop\ShopModule;
  * @property string  $product_url_prefix
  * @property int     $created_at
  * @property int     $updated_at
+ * @property int     $margin_strategy
  *
  * @property Product[] $products
  */
 class ProductType extends ActiveRecord
 {
+    const MARGIN_STRATEGY_NOT_SET = '';
+    const MARGIN_STRATEGY_USE_AVERAGE_SUPPLIER_PURCHASE_PRICE = 1;
+    const MARGIN_STRATEGY_USE_LOWER_SUPPLIER_PURCHASE_PRICE = 2;
+    const MARGIN_STRATEGY_USE_HIGHEST_SUPPLIER_PURCHASE_PRICE = 3;
+
     /**
      * @inheritdoc
      */
@@ -52,8 +58,12 @@ class ProductType extends ActiveRecord
             [['product_title'], 'string', 'max' => 255],
             [['product_description'], 'string', 'max' => 350],
             [['product_url_prefix'], 'string', 'max' => 100],
-            [['name_on_site', 'product_title', 'product_description', 'product_url_prefix'], 'default', 'value' => NULL],
-            [['created_at', 'updated_at'], 'integer'],
+            [
+                ['name_on_site', 'product_title', 'product_description', 'product_url_prefix', 'margin_strategy'],
+                'default',
+                'value' => NULL
+            ],
+            [['created_at', 'updated_at', 'margin_strategy'], 'integer'],
         ];
     }
 
@@ -70,6 +80,7 @@ class ProductType extends ActiveRecord
             'product_title'       => Yii::t(ShopModule::TRANSLATION_PRODUCT_TYPE, 'Title'),
             'product_description' => Yii::t(ShopModule::TRANSLATION_PRODUCT_TYPE, 'Description'),
             'product_url_prefix'  => Yii::t(ShopModule::TRANSLATION_PRODUCT_TYPE, 'Url prefix'),
+            'margin_strategy'     => Yii::t(ShopModule::TRANSLATION_PRODUCT_TYPE, 'Margin strategy'),
         ];
     }
 
