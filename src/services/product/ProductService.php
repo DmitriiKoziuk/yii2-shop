@@ -391,6 +391,14 @@ class ProductService extends EntityActionService
         } elseif ($productSku->isAttributeChanged('sell_price')) {
             $productSku->sell_price = $productSku->getOldAttribute('sell_price');
         }
+        // change sell price if sell price strategy is changed to margin
+        if (
+            $productSku->isAttributeChanged('sell_price_strategy') &&
+            ProductSku::SELL_PRICE_STRATEGY_MARGIN == $productSku->sell_price_strategy
+        ) {
+            $this->_defineProductSkuSellPrice($productSku);
+            $this->_defineProductSkuPriceOnSite($productSku);
+        }
         // change sell price if product type is changed
         if (
             ProductSku::SELL_PRICE_STRATEGY_MARGIN == $productSku->sell_price_strategy &&
