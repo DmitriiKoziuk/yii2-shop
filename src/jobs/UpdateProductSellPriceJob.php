@@ -14,7 +14,12 @@ class UpdateProductSellPriceJob extends BaseObject implements JobInterface
     /**
      * @var int
      */
-    public $productTypeId;
+    public $productSkuId = null;
+
+    /**
+     * @var int
+     */
+    public $productTypeId = null;
 
     /**
      * @var int
@@ -45,10 +50,9 @@ class UpdateProductSellPriceJob extends BaseObject implements JobInterface
     private function _prepareSearchParams(): ProductSkuSearchParams
     {
         $searchParams = new ProductSkuSearchParams();
+        $searchParams->product_sku_id = $this->productSkuId;
         $searchParams->type_id = $this->productTypeId;
-        if (! empty($this->currencyId)) {
-            $searchParams->currency_id = $this->currencyId;
-        }
+        $searchParams->currency_id = $this->currencyId;
         $searchParams->sell_price_strategy = ProductSku::SELL_PRICE_STRATEGY_MARGIN;
         return $searchParams;
     }

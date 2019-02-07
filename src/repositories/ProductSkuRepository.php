@@ -26,6 +26,7 @@ final class ProductSkuRepository extends EntityRepository
         }
         $query = ProductSku::find();
         $query->andFilterWhere([
+            ProductSku::tableName() . '.id' => $searchParams->product_sku_id,
             ProductSku::tableName() . '.sell_price_strategy' => $searchParams->sell_price_strategy,
             ProductSku::tableName() . '.currency_id' => $searchParams->currency_id,
         ]);
