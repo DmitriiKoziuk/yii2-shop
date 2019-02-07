@@ -1,15 +1,15 @@
 <?php
 namespace DmitriiKoziuk\yii2Shop\services\supplier;
 
-use DmitriiKoziuk\yii2Shop\services\currency\CurrencyService;
 use yii\db\Connection;
 use DmitriiKoziuk\yii2Base\services\EntityActionService;
+use DmitriiKoziuk\yii2Shop\repositories\SupplierRepository;
+use DmitriiKoziuk\yii2Shop\repositories\SupplierProductSkuRepository;
 use DmitriiKoziuk\yii2Shop\entities\SupplierProductSku;
 use DmitriiKoziuk\yii2Shop\data\SupplierData;
 use DmitriiKoziuk\yii2Shop\data\SupplierProductSkuData;
-use DmitriiKoziuk\yii2Shop\repositories\SupplierRepository;
-use DmitriiKoziuk\yii2Shop\repositories\SupplierProductSkuRepository;
 use DmitriiKoziuk\yii2Shop\forms\supplier\SupplierProductSkuCompositeUpdateForm;
+use DmitriiKoziuk\yii2Shop\services\currency\CurrencyService;
 
 final class SupplierService extends EntityActionService
 {
@@ -23,6 +23,9 @@ final class SupplierService extends EntityActionService
      */
     private $_supplierProductSkuRepository;
 
+    /**
+     * @var CurrencyService
+     */
     private $_currencyService;
 
     public function __construct(
@@ -71,7 +74,7 @@ final class SupplierService extends EntityActionService
      * @param int $productSkuId
      * @return SupplierProductSkuData[]
      */
-    public function getProductSkuSuppliersData(int $productSkuId): array
+    public function getAllProductSkuSuppliers(int $productSkuId): array
     {
         $productSkuSuppliers = [];
         $suppliers = $this->_supplierRepository->getProductSkuSuppliers($productSkuId);

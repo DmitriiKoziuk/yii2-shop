@@ -12,14 +12,19 @@ use DmitriiKoziuk\yii2Shop\helpers\UrlHelper;
 use DmitriiKoziuk\yii2Shop\entities\Product;
 use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 use DmitriiKoziuk\yii2Shop\entities\ProductType;
+use DmitriiKoziuk\yii2Shop\entities\ProductTypeMargin;
 use DmitriiKoziuk\yii2Shop\data\ProductSkuData;
+use DmitriiKoziuk\yii2Shop\data\ProductTypeMarginData;
+use DmitriiKoziuk\yii2Shop\data\ProductTypeData;
+use DmitriiKoziuk\yii2Shop\data\SupplierProductSkuData;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductInputForm;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuInputForm;
 use DmitriiKoziuk\yii2Shop\repositories\ProductRepository;
 use DmitriiKoziuk\yii2Shop\repositories\ProductSkuRepository;
-use DmitriiKoziuk\yii2Shop\repositories\CurrencyRepository;
 use DmitriiKoziuk\yii2Shop\services\category\CategoryProductService;
 use DmitriiKoziuk\yii2Shop\services\category\CategoryProductSkuService;
+use DmitriiKoziuk\yii2Shop\services\supplier\SupplierService;
+use DmitriiKoziuk\yii2Shop\services\currency\CurrencyService;
 
 class ProductService extends EntityActionService
 {
@@ -34,9 +39,19 @@ class ProductService extends EntityActionService
     private $_productSkuRepository;
 
     /**
-     * @var CurrencyRepository
+     * @var ProductTypeService
      */
-    private $_currencyRepository;
+    private $_productTypeService;
+
+    /**
+     * @var ProductMarginService
+     */
+    private $_productTypeMarginService;
+
+    /**
+     * @var SupplierService
+     */
+    private $_supplierService;
 
     /**
      * @var UrlService
@@ -53,22 +68,33 @@ class ProductService extends EntityActionService
      */
     private $_categoryProductSkuService;
 
+    /**
+     * @var CurrencyService
+     */
+    private $_currencyService;
+
     public function __construct(
         ProductRepository $productRepository,
         ProductSkuRepository $_productSkuRepository,
-        CurrencyRepository $currencyRepository,
+        ProductTypeService $productTypeService,
+        ProductMarginService $productTypeMarginService,
+        SupplierService $supplierService,
         UrlService $urlService,
         CategoryProductService $categoryProductService,
         CategoryProductSkuService $categoryProductSkuService,
+        CurrencyService $currencyService,
         Connection $db = null
     ) {
         parent::__construct($db);
         $this->_productRepository = $productRepository;
         $this->_productSkuRepository = $_productSkuRepository;
-        $this->_currencyRepository = $currencyRepository;
+        $this->_productTypeService = $productTypeService;
+        $this->_productTypeMarginService = $productTypeMarginService;
+        $this->_supplierService = $supplierService;
         $this->_urlService = $urlService;
         $this->_categoryProductService = $categoryProductService;
         $this->_categoryProductSkuService = $categoryProductSkuService;
+        $this->_currencyService = $currencyService;
     }
 
     /**
@@ -76,7 +102,6 @@ class ProductService extends EntityActionService
      * @param ProductSkuInputForm $productSkuInputForm
      * @return Product
      * @throws \Throwable
-     * @throws \yii\db\Exception
      */
     public function create(
         ProductInputForm $productInputForm,
@@ -101,7 +126,6 @@ class ProductService extends EntityActionService
      * @param ProductSkuInputForm[] $productSkuInputForms
      * @return Product
      * @throws \Throwable
-     * @throws \yii\db\Exception
      */
     public function update(
         int $productId,
@@ -131,7 +155,6 @@ class ProductService extends EntityActionService
      * @param ProductSkuInputForm $productSkuInputForm
      * @return ProductSku
      * @throws \Throwable
-     * @throws \yii\db\Exception
      */
     public function addSkuToProduct(
         Product $product,
@@ -152,6 +175,16 @@ class ProductService extends EntityActionService
     {
         $sku = $this->_productSkuRepository->getById($productSkuId);
         return new ProductSkuData($sku);
+    }
+
+    public function updateProductSkuSellPrice(int $productSkuId): void
+    {
+        $productSkuRecord = $this->_productSkuRepository->getById($productSkuId);
+        if (! empty($productSkuRecord)) {
+            $this->_defineProductSkuSellPrice($productSkuRecord);
+            $this->_defineProductSkuPriceOnSite($productSkuRecord);
+            $this->_productSkuRepository->save($productSkuRecord);
+        }
     }
 
     /**
@@ -331,7 +364,7 @@ class ProductService extends EntityActionService
             $productSku->isAttributeChanged('sell_price') ||
             $productSku->isAttributeChanged('currency_id', false)
         ) {
-            $productSku->price_on_site = $this->_defineSitePrice($productSku);
+            $this->_defineProductSkuPriceOnSite($productSku);
         }
         $changedAttributes = $productSku->getDirtyAttributes();
         $this->_productSkuRepository->save($productSku);
@@ -375,21 +408,156 @@ class ProductService extends EntityActionService
         return UrlHelper::slugFromString('/' . $url);
     }
 
+    private function _defineProductSkuSellPrice(ProductSku $productSkuRecord): void
+    {
+        if (
+            $productSkuRecord->sell_price_strategy == ProductSku::SELL_PRICE_STRATEGY_MARGIN &&
+            ! empty($productSkuRecord->getTypeID())
+        ) {
+            /** @var SupplierProductSkuData[] $allSupplierDataList */
+            $allSupplierDataList = $this->_supplierService->getAllProductSkuSuppliers($productSkuRecord->id);
+            // suppliers with the same currency as product sku
+            $actualSupplierList = [];
+            foreach ($allSupplierDataList as $supplierProductSkuData) {
+                if ($supplierProductSkuData->getCurrencyId() == $productSkuRecord->currency_id) {
+                    $actualSupplierList[] = $supplierProductSkuData;
+                }
+            }
+            if (! empty($actualSupplierList)) {
+                $productTypeData = $this->_productTypeService->getProductTypeById($productSkuRecord->getTypeID());
+                $productTypeMarginDataList = $this->_productTypeMarginService
+                    ->getProductTypeMargins($productSkuRecord->getTypeID());
+                $marginData = $productTypeMarginDataList[ $productSkuRecord->currency_id ] ?? null;
+                if (! empty($marginData)) {
+                    $supplierPurchasePrice = $this->_defineSupplierPurchasePrice(
+                        $productTypeData,
+                        $actualSupplierList
+                    );
+                    if (! empty($supplierPurchasePrice)) {
+                        $this->_defineProductSkuMarginSellPrice(
+                            $productSkuRecord,
+                            $marginData,
+                            $supplierPurchasePrice
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @param ProductTypeData $productTypeData
+     * @param SupplierProductSkuData[] $supplierProductSkuDataList
+     * @return float|null
+     */
+    private function _defineSupplierPurchasePrice(
+        ProductTypeData $productTypeData,
+        array $supplierProductSkuDataList
+    ): ?float {
+        switch ($productTypeData->getMarginStrategy()) {
+            case ProductType::MARGIN_STRATEGY_USE_AVERAGE_SUPPLIER_PURCHASE_PRICE:
+                $purchasePrice = $this->_getSupplierAveragePurchasePrice($supplierProductSkuDataList);
+                break;
+            case ProductType::MARGIN_STRATEGY_USE_LOWER_SUPPLIER_PURCHASE_PRICE:
+                $purchasePrice = $this->_getSupplierLowerPurchasePrice($supplierProductSkuDataList);
+                break;
+            case ProductType::MARGIN_STRATEGY_USE_HIGHEST_SUPPLIER_PURCHASE_PRICE:
+                $purchasePrice = $this->_getSupplierHighestPurchasePrice($supplierProductSkuDataList);
+                break;
+            default:
+                $purchasePrice = null;
+                break;
+        }
+        return $purchasePrice;
+    }
+
+    /**
+     * @param SupplierProductSkuData[] $supplierProductSkuDataList
+     * @return float|null
+     */
+    private function _getSupplierAveragePurchasePrice(
+        array $supplierProductSkuDataList
+    ): ?float {
+        $purchasePrice = null;
+        foreach ($supplierProductSkuDataList as $supplierProductSkuData) {
+            if (empty($purchasePrice)) {
+                $purchasePrice = $supplierProductSkuData->getPurchasePrice();
+            } else {
+                $purchasePrice += (float) $supplierProductSkuData->getPurchasePrice();
+            }
+        }
+        $purchasePrice = $purchasePrice / count($supplierProductSkuDataList);
+        return $purchasePrice;
+    }
+
+    /**
+     * @param SupplierProductSkuData[] $supplierProductSkuDataList
+     * @return float|null
+     */
+    private function _getSupplierLowerPurchasePrice(
+        array $supplierProductSkuDataList
+    ): ?float {
+        $purchasePrice = null;
+        foreach ($supplierProductSkuDataList as $supplierProductSkuData) {
+            if (empty($purchasePrice)) {
+                $purchasePrice = (float) $supplierProductSkuData->getPurchasePrice();
+            } elseif ($purchasePrice > (float) $supplierProductSkuData->getPurchasePrice()) {
+                $purchasePrice = (float) $supplierProductSkuData->getPurchasePrice();
+            }
+        }
+        $purchasePrice = $purchasePrice / count($supplierProductSkuDataList);
+        return $purchasePrice;
+    }
+
+    /**
+     * @param SupplierProductSkuData[] $supplierProductSkuDataList
+     * @return float|null
+     */
+    private function _getSupplierHighestPurchasePrice(
+        array $supplierProductSkuDataList
+    ): ?float {
+        $purchasePrice = null;
+        foreach ($supplierProductSkuDataList as $supplierProductSkuData) {
+            if (empty($purchasePrice)) {
+                $purchasePrice = (float) $supplierProductSkuData->getPurchasePrice();
+            } elseif ($purchasePrice < (float) $supplierProductSkuData->getPurchasePrice()) {
+                $purchasePrice = (float) $supplierProductSkuData->getPurchasePrice();
+            }
+        }
+        $purchasePrice = $purchasePrice / count($supplierProductSkuDataList);
+        return $purchasePrice;
+    }
+
+    private function _defineProductSkuMarginSellPrice(
+        ProductSku $productSku,
+        ProductTypeMarginData $productTypeMarginData,
+        float $purchasePrice = null
+    ): void {
+        if (! empty($purchasePrice)) {
+            switch ($productTypeMarginData->getMarginType()) {
+                case ProductTypeMargin::MARGIN_TYPE_SUM:
+                    $productSku->sell_price = $purchasePrice + $productTypeMarginData->getMarginValue();
+                    break;
+                case ProductTypeMargin::MARGIN_TYPE_PERCENT:
+                    $sellPricePercent = ($purchasePrice / 100) * $productTypeMarginData->getMarginValue();
+                    $productSku->sell_price = $purchasePrice + $sellPricePercent;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
     /**
      * @param ProductSku $productSku
-     * @return float|int|string
-     * @throws EntityNotFoundException
      */
-    private function _defineSitePrice(ProductSku $productSku)
+    private function _defineProductSkuPriceOnSite(ProductSku $productSku): void
     {
         if (empty($productSku->currency_id)) {
-            return $productSku->sell_price;
+            $productSku->price_on_site = $productSku->sell_price;
         } else {
-            $currency = $this->_currencyRepository->getCurrencyById($productSku->currency_id);
-            if (empty($currency)) {
-                throw new EntityNotFoundException("Currency with id '{$productSku->currency_id}' not found.");
-            }
-            return $productSku->sell_price * $currency->rate;
+            $currencyData = $this->_currencyService->getCurrencyById($productSku->currency_id);
+            $productSku->price_on_site = $productSku->sell_price * $currencyData->getRate();
         }
     }
 }

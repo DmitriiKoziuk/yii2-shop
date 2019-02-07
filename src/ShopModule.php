@@ -5,6 +5,7 @@ use yii\di\Container;
 use yii\db\Connection;
 use yii\web\Application as WebApp;
 use yii\base\Application as BaseApp;
+use yii\queue\cli\Queue;
 use DmitriiKoziuk\yii2ModuleManager\interfaces\ModuleInterface;
 use DmitriiKoziuk\yii2CustomUrls\services\UrlService;
 use DmitriiKoziuk\yii2FileManager\repositories\FileRepository;
@@ -12,6 +13,7 @@ use DmitriiKoziuk\yii2Shop\repositories\CurrencyRepository;
 use DmitriiKoziuk\yii2Shop\repositories\ProductRepository;
 use DmitriiKoziuk\yii2Shop\repositories\ProductSkuRepository;
 use DmitriiKoziuk\yii2Shop\repositories\ProductTypeRepository;
+use DmitriiKoziuk\yii2Shop\repositories\ProductTypeMarginRepository;
 use DmitriiKoziuk\yii2Shop\repositories\CategoryRepository;
 use DmitriiKoziuk\yii2Shop\repositories\CategoryClosureRepository;
 use DmitriiKoziuk\yii2Shop\repositories\CategoryProductRepository;
@@ -27,6 +29,7 @@ use DmitriiKoziuk\yii2Shop\repositories\BrandRepository;
 use DmitriiKoziuk\yii2Shop\services\currency\CurrencyService;
 use DmitriiKoziuk\yii2Shop\services\product\ProductService;
 use DmitriiKoziuk\yii2Shop\services\product\ProductTypeService;
+use DmitriiKoziuk\yii2Shop\services\product\ProductMarginService;
 use DmitriiKoziuk\yii2Shop\services\product\ProductSearchService;
 use DmitriiKoziuk\yii2Shop\services\category\CategoryProductService;
 use DmitriiKoziuk\yii2Shop\services\category\CategoryProductSkuService;
@@ -48,6 +51,7 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
     const TRANSLATION_PRODUCT = 'dk-shop-product';
     const TRANSLATION_PRODUCT_SKU = 'dk-shop-product-sku';
     const TRANSLATION_PRODUCT_TYPE = 'dk-shop-product-type';
+    const TRANSLATION_PRODUCT_TYPE_MARGIN = 'dk-shop-product-type-margin';
     const TRANSLATION_CATEGORY = 'dk-shop-category';
     const TRANSLATION_CURRENCY = 'dk-shop-currency';
     const TRANSLATION_CART = 'dk-shop-cart';
@@ -63,6 +67,11 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
      * @var Container
      */
     public $diContainer;
+
+    /**
+     * @var Queue
+     */
+    public $queue;
 
     /**
      * @var Connection
@@ -124,6 +133,9 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
         if ($app instanceof WebApp && $app->id == $this->backendAppId) {
             $this->controllerNamespace = __NAMESPACE__ . '\controllers\backend';
             $this->viewPath = '@DmitriiKoziuk/yii2Shop/views/backend';
+            if (empty($this->queue) || ! ($this->queue instanceof Queue)) {
+                throw new \InvalidArgumentException('Property queue not set.');
+            }
         }
         if ($app instanceof WebApp && $app->id == $this->frontendAppId) {
             $this->controllerNamespace = __NAMESPACE__ . '\controllers\frontend';
@@ -158,6 +170,11 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
             'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
         ];
         $app->i18n->translations[self::TRANSLATION_PRODUCT_TYPE] = [
+            'class'          => 'yii\i18n\PhpMessageSource',
+            'sourceLanguage' => 'en',
+            'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
+        ];
+        $app->i18n->translations[self::TRANSLATION_PRODUCT_TYPE_MARGIN] = [
             'class'          => 'yii\i18n\PhpMessageSource',
             'sourceLanguage' => 'en',
             'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
@@ -203,6 +220,9 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
         });
         $this->diContainer->setSingleton(ProductTypeRepository::class, function () {
             return new ProductTypeRepository();
+        });
+        $this->diContainer->setSingleton(ProductTypeMarginRepository::class, function () {
+            return new ProductTypeMarginRepository();
         });
         $this->diContainer->setSingleton(CurrencyRepository::class, function () {
             return new CurrencyRepository();
@@ -264,6 +284,8 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
         $productSkuRepository = $this->diContainer->get(ProductSkuRepository::class);
         /** @var ProductTypeRepository $productTypeRepository */
         $productTypeRepository = $this->diContainer->get(ProductTypeRepository::class);
+        /** @var ProductTypeMarginRepository $productTypeMarginRepository */
+        $productTypeMarginRepository = $this->diContainer->get(ProductTypeMarginRepository::class);
         /** @var CartRepository $cartRepository */
         $cartRepository = $this->diContainer->get(CartRepository::class);
         /** @var CartProductRepository $cartProductRepository */
@@ -339,6 +361,45 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
                 );
             }
         );
+        /** @var ProductTypeService $productTypeService */
+        $productTypeService = $this->diContainer->get(ProductTypeService::class);
+        $this->diContainer->setSingleton(
+            ProductMarginService::class,
+            function () use (
+                $productTypeMarginRepository,
+                $currencyService,
+                $productTypeService,
+                $app
+            ) {
+                return new ProductMarginService(
+                    $productTypeMarginRepository,
+                    $currencyService,
+                    $productTypeService,
+                    $this->queue,
+                    $app->db
+                );
+            }
+        );
+        /** @var ProductMarginService $productMarginService */
+        $productMarginService = $this->diContainer->get(ProductMarginService::class);
+        $this->diContainer->setSingleton(
+            SupplierService::class,
+            function () use (
+                $supplierRepository,
+                $supplierProductSkuRepository,
+                $currencyService,
+                $app
+            ) {
+                return new SupplierService(
+                    $supplierRepository,
+                    $supplierProductSkuRepository,
+                    $currencyService,
+                    $app->db
+                );
+            }
+        );
+        /** @var SupplierService $supplierService */
+        $supplierService = $this->diContainer->get(SupplierService::class);
         /** @var CategoryProductService $categoryProductService */
         $categoryProductService = $this->diContainer->get(CategoryProductService::class);
         /** @var CategoryProductSkuService $categoryProductSkuService */
@@ -348,18 +409,25 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
             function () use (
                 $productRepository,
                 $productSkuRepository,
+                $productTypeService,
+                $productMarginService,
+                $supplierService,
                 $currencyRepository,
                 $urlService,
                 $categoryProductService,
-                $categoryProductSkuService
+                $categoryProductSkuService,
+                $currencyService
             ) {
                 return new ProductService(
                     $productRepository,
                     $productSkuRepository,
-                    $currencyRepository,
+                    $productTypeService,
+                    $productMarginService,
+                    $supplierService,
                     $urlService,
                     $categoryProductService,
                     $categoryProductSkuService,
+                    $currencyService,
                     $this->dbConnection
                 );
             }
@@ -440,28 +508,15 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
             }
         );
         $this->diContainer->setSingleton(
-            SupplierService::class,
-            function () use (
-                $supplierRepository,
-                $supplierProductSkuRepository,
-                $currencyService,
-                $app
-            ) {
-                return new SupplierService(
-                    $supplierRepository,
-                    $supplierProductSkuRepository,
-                    $currencyService,
-                    $app->db
-                );
-            }
-        );
-        $this->diContainer->setSingleton(
             BrandService::class,
             function () use (
                 $brandRepository,
                 $app
             ) {
-                return new BrandService($brandRepository, $app->db);
+                return new BrandService(
+                    $brandRepository,
+                    $app->db
+                );
             }
         );
     }

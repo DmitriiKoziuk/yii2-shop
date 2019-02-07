@@ -31,6 +31,7 @@ $this->params['breadcrumbs'][] = Yii::t(ShopModule::TRANSLATION_PRODUCT_TYPE, 'P
             'id',
             'name',
             'name_on_site',
+            'margin_strategy',
 
             [
                 'attribute' => Yii::t(ShopModule::TRANSLATION_PRODUCT_TYPE, 'Product number'),
@@ -40,7 +41,15 @@ $this->params['breadcrumbs'][] = Yii::t(ShopModule::TRANSLATION_PRODUCT_TYPE, 'P
                 },
             ],
 
-            ['class'    => 'yii\grid\ActionColumn'],
+            [
+                'class'    => 'yii\grid\ActionColumn',
+                'template' => '{update-margin} {view} {update} {delete}',
+                'buttons'  => [
+                    'update-margin' => function ($url) {
+                        return Html::a('<span class="glyphicon glyphicon-usd"></span>', $url);
+                    }
+                ]
+            ],
         ],
     ]); ?>
 </div>

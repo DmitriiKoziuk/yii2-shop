@@ -22,6 +22,11 @@ class CurrencyData
         return $this->_currencyRecord->name;
     }
 
+    public function getRate()
+    {
+        return $this->_currencyRecord->rate;
+    }
+
     public function __get($name)
     {
         return $this->{'get' . $name}();

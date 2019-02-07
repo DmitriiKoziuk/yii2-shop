@@ -1,5 +1,4 @@
 <?php
-
 namespace DmitriiKoziuk\yii2Shop\controllers\backend;
 
 use Yii;
@@ -9,8 +8,11 @@ use yii\filters\VerbFilter;
 use yii\base\Module;
 use DmitriiKoziuk\yii2Shop\entities\search\ProductTypeSearch;
 use DmitriiKoziuk\yii2Shop\entities\ProductType;
-use DmitriiKoziuk\yii2Shop\services\product\ProductTypeService;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductTypeInputForm;
+use DmitriiKoziuk\yii2Shop\forms\product\ProductMarginUpdateForm;
+use DmitriiKoziuk\yii2Shop\forms\product\ProductMarginCompositeUpdateForm;
+use DmitriiKoziuk\yii2Shop\services\product\ProductTypeService;
+use DmitriiKoziuk\yii2Shop\services\product\ProductMarginService;
 
 /**
  * ProductTypeController implements the CRUD actions for ProductType model.
@@ -22,14 +24,21 @@ final class ProductTypeController extends Controller
      */
     private $_productTypeService;
 
+    /**
+     * @var ProductMarginService
+     */
+    private $_productMarginService;
+
     public function __construct(
         string $id,
         Module $module,
         ProductTypeService $productTypeService,
+        ProductMarginService $productMarginService,
         array $config = []
     ) {
         parent::__construct($id, $module, $config);
         $this->_productTypeService = $productTypeService;
+        $this->_productMarginService = $productMarginService;
     }
 
     /**
@@ -118,6 +127,27 @@ final class ProductTypeController extends Controller
         return $this->render('update', [
             'productType' => $productType,
             'productTypeInputForm' => $productTypeInputForm,
+        ]);
+    }
+
+    /**
+     * @param int $id product type id
+     * @return string
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function actionUpdateMargin(int $id)
+    {
+        $compositeForm = new ProductMarginCompositeUpdateForm();
+        if (
+            Yii::$app->request->isPost &&
+            $compositeForm->load(Yii::$app->request->post((new ProductMarginUpdateForm())->formName()))
+        ) {
+            $updateData = $this->_productMarginService->updateMargins($id, $compositeForm);
+        } else {
+            $updateData = $this->_productMarginService->getDataForUpdate($id);
+        }
+        return $this->render('update-margin', [
+            'updateData' => $updateData,
         ]);
     }
 

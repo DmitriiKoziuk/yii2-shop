@@ -10,6 +10,7 @@ class ProductTypeInputForm extends Model
     public $product_title;
     public $product_description;
     public $product_url_prefix;
+    public $margin_strategy;
 
     public function rules()
     {
@@ -19,8 +20,13 @@ class ProductTypeInputForm extends Model
             [['product_title'], 'string', 'max' => 255],
             [['product_description'], 'string', 'max' => 350],
             [['product_url_prefix'], 'string', 'max' => 100],
+            [['margin_strategy'], 'integer'],
+            [
+                ['name_on_site', 'product_title', 'product_description', 'product_url_prefix', 'margin_strategy'],
+                'default',
+                'value' => NULL
+            ],
             [['name', 'name_on_site', 'product_title', 'product_description', 'product_url_prefix'], 'trim'],
-            [['name_on_site', 'product_title', 'product_description', 'product_url_prefix'], 'default', 'value' => NULL],
         ];
     }
 }

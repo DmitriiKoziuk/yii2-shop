@@ -79,4 +79,10 @@ class CurrencyService extends EntityActionService
         }
         return $currencies;
     }
+
+    public function getCurrencyById(int $currencyId): CurrencyData
+    {
+        $currencyRecord = $this->_currencyRepository->getCurrencyById($currencyId);
+        return new CurrencyData($currencyRecord);
+    }
 }
