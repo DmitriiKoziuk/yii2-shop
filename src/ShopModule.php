@@ -7,7 +7,7 @@ use yii\web\Application as WebApp;
 use yii\base\Application as BaseApp;
 use yii\queue\cli\Queue;
 use DmitriiKoziuk\yii2ModuleManager\interfaces\ModuleInterface;
-use DmitriiKoziuk\yii2CustomUrls\services\UrlService;
+use DmitriiKoziuk\yii2CustomUrls\services\UrlIndexService;
 use DmitriiKoziuk\yii2FileManager\repositories\FileRepository;
 use DmitriiKoziuk\yii2Shop\repositories\CurrencyRepository;
 use DmitriiKoziuk\yii2Shop\repositories\ProductRepository;
@@ -280,8 +280,8 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
         $categoryProductRepository = $this->diContainer->get(CategoryProductRepository::class);
         /** @var CategoryProductSkuRepository $categoryProductSkuRepository */
         $categoryProductSkuRepository = $this->diContainer->get(CategoryProductSkuRepository::class);
-        /** @var UrlService $urlService */
-        $urlService = $this->diContainer->get(UrlService::class);
+        /** @var UrlIndexService $urlService */
+        $urlService = $this->diContainer->get(UrlIndexService::class);
         /** @var ProductRepository $productRepository */
         $productRepository = $this->diContainer->get(ProductRepository::class);
         /** @var ProductSkuRepository $productSkuRepository */

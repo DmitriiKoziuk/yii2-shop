@@ -48,7 +48,7 @@ final class ProductSkuController extends Controller
      */
     public function actionIndex(UrlData $urlData)
     {
-        $productSku = $this->_productSkuRepository->getById((int) $urlData->entity_id);
+        $productSku = $this->_productSkuRepository->getById((int) $urlData->getEntityId());
         if (empty($productSku)) {
             throw new NotFoundHttpException('Page not found.');
         }

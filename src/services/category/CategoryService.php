@@ -5,7 +5,7 @@ use yii\db\Connection;
 use DmitriiKoziuk\yii2Base\services\EntityActionService;
 use DmitriiKoziuk\yii2CustomUrls\forms\UrlCreateForm;
 use DmitriiKoziuk\yii2CustomUrls\forms\UrlUpdateForm;
-use DmitriiKoziuk\yii2CustomUrls\services\UrlService;
+use DmitriiKoziuk\yii2CustomUrls\services\UrlIndexService;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 use DmitriiKoziuk\yii2Shop\forms\CategoryInputForm;
 use DmitriiKoziuk\yii2Shop\entities\Category;
@@ -25,19 +25,19 @@ final class CategoryService extends EntityActionService
     private $_categoryClosureService;
 
     /**
-     * @var UrlService
+     * @var UrlIndexService
      */
-    private $_urlService;
+    private $_urlIndexService;
 
     public function __construct(
         CategoryRepository $categoryRepository,
         CategoryClosureService $categoryClosureService,
-        UrlService $urlService,
+        UrlIndexService $urlIndexService,
         Connection $db = null
     ) {
         parent::__construct($db);
         $this->_categoryClosureService = $categoryClosureService;
-        $this->_urlService = $urlService;
+        $this->_urlIndexService = $urlIndexService;
         $this->_categoryRepository = $categoryRepository;
     }
 
@@ -45,7 +45,6 @@ final class CategoryService extends EntityActionService
      * @param CategoryInputForm $categoryInputForm
      * @return \DmitriiKoziuk\yii2Shop\entities\Category
      * @throws \Throwable
-     * @throws \yii\db\Exception
      */
     public function createCategory(CategoryInputForm $categoryInputForm): Category
     {
@@ -57,15 +56,7 @@ final class CategoryService extends EntityActionService
             $category->url = $this->_defineUrl($category);
             $this->_categoryRepository->save($category);
             $this->_categoryClosureService->updateRelations($category);
-            $this->_urlService->addUrlToIndex(
-                new UrlCreateForm([
-                    'url' => $category->url,
-                    'module_name' => ShopModule::ID,
-                    'controller_name' => Category::FRONTEND_CONTROLLER_NAME,
-                    'action_name' => Category::FRONTEND_ACTION_NAME,
-                    'entity_id' => (string) $category->id
-                ])
-            );
+            $this->_addCategoryUrlToIndex($category);
             $this->commitTransaction();
             return $category;
         } catch (\Throwable $e) {
@@ -93,13 +84,7 @@ final class CategoryService extends EntityActionService
             }
             $this->_categoryRepository->save($category);
             if (isset($changedAttributesList['slug'])) {
-                $this->_urlService->updateUrlInIndex(new UrlUpdateForm([
-                    'url' => $category->url,
-                    'module_name' => ShopModule::ID,
-                    'controller_name' => Category::FRONTEND_CONTROLLER_NAME,
-                    'action_name' => Category::FRONTEND_ACTION_NAME,
-                    'entity_id' => (string) $category->id,
-                ]));
+                $this->_updateCategoryUrlInIndex($category);
                 $this->_updateChildrenUrl($category);
             }
             if (isset($changedAttributesList['parent_id'])) {
@@ -153,5 +138,29 @@ final class CategoryService extends EntityActionService
             $this->_categoryRepository->save($child);
             $this->_updateChildrenUrl($child);
         }
+    }
+
+    private function _addCategoryUrlToIndex(Category $category): void
+    {
+        $this->_urlIndexService->addUrlToIndex(
+            new UrlCreateForm([
+                'url' => $category->url,
+                'module_name' => ShopModule::ID,
+                'controller_name' => Category::FRONTEND_CONTROLLER_NAME,
+                'action_name' => Category::FRONTEND_ACTION_NAME,
+                'entity_id' => (string) $category->id
+            ])
+        );
+    }
+
+    private function _updateCategoryUrlInIndex(Category $category): void
+    {
+        $this->_urlIndexService->updateUrlInIndex(new UrlUpdateForm([
+            'url' => $category->url,
+            'module_name' => ShopModule::ID,
+            'controller_name' => Category::FRONTEND_CONTROLLER_NAME,
+            'action_name' => Category::FRONTEND_ACTION_NAME,
+            'entity_id' => (string) $category->id,
+        ]));
     }
 }

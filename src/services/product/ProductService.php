@@ -6,7 +6,7 @@ use DmitriiKoziuk\yii2Base\services\EntityActionService;
 use DmitriiKoziuk\yii2Base\exceptions\EntityNotFoundException;
 use DmitriiKoziuk\yii2CustomUrls\forms\UrlCreateForm;
 use DmitriiKoziuk\yii2CustomUrls\forms\UrlUpdateForm;
-use DmitriiKoziuk\yii2CustomUrls\services\UrlService;
+use DmitriiKoziuk\yii2CustomUrls\services\UrlIndexService;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 use DmitriiKoziuk\yii2Shop\helpers\UrlHelper;
 use DmitriiKoziuk\yii2Shop\entities\Product;
@@ -54,9 +54,9 @@ class ProductService extends EntityActionService
     private $_supplierService;
 
     /**
-     * @var UrlService
+     * @var UrlIndexService
      */
-    private $_urlService;
+    private $_urlIndexService;
 
     /**
      * @var CategoryProductService
@@ -79,7 +79,7 @@ class ProductService extends EntityActionService
         ProductTypeService $productTypeService,
         ProductMarginService $productTypeMarginService,
         SupplierService $supplierService,
-        UrlService $urlService,
+        UrlIndexService $urlIndexService,
         CategoryProductService $categoryProductService,
         CategoryProductSkuService $categoryProductSkuService,
         CurrencyService $currencyService,
@@ -91,7 +91,7 @@ class ProductService extends EntityActionService
         $this->_productTypeService = $productTypeService;
         $this->_productTypeMarginService = $productTypeMarginService;
         $this->_supplierService = $supplierService;
-        $this->_urlService = $urlService;
+        $this->_urlIndexService = $urlIndexService;
         $this->_categoryProductService = $categoryProductService;
         $this->_categoryProductSkuService = $categoryProductSkuService;
         $this->_currencyService = $currencyService;
@@ -232,13 +232,7 @@ class ProductService extends EntityActionService
         $product->slug = $this->_defineSlug($product->name);
         $product->url = $this->_defineProductUrl($product);
         $this->_productRepository->save($product);
-        $this->_urlService->addUrlToIndex(new UrlCreateForm([
-            'url' => $product->url,
-            'module_name' => ShopModule::ID,
-            'controller_name' => ShopModule::PRODUCT_FRONTEND_CONTROLLER_NAME,
-            'action_name' => ShopModule::PRODUCT_FRONTEND_ACTION_NAME,
-            'entity_id' => (string) $product->id,
-        ]));
+        $this->_addProductUrlToIndex($product);
         return $product;
     }
 
@@ -262,13 +256,7 @@ class ProductService extends EntityActionService
         }
         if ($product->isAttributeChanged('slug')) {
             $product->url = $this->_defineProductUrl($product);
-            $this->_urlService->updateUrlInIndex(new UrlUpdateForm([
-                'url' => $product->url,
-                'module_name' => ShopModule::ID,
-                'controller_name' => ShopModule::PRODUCT_FRONTEND_CONTROLLER_NAME,
-                'action_name' => ShopModule::PRODUCT_FRONTEND_ACTION_NAME,
-                'entity_id' => (string) $product->id,
-            ]));
+            $this->_updateProductUrlInIndex($product);
         }
         $changedAttributes = $product->getDirtyAttributes();
         $this->_productRepository->save($product);
@@ -322,13 +310,7 @@ class ProductService extends EntityActionService
         $productSku->url = $this->_defineProductSkuUrl($product, $productSku);
         $productSku->sort = ProductSku::getNextSortNumber($product->id);
         $this->_productSkuRepository->save($productSku);
-        $this->_urlService->addUrlToIndex(new UrlCreateForm([
-            'url' => $productSku->url,
-            'module_name' => ShopModule::ID,
-            'controller_name' => ShopModule::PRODUCT_SKU_FRONTEND_CONTROLLER_NAME,
-            'action_name' => ShopModule::PRODUCT_SKU_FRONTEND_ACTION_NAME,
-            'entity_id' => (string) $productSku->id,
-        ]));
+        $this->_addProductSkuUrlToIndex($productSku);
         return $productSku;
     }
 
@@ -338,7 +320,6 @@ class ProductService extends EntityActionService
      * @param ProductSkuInputForm $productSkuInputForm
      * @param array $productChangedAttributes
      * @return array product sku changed attributes
-     * @throws EntityNotFoundException
      * @throws \DmitriiKoziuk\yii2Base\exceptions\DataNotValidException
      * @throws \DmitriiKoziuk\yii2Base\exceptions\EntityNotValidException
      * @throws \DmitriiKoziuk\yii2Base\exceptions\EntitySaveException
@@ -360,13 +341,7 @@ class ProductService extends EntityActionService
         if ($productSku->isAttributeChanged('slug')) {
             if (! $productSku->isAttributeChanged('url')) {
                 $productSku->url = $this->_defineProductSkuUrl($product, $productSku);
-                $this->_urlService->updateUrlInIndex(new UrlUpdateForm([
-                    'url' => $productSku->url,
-                    'module_name' => ShopModule::ID,
-                    'controller_name' => ShopModule::PRODUCT_SKU_FRONTEND_CONTROLLER_NAME,
-                    'action_name' => ShopModule::PRODUCT_SKU_FRONTEND_ACTION_NAME,
-                    'entity_id' => (string) $productSku->id,
-                ]));
+                $this->_updateProductSkuUrlInIndex($productSku);
             }
         }
         // user can change sell price only if strategy is static.
@@ -599,5 +574,49 @@ class ProductService extends EntityActionService
             $currencyData = $this->_currencyService->getCurrencyById($productSku->currency_id);
             $productSku->price_on_site = $productSku->sell_price * $currencyData->getRate();
         }
+    }
+
+    private function _addProductUrlToIndex(Product $product): void
+    {
+        $this->_urlIndexService->addUrlToIndex(new UrlCreateForm([
+            'url' => $product->url,
+            'module_name' => ShopModule::ID,
+            'controller_name' => ShopModule::PRODUCT_FRONTEND_CONTROLLER_NAME,
+            'action_name' => ShopModule::PRODUCT_FRONTEND_ACTION_NAME,
+            'entity_id' => (string) $product->id,
+        ]));
+    }
+
+    private function _addProductSkuUrlToIndex(ProductSku $productSku)
+    {
+        $this->_urlIndexService->addUrlToIndex(new UrlCreateForm([
+            'url' => $productSku->url,
+            'module_name' => ShopModule::ID,
+            'controller_name' => ShopModule::PRODUCT_SKU_FRONTEND_CONTROLLER_NAME,
+            'action_name' => ShopModule::PRODUCT_SKU_FRONTEND_ACTION_NAME,
+            'entity_id' => (string) $productSku->id,
+        ]));
+    }
+
+    private function _updateProductUrlInIndex(Product $product): void
+    {
+        $this->_urlIndexService->updateUrlInIndex(new UrlUpdateForm([
+            'url' => $product->url,
+            'module_name' => ShopModule::ID,
+            'controller_name' => ShopModule::PRODUCT_FRONTEND_CONTROLLER_NAME,
+            'action_name' => ShopModule::PRODUCT_FRONTEND_ACTION_NAME,
+            'entity_id' => (string) $product->id,
+        ]));
+    }
+
+    private function _updateProductSkuUrlInIndex(ProductSku $productSku): void
+    {
+        $this->_urlIndexService->updateUrlInIndex(new UrlUpdateForm([
+            'url' => $productSku->url,
+            'module_name' => ShopModule::ID,
+            'controller_name' => ShopModule::PRODUCT_SKU_FRONTEND_CONTROLLER_NAME,
+            'action_name' => ShopModule::PRODUCT_SKU_FRONTEND_ACTION_NAME,
+            'entity_id' => (string) $productSku->id,
+        ]));
     }
 }
