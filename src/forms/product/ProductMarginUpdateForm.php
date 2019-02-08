@@ -1,9 +1,9 @@
 <?php
 namespace DmitriiKoziuk\yii2Shop\forms\product;
 
-use DmitriiKoziuk\yii2Base\data\Data;
+use DmitriiKoziuk\yii2Base\forms\Form;
 
-class ProductMarginUpdateForm extends Data
+class ProductMarginUpdateForm extends Form
 {
     public $product_type_id;
     public $currency_id;
