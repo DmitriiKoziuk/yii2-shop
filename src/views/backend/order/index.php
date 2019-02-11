@@ -52,6 +52,13 @@ OrderIndexAsset::register($this);
                     return $order->cart()->getTotalPrice();
                 }
             ],
+            [
+                'attribute' => 'Order time',
+                'content' => function ($order) {
+                    /** @var $order \DmitriiKoziuk\yii2Shop\data\order\OrderData */
+                    return $order->stageLog()->getOrderTime();
+                }
+            ],
 
             [
                 'class' => 'yii\grid\ActionColumn',
