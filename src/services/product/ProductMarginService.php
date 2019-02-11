@@ -66,7 +66,7 @@ class ProductMarginService extends DBActionService
                         $this->_productTypeMarginRepository->save($existRecord);
                         $this->_queue->push(new UpdateProductSkuSellPriceJob([
                             'productSkuSearchParams' => new ProductSkuSearchParams([
-                                'product_type_id' => $productTypeId,
+                                'type_id' => $productTypeId,
                                 'currency_id' => $updateForm->currency_id,
                             ]),
                         ]));
@@ -77,7 +77,7 @@ class ProductMarginService extends DBActionService
                     $this->_productTypeMarginRepository->save($newRecord);
                     $this->_queue->push(new UpdateProductSkuSellPriceJob([
                         'productSkuSearchParams' => new ProductSkuSearchParams([
-                            'product_type_id' => $productTypeId,
+                            'type_id' => $productTypeId,
                             'currency_id' => $updateForm->currency_id,
                         ]),
                     ]));

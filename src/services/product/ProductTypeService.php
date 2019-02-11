@@ -1,7 +1,6 @@
 <?php
 namespace DmitriiKoziuk\yii2Shop\services\product;
 
-use DmitriiKoziuk\yii2Shop\data\product\ProductSkuSearchParams;
 use yii\db\Connection;
 use yii\queue\cli\Queue;
 use yii\helpers\Inflector;
@@ -9,6 +8,7 @@ use DmitriiKoziuk\yii2Base\services\DBActionService;
 use DmitriiKoziuk\yii2Shop\repositories\ProductTypeRepository;
 use DmitriiKoziuk\yii2Shop\entities\ProductType;
 use DmitriiKoziuk\yii2Shop\data\ProductTypeData;
+use DmitriiKoziuk\yii2Shop\data\product\ProductSkuSearchParams;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductTypeInputForm;
 use DmitriiKoziuk\yii2Shop\jobs\UpdateProductSkuSellPriceJob;
 
@@ -78,7 +78,7 @@ class ProductTypeService extends DBActionService
             ) {
                 $this->_queue->push(new UpdateProductSkuSellPriceJob([
                     'productSkuSearchParams' => new ProductSkuSearchParams([
-                        'product_type_id' => $productType->id,
+                        'type_id' => $productType->id,
                     ]),
                 ]));
             }
