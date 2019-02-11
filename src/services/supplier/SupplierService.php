@@ -3,17 +3,18 @@ namespace DmitriiKoziuk\yii2Shop\services\supplier;
 
 use yii\db\Connection;
 use yii\queue\cli\Queue;
-use DmitriiKoziuk\yii2Base\services\EntityActionService;
+use DmitriiKoziuk\yii2Base\services\DBActionService;
 use DmitriiKoziuk\yii2Shop\repositories\SupplierRepository;
 use DmitriiKoziuk\yii2Shop\repositories\SupplierProductSkuRepository;
 use DmitriiKoziuk\yii2Shop\entities\SupplierProductSku;
 use DmitriiKoziuk\yii2Shop\data\SupplierData;
 use DmitriiKoziuk\yii2Shop\data\SupplierProductSkuData;
+use DmitriiKoziuk\yii2Shop\data\product\ProductSkuSearchParams;
 use DmitriiKoziuk\yii2Shop\forms\supplier\SupplierProductSkuCompositeUpdateForm;
 use DmitriiKoziuk\yii2Shop\services\currency\CurrencyService;
-use DmitriiKoziuk\yii2Shop\jobs\UpdateProductSellPriceJob;
+use DmitriiKoziuk\yii2Shop\jobs\UpdateProductSkuSellPriceJob;
 
-final class SupplierService extends EntityActionService
+final class SupplierService extends DBActionService
 {
     /**
      * @var SupplierRepository
@@ -138,8 +139,10 @@ final class SupplierService extends EntityActionService
                 array_key_exists('purchase_price', $changedAttributes) &&
                 ! empty($changedAttributes['purchase_price'])
             ) { //TODO optimize this
-                $this->_queue->push(new UpdateProductSellPriceJob([
-                    'productSkuId' => $form->product_sku_id,
+                $this->_queue->push(new UpdateProductSkuSellPriceJob([
+                    'productSkuSearchParams' => new ProductSkuSearchParams([
+                        'product_sku_id' => $form->product_sku_id,
+                    ]),
                 ]));
             }
         }

@@ -35,7 +35,7 @@ final class CategoryController extends Controller
     public function actionIndex(UrlData $urlData, UrlFilterService $filterService)
     {
         /** @var Category|null $category */
-        $category = $this->_categoryRepository->getById((int) $urlData->entity_id);
+        $category = $this->_categoryRepository->getById((int) $urlData->getEntityId());
         if (empty($category)) {
             throw new NotFoundHttpException('Page not found.');
         }

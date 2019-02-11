@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use DmitriiKoziuk\yii2Shop\ShopModule;
 use DmitriiKoziuk\yii2Shop\assets\frontend\CartCheckoutAsset;
 
 /**
@@ -29,6 +30,6 @@ CartCheckoutAsset::register($this);
             <?= $form->field($checkoutForm, 'first_name')->label(false) ?>
         </div>
     </div>
-    <?= Html::submitButton('Checkout') ?>
+    <?= Html::submitButton(Yii::t(ShopModule::TRANSLATION_CART, 'Checkout')) ?>
 <?php ActiveForm::end(); ?>
 </div>

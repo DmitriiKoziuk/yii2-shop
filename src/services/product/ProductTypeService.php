@@ -4,14 +4,15 @@ namespace DmitriiKoziuk\yii2Shop\services\product;
 use yii\db\Connection;
 use yii\queue\cli\Queue;
 use yii\helpers\Inflector;
-use DmitriiKoziuk\yii2Base\services\EntityActionService;
+use DmitriiKoziuk\yii2Base\services\DBActionService;
 use DmitriiKoziuk\yii2Shop\repositories\ProductTypeRepository;
 use DmitriiKoziuk\yii2Shop\entities\ProductType;
 use DmitriiKoziuk\yii2Shop\data\ProductTypeData;
+use DmitriiKoziuk\yii2Shop\data\product\ProductSkuSearchParams;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductTypeInputForm;
-use DmitriiKoziuk\yii2Shop\jobs\UpdateProductSellPriceJob;
+use DmitriiKoziuk\yii2Shop\jobs\UpdateProductSkuSellPriceJob;
 
-class ProductTypeService extends EntityActionService
+class ProductTypeService extends DBActionService
 {
     /**
      * @var ProductTypeRepository
@@ -75,8 +76,10 @@ class ProductTypeService extends EntityActionService
                 array_key_exists('margin_strategy', $changedAttributes) &&
                 $changedAttributes['margin_strategy'] != ProductType::MARGIN_STRATEGY_NOT_SET
             ) {
-                $this->_queue->push(new UpdateProductSellPriceJob([
-                    'productTypeId' => $productType->id,
+                $this->_queue->push(new UpdateProductSkuSellPriceJob([
+                    'productSkuSearchParams' => new ProductSkuSearchParams([
+                        'type_id' => $productType->id,
+                    ]),
                 ]));
             }
             return $productType;

@@ -1,10 +1,10 @@
 <?php
 namespace DmitriiKoziuk\yii2Shop\repositories;
 
-use DmitriiKoziuk\yii2Base\repositories\EntityRepository;
+use DmitriiKoziuk\yii2Base\repositories\AbstractActiveRecordRepository;
 use DmitriiKoziuk\yii2Shop\entities\Brand;
 
-class BrandRepository extends EntityRepository
+class BrandRepository extends AbstractActiveRecordRepository
 {
     /**
      * @return Brand[]

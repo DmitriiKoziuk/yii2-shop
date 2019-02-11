@@ -1,9 +1,9 @@
 <?php
 namespace DmitriiKoziuk\yii2Shop\forms\cart;
 
-use DmitriiKoziuk\yii2Base\data\Data;
+use DmitriiKoziuk\yii2Base\forms\Form;
 
-class CheckoutForm extends Data
+class CheckoutForm extends Form
 {
     public $first_name;
     public $middle_name;

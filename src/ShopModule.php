@@ -7,7 +7,7 @@ use yii\web\Application as WebApp;
 use yii\base\Application as BaseApp;
 use yii\queue\cli\Queue;
 use DmitriiKoziuk\yii2ModuleManager\interfaces\ModuleInterface;
-use DmitriiKoziuk\yii2CustomUrls\services\UrlService;
+use DmitriiKoziuk\yii2CustomUrls\services\UrlIndexService;
 use DmitriiKoziuk\yii2FileManager\repositories\FileRepository;
 use DmitriiKoziuk\yii2Shop\repositories\CurrencyRepository;
 use DmitriiKoziuk\yii2Shop\repositories\ProductRepository;
@@ -57,6 +57,7 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
     const TRANSLATION_CART = 'dk-shop-cart';
     const TRANSLATION_ORDER = 'dk-shop-order';
     const TRANSLATION_SUPPLIER = 'dk-shop-supplier';
+    const TRANSLATION_BRAND = 'dk-shop-brand';
 
     const PRODUCT_FRONTEND_CONTROLLER_NAME = 'product';
     const PRODUCT_FRONTEND_ACTION_NAME = 'index';
@@ -207,6 +208,11 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
             'sourceLanguage' => 'en',
             'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
         ];
+        $app->i18n->translations[self::TRANSLATION_BRAND] = [
+            'class'          => 'yii\i18n\PhpMessageSource',
+            'sourceLanguage' => 'en',
+            'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
+        ];
     }
 
     /**
@@ -280,8 +286,8 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
         $categoryProductRepository = $this->diContainer->get(CategoryProductRepository::class);
         /** @var CategoryProductSkuRepository $categoryProductSkuRepository */
         $categoryProductSkuRepository = $this->diContainer->get(CategoryProductSkuRepository::class);
-        /** @var UrlService $urlService */
-        $urlService = $this->diContainer->get(UrlService::class);
+        /** @var UrlIndexService $urlService */
+        $urlService = $this->diContainer->get(UrlIndexService::class);
         /** @var ProductRepository $productRepository */
         $productRepository = $this->diContainer->get(ProductRepository::class);
         /** @var ProductSkuRepository $productSkuRepository */

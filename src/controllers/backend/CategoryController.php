@@ -56,13 +56,6 @@ final class CategoryController extends Controller
         ]);
     }
 
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
-
     /**
      * @return string|\yii\web\Response
      * @throws \Throwable

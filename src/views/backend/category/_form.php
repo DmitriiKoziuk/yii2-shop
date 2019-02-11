@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use yii\widgets\ActiveForm;
 use kartik\select2\Select2;
+use DmitriiKoziuk\yii2Base\BaseModule;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 use DmitriiKoziuk\yii2Shop\helpers\CategoryHelper;
 
@@ -64,7 +65,7 @@ use DmitriiKoziuk\yii2Shop\helpers\CategoryHelper;
     <?php endif; ?>
 
     <div class="form-group">
-        <?= Html::submitButton($category->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $category->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?= Html::submitButton($category->isNewRecord ? Yii::t(BaseModule::TRANSLATE, 'Create') : Yii::t(BaseModule::TRANSLATE, 'Update'), ['class' => $category->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

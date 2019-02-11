@@ -3,15 +3,16 @@ namespace DmitriiKoziuk\yii2Shop\services\currency;
 
 use yii\db\Connection;
 use yii\queue\cli\Queue;
-use DmitriiKoziuk\yii2Base\services\EntityActionService;
+use DmitriiKoziuk\yii2Base\services\DBActionService;
 use DmitriiKoziuk\yii2Base\exceptions\EntityNotFoundException;
 use DmitriiKoziuk\yii2Shop\entities\Currency;
 use DmitriiKoziuk\yii2Shop\data\CurrencyData;
+use DmitriiKoziuk\yii2Shop\data\product\ProductSkuSearchParams;
 use DmitriiKoziuk\yii2Shop\forms\currency\CurrencyInputForm;
 use DmitriiKoziuk\yii2Shop\repositories\CurrencyRepository;
-use DmitriiKoziuk\yii2Shop\jobs\UpdateProductPriceOnSite;
+use DmitriiKoziuk\yii2Shop\jobs\UpdateProductSkuPriceOnSite;
 
-class CurrencyService extends EntityActionService
+class CurrencyService extends DBActionService
 {
     /**
      * @var CurrencyRepository
@@ -70,8 +71,10 @@ class CurrencyService extends EntityActionService
                 array_key_exists('rate', $changedAttributes) &&
                 ! empty($changedAttributes['rate'])
             ) {
-                $this->_queue->push(new UpdateProductPriceOnSite([
-                    'currencyId' => $currency->id,
+                $this->_queue->push(new UpdateProductSkuPriceOnSite([
+                    'productSkuSearchParams' => new ProductSkuSearchParams([
+                        'currency_id' => $currency->id,
+                    ]),
                 ]));
             }
             return $currency;

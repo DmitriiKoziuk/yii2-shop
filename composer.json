@@ -19,13 +19,13 @@
     "yiisoft/yii2": "~2.0.0",
     "yiisoft/yii2-queue": "~2.0",
     "kartik-v/yii2-widget-select2": "@dev",
-    "dmitriikoziuk/yii2-base": "dev-master",
-    "dmitriikoziuk/yii2-module-manager": "dev-master",
-    "dmitriikoziuk/yii2-config-manager": "dev-master",
-    "dmitriikoziuk/yii2-user-manager": "dev-master",
-    "dmitriikoziuk/yii2-file-manager": "dev-master",
-    "dmitriikoziuk/yii2-custom-urls": "dev-master",
-    "dmitriikoziuk/yii2-web-backend-lock": "dev-master"
+    "dmitriikoziuk/yii2-base": "^0.1",
+    "dmitriikoziuk/yii2-config-manager": "^0.1",
+    "dmitriikoziuk/yii2-module-manager": "^0.1",
+    "dmitriikoziuk/yii2-user-manager": "^0.1",
+    "dmitriikoziuk/yii2-file-manager": "^0.1",
+    "dmitriikoziuk/yii2-custom-urls": "^0.1",
+    "dmitriikoziuk/yii2-web-backend-lock": "^0.1"
   },
   "autoload": {
     "psr-4": {

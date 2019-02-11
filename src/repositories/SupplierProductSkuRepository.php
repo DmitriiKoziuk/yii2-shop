@@ -1,10 +1,10 @@
 <?php
 namespace DmitriiKoziuk\yii2Shop\repositories;
 
-use DmitriiKoziuk\yii2Base\repositories\EntityRepository;
+use DmitriiKoziuk\yii2Base\repositories\AbstractActiveRecordRepository;
 use DmitriiKoziuk\yii2Shop\entities\SupplierProductSku;
 
-class SupplierProductSkuRepository extends EntityRepository
+class SupplierProductSkuRepository extends AbstractActiveRecordRepository
 {
     public function getProductSku(int $supplierId, int $productSkuId): SupplierProductSku
     {

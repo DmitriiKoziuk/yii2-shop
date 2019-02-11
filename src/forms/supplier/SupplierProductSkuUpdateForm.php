@@ -2,9 +2,9 @@
 namespace DmitriiKoziuk\yii2Shop\forms\supplier;
 
 use Yii;
-use DmitriiKoziuk\yii2Base\data\Data;
+use DmitriiKoziuk\yii2Base\forms\Form;
 
-class SupplierProductSkuUpdateForm extends Data
+class SupplierProductSkuUpdateForm extends Form
 {
     public $supplier_id;
     public $product_sku_id;

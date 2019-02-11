@@ -3,6 +3,7 @@
 use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use DmitriiKoziuk\yii2Shop\ShopModule;
 use DmitriiKoziuk\yii2Shop\assets\frontend\CartViewAsset;
 use DmitriiKoziuk\yii2FileManager\helpers\FileWebHelper;
 
@@ -66,10 +67,10 @@ CartViewAsset::register($this);
         </span>
       </div>
       <div>
-          <?= Html::submitButton('Update') ?>
+          <?= Html::submitButton(Yii::t(ShopModule::TRANSLATION_CART, 'Update quantity')) ?>
       </div>
       <div>
-          <?= Html::a('Checkout', '/cart/checkout') ?>
+          <?= Html::a(Yii::t(ShopModule::TRANSLATION_CART, 'Checkout'), '/cart/checkout') ?>
       </div>
     </div>
   </div>

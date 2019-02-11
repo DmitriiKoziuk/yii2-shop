@@ -2,12 +2,13 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use DmitriiKoziuk\yii2Shop\ShopModule;
 
 /* @var $this yii\web\View */
 /* @var $searchModel DmitriiKoziuk\yii2Shop\entities\search\SupplierSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('app', 'Suppliers');
+$this->title = Yii::t(ShopModule::TRANSLATION_SUPPLIER, 'Suppliers');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="supplier-index">
@@ -16,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a(Yii::t('app', 'Create Supplier'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Yii::t(ShopModule::TRANSLATION_SUPPLIER, 'Create Supplier'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= GridView::widget([

@@ -1,12 +1,13 @@
 <?php
 
 use yii\helpers\Html;
+use DmitriiKoziuk\yii2Shop\ShopModule;
 
 /* @var $this yii\web\View */
 /* @var $model DmitriiKoziuk\yii2Shop\entities\Supplier */
 
-$this->title = Yii::t('app', 'Create Supplier');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Suppliers'), 'url' => ['index']];
+$this->title = Yii::t(ShopModule::TRANSLATION_SUPPLIER, 'Create Supplier');
+$this->params['breadcrumbs'][] = ['label' => Yii::t(ShopModule::TRANSLATION_SUPPLIER, 'Suppliers'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="supplier-create">
