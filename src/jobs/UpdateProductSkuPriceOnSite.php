@@ -9,12 +9,19 @@ use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 use DmitriiKoziuk\yii2Shop\data\product\ProductSkuSearchParams;
 use DmitriiKoziuk\yii2Shop\services\product\ProductService;
 
-class UpdateProductPriceOnSite extends BaseObject implements JobInterface
+class UpdateProductSkuPriceOnSite extends BaseObject implements JobInterface
 {
     /**
-     * @var null|int
+     * @var ProductSkuSearchParams
      */
-    public $currencyId = null;
+    public $productSkuSearchParams;
+
+    public function init()
+    {
+        if (empty($this->productSkuSearchParams)) {
+            $this->productSkuSearchParams = new ProductSkuSearchParams();
+        }
+    }
 
     /**
      * @param \yii\queue\Queue $queue
@@ -27,21 +34,12 @@ class UpdateProductPriceOnSite extends BaseObject implements JobInterface
         $productSkuRepository = Yii::$container->get(ProductSkuRepository::class);
         /** @var ProductService $productService */
         $productService = Yii::$container->get(ProductService::class);
-        $searchParams = $this->_prepareSearchParams();
-        $query = $productSkuRepository->searchProductSku($searchParams);
+        $query = $productSkuRepository->searchProductSku($this->productSkuSearchParams);
         /** @var ProductSku[] $productSkuRecordList */
         foreach ($query->batch(10) as $productSkuRecordList) {
             foreach ($productSkuRecordList as $productSkuRecord) {
                 $productService->updateProductPriceOnSite($productSkuRecord->id);
             }
         }
-    }
-
-    private function _prepareSearchParams(): ProductSkuSearchParams
-    {
-        $searchParams = new ProductSkuSearchParams();
-        $searchParams->currency_id = $this->currencyId;
-        $searchParams->sell_price_strategy = ProductSku::SELL_PRICE_STRATEGY_MARGIN;
-        return $searchParams;
     }
 }
