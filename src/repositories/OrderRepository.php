@@ -1,10 +1,10 @@
 <?php
 namespace DmitriiKoziuk\yii2Shop\repositories;
 
-use DmitriiKoziuk\yii2Base\repositories\ActiveRecordRepository;
+use DmitriiKoziuk\yii2Base\repositories\AbstractActiveRecordRepository;
 use DmitriiKoziuk\yii2Shop\entities\Order;
 
-class OrderRepository extends ActiveRecordRepository
+class OrderRepository extends AbstractActiveRecordRepository
 {
     public function getOrderById(int $id): ?Order
     {

@@ -1,10 +1,10 @@
 <?php
 namespace DmitriiKoziuk\yii2Shop\repositories;
 
-use DmitriiKoziuk\yii2Base\repositories\ActiveRecordRepository;
+use DmitriiKoziuk\yii2Base\repositories\AbstractActiveRecordRepository;
 use DmitriiKoziuk\yii2Shop\entities\OrderStageLog;
 
-class OrderStageLogRepository extends ActiveRecordRepository
+class OrderStageLogRepository extends AbstractActiveRecordRepository
 {
     /**
      * @param int $orderId

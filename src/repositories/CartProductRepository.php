@@ -2,10 +2,10 @@
 namespace DmitriiKoziuk\yii2Shop\repositories;
 
 
-use DmitriiKoziuk\yii2Base\repositories\ActiveRecordRepository;
+use DmitriiKoziuk\yii2Base\repositories\AbstractActiveRecordRepository;
 use DmitriiKoziuk\yii2Shop\entities\CartProduct;
 
-class CartProductRepository extends ActiveRecordRepository
+class CartProductRepository extends AbstractActiveRecordRepository
 {
     public function getRelation(int $cartId, int $productSkuId): ?CartProduct
     {

@@ -1,10 +1,10 @@
 <?php
 namespace DmitriiKoziuk\yii2Shop\repositories;
 
-use DmitriiKoziuk\yii2Base\repositories\ActiveRecordRepository;
+use DmitriiKoziuk\yii2Base\repositories\AbstractActiveRecordRepository;
 use DmitriiKoziuk\yii2Shop\entities\CategoryProductSku;
 
-final class CategoryProductSkuRepository extends ActiveRecordRepository
+final class CategoryProductSkuRepository extends AbstractActiveRecordRepository
 {
     /**
      * @param int $productSkuId

@@ -1,8 +1,8 @@
 <?php
 namespace DmitriiKoziuk\yii2Shop\repositories;
 
-use DmitriiKoziuk\yii2Base\repositories\ActiveRecordRepository;
+use DmitriiKoziuk\yii2Base\repositories\AbstractActiveRecordRepository;
 
-class CategoryClosureRepository extends ActiveRecordRepository
+class CategoryClosureRepository extends AbstractActiveRecordRepository
 {
 }

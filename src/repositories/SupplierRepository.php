@@ -2,11 +2,11 @@
 namespace DmitriiKoziuk\yii2Shop\repositories;
 
 use yii\db\Expression;
-use DmitriiKoziuk\yii2Base\repositories\ActiveRecordRepository;
+use DmitriiKoziuk\yii2Base\repositories\AbstractActiveRecordRepository;
 use DmitriiKoziuk\yii2Shop\entities\Supplier;
 use DmitriiKoziuk\yii2Shop\entities\SupplierProductSku;
 
-class SupplierRepository extends ActiveRecordRepository
+class SupplierRepository extends AbstractActiveRecordRepository
 {
     /**
      * @return Supplier[]
