@@ -9,22 +9,19 @@ use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 use DmitriiKoziuk\yii2Shop\data\product\ProductSkuSearchParams;
 use DmitriiKoziuk\yii2Shop\services\product\ProductService;
 
-class UpdateProductSellPriceJob extends BaseObject implements JobInterface
+class UpdateProductSkuSellPriceJob extends BaseObject implements JobInterface
 {
     /**
-     * @var int
+     * @var ProductSkuSearchParams
      */
-    public $productSkuId = null;
+    public $productSkuSearchParams;
 
-    /**
-     * @var int
-     */
-    public $productTypeId = null;
-
-    /**
-     * @var int
-     */
-    public $currencyId = null;
+    public function init()
+    {
+        if (empty($this->productSkuSearchParams)) {
+            $this->productSkuSearchParams = new ProductSkuSearchParams();
+        }
+    }
 
     /**
      * @param \yii\queue\Queue $queue
@@ -37,23 +34,12 @@ class UpdateProductSellPriceJob extends BaseObject implements JobInterface
         $productSkuRepository = Yii::$container->get(ProductSkuRepository::class);
         /** @var ProductService $productService */
         $productService = Yii::$container->get(ProductService::class);
-        $searchParams = $this->_prepareSearchParams();
-        $query = $productSkuRepository->searchProductSku($searchParams);
+        $query = $productSkuRepository->searchProductSku($this->productSkuSearchParams);
         /** @var ProductSku[] $productSkuRecordList */
         foreach ($query->batch(10) as $productSkuRecordList) {
             foreach ($productSkuRecordList as $productSkuRecord) {
                 $productService->updateProductSkuSellPrice($productSkuRecord->id);
             }
         }
-    }
-
-    private function _prepareSearchParams(): ProductSkuSearchParams
-    {
-        $searchParams = new ProductSkuSearchParams();
-        $searchParams->product_sku_id = $this->productSkuId;
-        $searchParams->type_id = $this->productTypeId;
-        $searchParams->currency_id = $this->currencyId;
-        $searchParams->sell_price_strategy = ProductSku::SELL_PRICE_STRATEGY_MARGIN;
-        return $searchParams;
     }
 }

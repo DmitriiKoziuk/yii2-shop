@@ -8,10 +8,11 @@ use DmitriiKoziuk\yii2Shop\repositories\ProductTypeMarginRepository;
 use DmitriiKoziuk\yii2Shop\entities\ProductTypeMargin;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductMarginUpdateForm;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductMarginCompositeUpdateForm;
+use DmitriiKoziuk\yii2Shop\data\product\ProductSkuSearchParams;
 use DmitriiKoziuk\yii2Shop\data\ProductMarginUpdateData;
 use DmitriiKoziuk\yii2Shop\data\ProductTypeMarginData;
 use DmitriiKoziuk\yii2Shop\services\currency\CurrencyService;
-use DmitriiKoziuk\yii2Shop\jobs\UpdateProductSellPriceJob;
+use DmitriiKoziuk\yii2Shop\jobs\UpdateProductSkuSellPriceJob;
 
 class ProductMarginService extends DBActionService
 {
@@ -63,18 +64,22 @@ class ProductMarginService extends DBActionService
                     } else {
                         $existRecord->setAttributes($updateForm->getUpdatedAttributes());
                         $this->_productTypeMarginRepository->save($existRecord);
-                        $this->_queue->push(new UpdateProductSellPriceJob([
-                            'productTypeId' => $productTypeId,
-                            'currencyId' => $updateForm->currency_id,
+                        $this->_queue->push(new UpdateProductSkuSellPriceJob([
+                            'productSkuSearchParams' => new ProductSkuSearchParams([
+                                'product_type_id' => $productTypeId,
+                                'currency_id' => $updateForm->currency_id,
+                            ]),
                         ]));
                     }
                 } elseif (! empty($updateForm->margin_value)) {
                     $newRecord = new ProductTypeMargin();
                     $newRecord->setAttributes($updateForm->getAttributes());
                     $this->_productTypeMarginRepository->save($newRecord);
-                    $this->_queue->push(new UpdateProductSellPriceJob([
-                        'productTypeId' => $productTypeId,
-                        'currencyId' => $updateForm->currency_id,
+                    $this->_queue->push(new UpdateProductSkuSellPriceJob([
+                        'productSkuSearchParams' => new ProductSkuSearchParams([
+                            'product_type_id' => $productTypeId,
+                            'currency_id' => $updateForm->currency_id,
+                        ]),
                     ]));
                 }
             }
