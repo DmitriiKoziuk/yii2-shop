@@ -1,10 +1,10 @@
 <?php
 namespace DmitriiKoziuk\yii2Shop\repositories;
 
-use DmitriiKoziuk\yii2Base\repositories\EntityRepository;
+use DmitriiKoziuk\yii2Base\repositories\ActiveRecordRepository;
 use DmitriiKoziuk\yii2Shop\entities\Category;
 
-final class CategoryRepository extends EntityRepository
+final class CategoryRepository extends ActiveRecordRepository
 {
     public function getById(int $categoryId): ?Category
     {

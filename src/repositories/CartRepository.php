@@ -2,10 +2,10 @@
 namespace DmitriiKoziuk\yii2Shop\repositories;
 
 use yii\db\Expression;
-use DmitriiKoziuk\yii2Base\repositories\EntityRepository;
+use DmitriiKoziuk\yii2Base\repositories\ActiveRecordRepository;
 use DmitriiKoziuk\yii2Shop\entities\Cart;
 
-class CartRepository extends EntityRepository
+class CartRepository extends ActiveRecordRepository
 {
     public function getByKey(string $cartKey): ?Cart
     {

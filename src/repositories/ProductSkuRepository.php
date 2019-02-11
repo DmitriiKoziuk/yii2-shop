@@ -3,12 +3,12 @@ namespace DmitriiKoziuk\yii2Shop\repositories;
 
 use yii\db\Expression;
 use yii\db\ActiveQuery;
-use DmitriiKoziuk\yii2Base\repositories\EntityRepository;
+use DmitriiKoziuk\yii2Base\repositories\ActiveRecordRepository;
 use DmitriiKoziuk\yii2Shop\entities\Product;
 use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 use DmitriiKoziuk\yii2Shop\data\product\ProductSkuSearchParams;
 
-final class ProductSkuRepository extends EntityRepository
+final class ProductSkuRepository extends ActiveRecordRepository
 {
     /**
      * @param $id
