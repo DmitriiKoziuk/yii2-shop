@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use DmitriiKoziuk\yii2Base\BaseModule;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 use DmitriiKoziuk\yii2Shop\entities\ProductTypeMargin;
 
@@ -14,7 +15,7 @@ $this->title = Yii::t(ShopModule::TRANSLATION_PRODUCT_TYPE_MARGIN, 'Update margi
 $this->params['breadcrumbs'][] = ['label' => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Products'), 'url' => ['product/index']];
 $this->params['breadcrumbs'][] = ['label' => Yii::t(ShopModule::TRANSLATION_PRODUCT_TYPE, 'Product types'), 'url' => ['product-type/index']];
 $this->params['breadcrumbs'][] = ['label' => Yii::t(ShopModule::TRANSLATION_PRODUCT_TYPE, $updateData->getProductTypeData()->getName()), 'url' => ['product-type/update', 'id' => $updateData->getProductTypeData()->getId()]];
-$this->params['breadcrumbs'][] = 'Update product type margins';
+$this->params['breadcrumbs'][] = Yii::t(ShopModule::TRANSLATION_PRODUCT_TYPE_MARGIN, 'Update product type currency margins');
 ?>
 
 <div class="row">
@@ -47,7 +48,7 @@ $this->params['breadcrumbs'][] = 'Update product type margins';
         <?php endforeach; ?>
         </tbody>
       </table>
-      <?= Html::submitButton(Yii::t('app', 'Update'), ['class' => 'btn btn-primary']) ?>
+      <?= Html::submitButton(Yii::t(BaseModule::TRANSLATE, 'Update'), ['class' => 'btn btn-primary']) ?>
     <?php ActiveForm::end(); ?>
   </div>
 </div>

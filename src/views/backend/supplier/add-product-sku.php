@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use DmitriiKoziuk\yii2Base\BaseModule;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 
 /**
@@ -13,7 +14,7 @@ use DmitriiKoziuk\yii2Shop\ShopModule;
 $this->title = Yii::t(ShopModule::TRANSLATION_SUPPLIER, 'Add suppliers to product sku data:') . ' ' . $productSkuData->getFullName();
 $this->params['breadcrumbs'][] = ['label' => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Products'), 'url' => ['product/index']];
 $this->params['breadcrumbs'][] = ['label' => Yii::t(ShopModule::TRANSLATION_PRODUCT, $productSkuData->getFullName()), 'url' => ['product/update', 'id' => $productSkuData->getProductId()]];
-$this->params['breadcrumbs'][] = 'Add suppliers';
+$this->params['breadcrumbs'][] = Yii::t(ShopModule::TRANSLATION_SUPPLIER, 'Add suppliers to product sku');
 ?>
 
 <div class="row">
@@ -39,7 +40,7 @@ $this->params['breadcrumbs'][] = 'Add suppliers';
           <?php endforeach; ?>
         </tbody>
       </table>
-      <?= Html::submitButton('Save', ['class' => 'btn btn-success']); ?>
+      <?= Html::submitButton(Yii::t(BaseModule::TRANSLATE, 'Save'), ['class' => 'btn btn-success']); ?>
     <?php ActiveForm::end() ?>
   </div>
 </div>

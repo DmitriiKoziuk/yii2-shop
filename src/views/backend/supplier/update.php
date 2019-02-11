@@ -1,6 +1,8 @@
 <?php
 
 use yii\helpers\Html;
+use DmitriiKoziuk\yii2Base\BaseModule;
+use DmitriiKoziuk\yii2Shop\ShopModule;
 
 /* @var $this yii\web\View */
 /* @var $model DmitriiKoziuk\yii2Shop\entities\Supplier */
@@ -8,9 +10,9 @@ use yii\helpers\Html;
 $this->title = Yii::t('app', 'Update Supplier: {name}', [
     'name' => $model->name,
 ]);
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Suppliers'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t(ShopModule::TRANSLATION_SUPPLIER, 'Suppliers'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
+$this->params['breadcrumbs'][] = Yii::t(BaseModule::TRANSLATE, 'Update');
 ?>
 <div class="supplier-update">
 

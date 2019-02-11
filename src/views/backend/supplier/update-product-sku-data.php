@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use yii\widgets\ActiveForm;
+use DmitriiKoziuk\yii2Base\BaseModule;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 
 /**
@@ -15,7 +16,7 @@ use DmitriiKoziuk\yii2Shop\ShopModule;
 $this->title = Yii::t(ShopModule::TRANSLATION_SUPPLIER, 'Update supplier product sku data:') . ' ' . $productSkuData->getFullName();
 $this->params['breadcrumbs'][] = ['label' => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Products'), 'url' => ['product/index']];
 $this->params['breadcrumbs'][] = ['label' => Yii::t(ShopModule::TRANSLATION_PRODUCT, $productSkuData->getFullName()), 'url' => ['product/update', 'id' => $productSkuData->getProductId()]];
-$this->params['breadcrumbs'][] = 'Update suppliers product sku data';
+$this->params['breadcrumbs'][] = Yii::t(ShopModule::TRANSLATION_SUPPLIER, 'Update suppliers product sku data');
 
 $currencies = ArrayHelper::map($allCurrencies, 'id', 'name');
 ?>
@@ -26,12 +27,12 @@ $currencies = ArrayHelper::map($allCurrencies, 'id', 'name');
       <table class="table table-bordered">
         <thead>
         <tr>
-          <td>Supplier name</td>
-          <td>Supplier product unique id</td>
-          <td>Product quantity</td>
-          <td>Currency</td>
-          <td>Purchase price</td>
-          <td>Recommended price</td>
+          <td><?= Yii::t(ShopModule::TRANSLATION_SUPPLIER, 'Supplier name') ?></td>
+          <td><?= Yii::t(ShopModule::TRANSLATION_SUPPLIER, 'Supplier product sku unique id') ?></td>
+          <td><?= Yii::t(ShopModule::TRANSLATION_SUPPLIER, 'Product quantity') ?></td>
+          <td><?= Yii::t(ShopModule::TRANSLATION_SUPPLIER, 'Currency') ?></td>
+          <td><?= Yii::t(ShopModule::TRANSLATION_SUPPLIER, 'Purchase price') ?></td>
+          <td><?= Yii::t(ShopModule::TRANSLATION_SUPPLIER, 'Recommended price') ?></td>
         </tr>
         </thead>
         <tbody>
@@ -50,7 +51,7 @@ $currencies = ArrayHelper::map($allCurrencies, 'id', 'name');
         <?php endforeach; ?>
         </tbody>
       </table>
-      <?= Html::submitButton(Yii::t('app', 'Update'), ['class' => 'btn btn-primary']) ?>
+      <?= Html::submitButton(Yii::t(BaseModule::TRANSLATE, 'Update'), ['class' => 'btn btn-primary']) ?>
     <?php ActiveForm::end(); ?>
   </div>
 </div>

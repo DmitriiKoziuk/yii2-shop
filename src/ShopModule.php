@@ -57,6 +57,7 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
     const TRANSLATION_CART = 'dk-shop-cart';
     const TRANSLATION_ORDER = 'dk-shop-order';
     const TRANSLATION_SUPPLIER = 'dk-shop-supplier';
+    const TRANSLATION_BRAND = 'dk-shop-brand';
 
     const PRODUCT_FRONTEND_CONTROLLER_NAME = 'product';
     const PRODUCT_FRONTEND_ACTION_NAME = 'index';
@@ -203,6 +204,11 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
             'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
         ];
         $app->i18n->translations[self::TRANSLATION_SUPPLIER] = [
+            'class'          => 'yii\i18n\PhpMessageSource',
+            'sourceLanguage' => 'en',
+            'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
+        ];
+        $app->i18n->translations[self::TRANSLATION_BRAND] = [
             'class'          => 'yii\i18n\PhpMessageSource',
             'sourceLanguage' => 'en',
             'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
