@@ -4,14 +4,14 @@ namespace DmitriiKoziuk\yii2Shop\services\product;
 use yii\db\Connection;
 use yii\queue\cli\Queue;
 use yii\helpers\Inflector;
-use DmitriiKoziuk\yii2Base\services\EntityActionService;
+use DmitriiKoziuk\yii2Base\services\DBActionService;
 use DmitriiKoziuk\yii2Shop\repositories\ProductTypeRepository;
 use DmitriiKoziuk\yii2Shop\entities\ProductType;
 use DmitriiKoziuk\yii2Shop\data\ProductTypeData;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductTypeInputForm;
 use DmitriiKoziuk\yii2Shop\jobs\UpdateProductSellPriceJob;
 
-class ProductTypeService extends EntityActionService
+class ProductTypeService extends DBActionService
 {
     /**
      * @var ProductTypeRepository

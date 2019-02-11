@@ -2,13 +2,13 @@
 namespace DmitriiKoziuk\yii2Shop\services\category;
 
 use yii\db\Connection;
-use DmitriiKoziuk\yii2Base\services\EntityActionService;
+use DmitriiKoziuk\yii2Base\services\DBActionService;
 use DmitriiKoziuk\yii2Shop\repositories\CategoryRepository;
 use DmitriiKoziuk\yii2Shop\repositories\CategoryProductSkuRepository;
 use DmitriiKoziuk\yii2Shop\entities\Category;
 use DmitriiKoziuk\yii2Shop\entities\CategoryProductSku;
 
-final class CategoryProductSkuService extends EntityActionService
+final class CategoryProductSkuService extends DBActionService
 {
     /**
      * @var CategoryRepository

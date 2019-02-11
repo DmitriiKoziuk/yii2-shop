@@ -3,7 +3,7 @@ namespace DmitriiKoziuk\yii2Shop\services\currency;
 
 use yii\db\Connection;
 use yii\queue\cli\Queue;
-use DmitriiKoziuk\yii2Base\services\EntityActionService;
+use DmitriiKoziuk\yii2Base\services\DBActionService;
 use DmitriiKoziuk\yii2Base\exceptions\EntityNotFoundException;
 use DmitriiKoziuk\yii2Shop\entities\Currency;
 use DmitriiKoziuk\yii2Shop\data\CurrencyData;
@@ -11,7 +11,7 @@ use DmitriiKoziuk\yii2Shop\forms\currency\CurrencyInputForm;
 use DmitriiKoziuk\yii2Shop\repositories\CurrencyRepository;
 use DmitriiKoziuk\yii2Shop\jobs\UpdateProductPriceOnSite;
 
-class CurrencyService extends EntityActionService
+class CurrencyService extends DBActionService
 {
     /**
      * @var CurrencyRepository

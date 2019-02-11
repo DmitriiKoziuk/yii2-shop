@@ -2,13 +2,13 @@
 namespace DmitriiKoziuk\yii2Shop\services\category;
 
 use yii\db\Connection;
-use DmitriiKoziuk\yii2Base\services\EntityActionService;
+use DmitriiKoziuk\yii2Base\services\DBActionService;
 use DmitriiKoziuk\yii2Shop\entities\Category;
 use DmitriiKoziuk\yii2Shop\entities\CategoryClosure;
 use DmitriiKoziuk\yii2Shop\repositories\CategoryClosureRepository;
 use DmitriiKoziuk\yii2Shop\repositories\CategoryRepository;
 
-final class CategoryClosureService extends EntityActionService
+final class CategoryClosureService extends DBActionService
 {
     /**
      * @var CategoryClosureRepository

@@ -3,7 +3,7 @@ namespace DmitriiKoziuk\yii2Shop\services\supplier;
 
 use yii\db\Connection;
 use yii\queue\cli\Queue;
-use DmitriiKoziuk\yii2Base\services\EntityActionService;
+use DmitriiKoziuk\yii2Base\services\DBActionService;
 use DmitriiKoziuk\yii2Shop\repositories\SupplierRepository;
 use DmitriiKoziuk\yii2Shop\repositories\SupplierProductSkuRepository;
 use DmitriiKoziuk\yii2Shop\entities\SupplierProductSku;
@@ -13,7 +13,7 @@ use DmitriiKoziuk\yii2Shop\forms\supplier\SupplierProductSkuCompositeUpdateForm;
 use DmitriiKoziuk\yii2Shop\services\currency\CurrencyService;
 use DmitriiKoziuk\yii2Shop\jobs\UpdateProductSellPriceJob;
 
-final class SupplierService extends EntityActionService
+final class SupplierService extends DBActionService
 {
     /**
      * @var SupplierRepository

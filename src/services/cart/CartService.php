@@ -5,7 +5,7 @@ use Yii;
 use yii\base\Exception;
 use yii\db\Connection;
 
-use DmitriiKoziuk\yii2Base\services\EntityActionService;
+use DmitriiKoziuk\yii2Base\services\DBActionService;
 use DmitriiKoziuk\yii2Base\exceptions\EntityNotValidException;
 use DmitriiKoziuk\yii2Base\exceptions\EntitySaveException;
 use DmitriiKoziuk\yii2Base\exceptions\EntityNotFoundException;
@@ -33,7 +33,7 @@ use DmitriiKoziuk\yii2Shop\exceptions\cart\CartProductsNotFoundException;
 use DmitriiKoziuk\yii2Shop\exceptions\cart\AddProductToCartException;
 use DmitriiKoziuk\yii2Shop\exceptions\InputDataNotValidException;
 
-class CartService extends EntityActionService
+class CartService extends DBActionService
 {
     /**
      * @var CartRepository

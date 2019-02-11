@@ -2,11 +2,11 @@
 namespace DmitriiKoziuk\yii2Shop\services\brand;
 
 use yii\db\Connection;
-use DmitriiKoziuk\yii2Base\services\EntityActionService;
+use DmitriiKoziuk\yii2Base\services\DBActionService;
 use DmitriiKoziuk\yii2Shop\repositories\BrandRepository;
 use DmitriiKoziuk\yii2Shop\data\BrandData;
 
-class BrandService extends EntityActionService
+class BrandService extends DBActionService
 {
     private $_brandRepository;
 

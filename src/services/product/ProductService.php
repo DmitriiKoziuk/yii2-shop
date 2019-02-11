@@ -2,7 +2,7 @@
 namespace DmitriiKoziuk\yii2Shop\services\product;
 
 use yii\db\Connection;
-use DmitriiKoziuk\yii2Base\services\EntityActionService;
+use DmitriiKoziuk\yii2Base\services\DBActionService;
 use DmitriiKoziuk\yii2Base\exceptions\EntityNotFoundException;
 use DmitriiKoziuk\yii2CustomUrls\forms\UrlCreateForm;
 use DmitriiKoziuk\yii2CustomUrls\forms\UrlUpdateForm;
@@ -26,7 +26,7 @@ use DmitriiKoziuk\yii2Shop\services\category\CategoryProductSkuService;
 use DmitriiKoziuk\yii2Shop\services\supplier\SupplierService;
 use DmitriiKoziuk\yii2Shop\services\currency\CurrencyService;
 
-class ProductService extends EntityActionService
+class ProductService extends DBActionService
 {
     /**
      * @var ProductRepository

@@ -2,7 +2,7 @@
 namespace DmitriiKoziuk\yii2Shop\services\category;
 
 use yii\db\Connection;
-use DmitriiKoziuk\yii2Base\services\EntityActionService;
+use DmitriiKoziuk\yii2Base\services\DBActionService;
 use DmitriiKoziuk\yii2CustomUrls\forms\UrlCreateForm;
 use DmitriiKoziuk\yii2CustomUrls\forms\UrlUpdateForm;
 use DmitriiKoziuk\yii2CustomUrls\services\UrlIndexService;
@@ -12,7 +12,7 @@ use DmitriiKoziuk\yii2Shop\entities\Category;
 use DmitriiKoziuk\yii2Shop\helpers\UrlHelper;
 use DmitriiKoziuk\yii2Shop\repositories\CategoryRepository;
 
-final class CategoryService extends EntityActionService
+final class CategoryService extends DBActionService
 {
     /**
      * @var CategoryRepository

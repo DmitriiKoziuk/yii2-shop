@@ -3,7 +3,7 @@ namespace DmitriiKoziuk\yii2Shop\services\product;
 
 use yii\db\Connection;
 use yii\queue\cli\Queue;
-use DmitriiKoziuk\yii2Base\services\EntityActionService;
+use DmitriiKoziuk\yii2Base\services\DBActionService;
 use DmitriiKoziuk\yii2Shop\repositories\ProductTypeMarginRepository;
 use DmitriiKoziuk\yii2Shop\entities\ProductTypeMargin;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductMarginUpdateForm;
@@ -13,7 +13,7 @@ use DmitriiKoziuk\yii2Shop\data\ProductTypeMarginData;
 use DmitriiKoziuk\yii2Shop\services\currency\CurrencyService;
 use DmitriiKoziuk\yii2Shop\jobs\UpdateProductSellPriceJob;
 
-class ProductMarginService extends EntityActionService
+class ProductMarginService extends DBActionService
 {
     /**
      * @var ProductTypeMarginRepository
