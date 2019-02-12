@@ -11,7 +11,11 @@ use DmitriiKoziuk\yii2FileManager\helpers\FileWebHelper;
  * @var $fileWebHelper FileWebHelper
  */
 
-ProductSkuAsset::register($this)
+ProductSkuAsset::register($this);
+
+$this->title = $productSkuData->getMetaTitle();
+$this->registerMetaTag(['name' => 'description', 'content' => $productSkuData->getMetaDescription()]);
+$this->registerLinkTag(['rel' => 'canonical', 'href' => $productSkuData->getUrl()]);
 ?>
 
 <div class="product-sku">
