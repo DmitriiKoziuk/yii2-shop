@@ -11,6 +11,7 @@ use DmitriiKoziuk\yii2CustomUrls\data\UrlData;
 use DmitriiKoziuk\yii2FileManager\helpers\FileWebHelper;
 use DmitriiKoziuk\yii2FileManager\services\FileService;
 use DmitriiKoziuk\yii2Shop\services\product\ProductService;
+use DmitriiKoziuk\yii2Shop\services\product\ProductTypeService;
 use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 
 final class ProductSkuController extends Controller
@@ -19,6 +20,8 @@ final class ProductSkuController extends Controller
      * @var ProductService
      */
     private $_productService;
+
+    private $_productTypeService;
 
     /**
      * @var FileService
@@ -34,12 +37,14 @@ final class ProductSkuController extends Controller
         string $id,
         Module $module,
         ProductService $productService,
+        ProductTypeService $productTypeService,
         FileService $fileService,
         FileWebHelper $fileWebHelper,
         array $config = []
     ) {
         parent::__construct($id, $module, $config);
         $this->_productService = $productService;
+        $this->_productTypeService = $productTypeService;
         $this->_fileWebHelper = $fileWebHelper;
         $this->_fileService = $fileService;
     }
@@ -54,6 +59,10 @@ final class ProductSkuController extends Controller
         try {
             $productSkuData = $this->_productService->getProductSkuById((int) $urlData->getEntityId());
             $productData = $this->_productService->getProductById($productSkuData->getProductId());
+            $productTypeData = null;
+            if (! empty($productData->getTypeId())) {
+                $productTypeData = $this->_productTypeService->getProductTypeById($productData->getTypeId());
+            }
         } catch (EntityNotFoundException $e) {
             throw new NotFoundHttpException(
                 Yii::t(BaseModule::TRANSLATE, 'Page not found.')
@@ -70,6 +79,7 @@ final class ProductSkuController extends Controller
         return $this->render('index', [
             'productSkuData' => $productSkuData,
             'productData' => $productData,
+            'productTypeData' => $productTypeData,
             'images' => $images,
             'mainImage' => $mainImage,
             'fileWebHelper' => $this->_fileWebHelper,
