@@ -1,4 +1,5 @@
 <?php
+
 use DmitriiKoziuk\yii2Shop\assets\frontend\ProductSkuAsset;
 use DmitriiKoziuk\yii2FileManager\helpers\FileWebHelper;
 
