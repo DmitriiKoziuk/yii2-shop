@@ -27,6 +27,16 @@ class ProductSkuData
         return $this->_productSku->id;
     }
 
+    public function getSlug(): string
+    {
+        return $this->_productSku->slug;
+    }
+
+    public function getUrl(): string
+    {
+        return $this->_productSku->url;
+    }
+
     public function getProductId(): int
     {
         return $this->_productSku->product_id;
