@@ -33,6 +33,10 @@ use DmitriiKoziuk\yii2Shop\entities\ProductType;
         ProductType::MARGIN_STRATEGY_USE_HIGHEST_SUPPLIER_PURCHASE_PRICE => 'From highest supplier purchase price',
     ]) ?>
 
+    <?= $form->field($productTypeInputForm, 'product_sku_title_template')->textarea(['maxlength' => true]) ?>
+
+    <?= $form->field($productTypeInputForm, 'product_sku_description_template')->textarea(['maxlength' => true]) ?>
+
     <div class="form-group">
         <?= Html::submitButton($productType->isNewRecord ? Yii::t(BaseModule::TRANSLATE, 'Create') : Yii::t('app', 'Update'), ['class' => $productType->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
