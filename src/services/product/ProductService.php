@@ -180,10 +180,18 @@ class ProductService extends DBActionService
         }
     }
 
+    /**
+     * @param int $productSkuId
+     * @return ProductSkuData
+     * @throws EntityNotFoundException
+     */
     public function getProductSkuById(int $productSkuId): ProductSkuData
     {
-        $sku = $this->_productSkuRepository->getById($productSkuId);
-        return new ProductSkuData($sku);
+        $productSkuRecord = $this->_productSkuRepository->getById($productSkuId);
+        if (empty($productSkuRecord)) {
+            throw new EntityNotFoundException("Product sku with id '{$productSkuId}' not found.");
+        }
+        return new ProductSkuData($productSkuRecord);
     }
 
     public function updateProductSkuSellPrice(int $productSkuId): void
