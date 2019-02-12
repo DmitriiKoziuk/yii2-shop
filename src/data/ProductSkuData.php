@@ -49,6 +49,11 @@ class ProductSkuData
         return $this->_productSku->product->name . ' ' . $this->_productSku->name;
     }
 
+    public function getName(): string
+    {
+        return $this->_productSku->name;
+    }
+
     public function getTypeName(): string
     {
         return $this->_productSku->product->type->name;
@@ -58,6 +63,11 @@ class ProductSkuData
     {
         $price = $this->_productSku->price_on_site;
         return ceil($price);
+    }
+
+    public function getPriceOnSite(): float
+    {
+        return $this->_productSku->price_on_site;
     }
 
     public function isHasImages(): bool
