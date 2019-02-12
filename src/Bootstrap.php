@@ -5,45 +5,39 @@ use Yii;
 use yii\base\BootstrapInterface;
 use DmitriiKoziuk\yii2ConfigManager\ConfigManagerModule;
 use DmitriiKoziuk\yii2ConfigManager\services\ConfigService;
-use DmitriiKoziuk\yii2ModuleManager\services\ModuleService;
+use DmitriiKoziuk\yii2ModuleManager\services\ModuleInitService;
 
 final class Bootstrap implements BootstrapInterface
 {
     /**
      * @param \yii\base\Application $app
-     * @throws \yii\base\InvalidConfigException
-     * @throws \yii\di\NotInstantiableException
      */
     public function bootstrap($app)
     {
-        $app->setComponents([
-            'dkShopQueue' => [
-                'class' => \yii\queue\file\Queue::class,
-                'path' => '@console/runtime/queue',
-                'as log' => \yii\queue\LogBehavior::class,
-            ],
-        ]);
-        $app->bootstrap[] = 'dkShopQueue';
-        /** @var ConfigService $configService */
-        $configService = Yii::$container->get(ConfigService::class);
-        $app->setModule(ShopModule::ID, [
-            'class' => ShopModule::class,
-            'diContainer' => Yii::$container,
-            'queue' => Yii::$app->dkShopQueue,
-            'dbConnection' => Yii::$app->db,
-            'backendAppId' => $configService->getValue(
-                ConfigManagerModule::GENERAL_CONFIG_NAME,
-                'backendAppId'
-            ),
-            'frontendAppId' => $configService->getValue(
-                ConfigManagerModule::GENERAL_CONFIG_NAME,
-                'frontendAppId'
-            ),
-        ]);
-        /** @var ShopModule $module */
-        $module = $app->getModule(ShopModule::ID);
-        /** @var ModuleService $moduleService */
-        $moduleService = Yii::$container->get(ModuleService::class);
-        $moduleService->registerModule($module);
+        ModuleInitService::registerModule(ShopModule::class, function () use ($app) {
+            $app->setComponents([
+                'dkShopQueue' => [
+                    'class' => \yii\queue\file\Queue::class,
+                    'path' => '@console/runtime/queue',
+                    'as log' => \yii\queue\LogBehavior::class,
+                ],
+            ]);
+            /** @var ConfigService $configService */
+            $configService = Yii::$container->get(ConfigService::class);
+            return [
+                'class' => ShopModule::class,
+                'diContainer' => Yii::$container,
+                'queue' => $app->dkShopQueue,
+                'dbConnection' => Yii::$app->db,
+                'backendAppId' => $configService->getValue(
+                    ConfigManagerModule::GENERAL_CONFIG_NAME,
+                    'backendAppId'
+                ),
+                'frontendAppId' => $configService->getValue(
+                    ConfigManagerModule::GENERAL_CONFIG_NAME,
+                    'frontendAppId'
+                ),
+            ];
+        });
     }
 }
