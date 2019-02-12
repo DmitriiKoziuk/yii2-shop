@@ -6,8 +6,13 @@ use yii\db\Connection;
 use yii\web\Application as WebApp;
 use yii\base\Application as BaseApp;
 use yii\queue\cli\Queue;
+use DmitriiKoziuk\yii2Base\BaseModule;
 use DmitriiKoziuk\yii2ModuleManager\interfaces\ModuleInterface;
+use DmitriiKoziuk\yii2ConfigManager\ConfigManagerModule;
+use DmitriiKoziuk\yii2UserManager\UserManager;
+use DmitriiKoziuk\yii2CustomUrls\CustomUrlsModule;
 use DmitriiKoziuk\yii2CustomUrls\services\UrlIndexService;
+use DmitriiKoziuk\yii2FileManager\FileManagerModule;
 use DmitriiKoziuk\yii2FileManager\repositories\FileRepository;
 use DmitriiKoziuk\yii2Shop\repositories\CurrencyRepository;
 use DmitriiKoziuk\yii2Shop\repositories\ProductRepository;
@@ -104,9 +109,9 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
         $this->_registerClassesToDIContainer($app);
     }
 
-    public function getId(): string
+    public static function getId(): string
     {
-        return $this::ID;
+        return self::ID;
     }
 
     public function getBackendMenuItems(): array
@@ -120,6 +125,17 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
             ['label' => 'Suppliers', 'url' => ['/' . $this::ID . '/supplier/index']],
             ['label' => 'Brands', 'url' => ['/' . $this::ID . '/brand/index']],
         ]];
+    }
+
+    public static function requireOtherModulesToBeActive(): array
+    {
+        return [
+            BaseModule::class,
+            ConfigManagerModule::class,
+            UserManager::class,
+            FileManagerModule::class,
+            CustomUrlsModule::class,
+        ];
     }
 
     /**
