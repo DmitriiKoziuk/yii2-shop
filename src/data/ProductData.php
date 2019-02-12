@@ -21,4 +21,9 @@ class ProductData
     {
         return $this->_productRecord->name;
     }
+
+    public function getTypeId(): ?int
+    {
+        return $this->_productRecord->type_id;
+    }
 }
