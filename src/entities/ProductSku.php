@@ -88,6 +88,7 @@ class ProductSku extends ActiveRecord
             [['meta_description'], 'string', 'max' => 500],
             [['short_description', 'description'], 'string'],
             [['name', 'slug', 'url', 'sell_price', 'old_price', 'meta_title', 'meta_description'], 'trim'],
+            [['meta_title', 'meta_description', 'short_description', 'description'], 'default', 'value' => null],
             [
                 ['currency_id'],
                 'exist',
