@@ -7,6 +7,7 @@ use DmitriiKoziuk\yii2FileManager\helpers\FileWebHelper;
  * @var $this \yii\web\View
  * @var $productSkuData \DmitriiKoziuk\yii2Shop\data\ProductSkuData
  * @var $productData \DmitriiKoziuk\yii2Shop\data\ProductData
+ * @var $productTypeData \DmitriiKoziuk\yii2Shop\data\ProductTypeData|null
  * @var $images \DmitriiKoziuk\yii2FileManager\entities\File[]
  * @var $mainImage \DmitriiKoziuk\yii2FileManager\entities\File|null
  * @var $fileWebHelper FileWebHelper
