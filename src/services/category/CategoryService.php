@@ -3,12 +3,14 @@ namespace DmitriiKoziuk\yii2Shop\services\category;
 
 use yii\db\Connection;
 use DmitriiKoziuk\yii2Base\services\DBActionService;
+use DmitriiKoziuk\yii2Base\exceptions\EntityNotFoundException;
 use DmitriiKoziuk\yii2CustomUrls\forms\UrlCreateForm;
 use DmitriiKoziuk\yii2CustomUrls\forms\UrlUpdateForm;
 use DmitriiKoziuk\yii2CustomUrls\services\UrlIndexService;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 use DmitriiKoziuk\yii2Shop\forms\CategoryInputForm;
 use DmitriiKoziuk\yii2Shop\entities\Category;
+use DmitriiKoziuk\yii2Shop\data\CategoryData;
 use DmitriiKoziuk\yii2Shop\helpers\UrlHelper;
 use DmitriiKoziuk\yii2Shop\repositories\CategoryRepository;
 
@@ -104,6 +106,15 @@ final class CategoryService extends DBActionService
     public function deleteCategory()
     {
         //TODO make delete method for category.
+    }
+
+    public function getCategoryById(int $categoryId): CategoryData
+    {
+        $categoryRecord = $this->_categoryRepository->getById($categoryId);
+        if (empty($categoryRecord)) {
+            throw new EntityNotFoundException("Can't find category with id '{$categoryId}'");
+        }
+        return new CategoryData($categoryRecord);
     }
 
     private function _defineSlug($string): string
