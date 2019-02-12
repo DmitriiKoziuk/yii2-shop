@@ -27,4 +27,17 @@ class CategoryInputForm extends Model
             [['name', 'name_on_site', 'slug', 'url', 'meta_title', 'meta_description'], 'trim'],
         ];
     }
+
+    public function getChangedAttributes()
+    {
+        return $this->getAttributes([
+            'parent_id',
+            'name',
+            'name_on_site',
+            'slug',
+            'meta_title',
+            'meta_description',
+            'description',
+        ]);
+    }
 }

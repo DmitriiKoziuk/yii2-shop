@@ -72,13 +72,12 @@ final class CategoryService extends DBActionService
      * @param CategoryInputForm $categoryInputForm
      * @return Category
      * @throws \Throwable
-     * @throws \yii\db\Exception
      */
     public function updateCategory(Category $category, CategoryInputForm $categoryInputForm)
     {
         $this->beginTransaction();
         try {
-            $category->setAttributes($categoryInputForm->getAttributes());
+            $category->setAttributes($categoryInputForm->getChangedAttributes());
             $changedAttributesList = $category->getDirtyAttributes();
             if (isset($changedAttributesList['slug'])) {
                 $category->slug = $this->_defineSlug($category->slug);
