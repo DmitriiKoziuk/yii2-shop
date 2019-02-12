@@ -74,4 +74,24 @@ class ProductSkuData
     {
         return empty($this->_productSkuImages) ? false : true;
     }
+
+    public function getMetaTitle(): ?string
+    {
+        return $this->_productSku->meta_title;
+    }
+
+    public function getMetaDescription(): ?string
+    {
+        return $this->_productSku->meta_description;
+    }
+
+    public function getShortDescription(): ?string
+    {
+        return $this->_productSku->short_description;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->_productSku->description;
+    }
 }
