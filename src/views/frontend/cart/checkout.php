@@ -10,6 +10,11 @@ use DmitriiKoziuk\yii2Shop\assets\frontend\CartCheckoutAsset;
  * @var $checkoutForm \DmitriiKoziuk\yii2Shop\forms\cart\CheckoutForm
  */
 CartCheckoutAsset::register($this);
+$this->title = Yii::t(ShopModule::TRANSLATION_CART, 'Checkout');
+$this->registerMetaTag([
+    'name' => 'description',
+    'content' => Yii::t(ShopModule::TRANSLATION_CART, 'Checkout')
+]);
 ?>
 
 <div class="container cart-checkout">
