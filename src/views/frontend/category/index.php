@@ -2,23 +2,28 @@
 
 use DmitriiKoziuk\yii2Shop\assets\frontend\CategoryAsset;
 use DmitriiKoziuk\yii2Shop\widgets\ProductWidget;
+use DmitriiKoziuk\yii2Shop\data\product\ProductSearchParams;
 
 /**
  * @var $this \yii\web\View
- * @var $category \DmitriiKoziuk\yii2Shop\entities\Category
- * @var $searchParams \DmitriiKoziuk\yii2Shop\data\product\ProductSearchParams
+ * @var $categoryData \DmitriiKoziuk\yii2Shop\data\CategoryData
+ * @var $filterService \DmitriiKoziuk\yii2CustomUrls\services\UrlFilterService
  */
 
 CategoryAsset::register($this);
+
+$productSearchParams = new ProductSearchParams();
+$productSearchParams->category_id = $categoryData->getId();
+
+$this->title = $categoryData->getMetaTitle();
+$this->registerMetaTag(['name' => 'description', 'content' => $categoryData->getMetaDescription()]);
+$this->registerLinkTag(['rel' => 'canonical', 'href' => $categoryData->getUrl()]);
 ?>
 <div class="category">
   <div class="row">
-    <div class="col-3">
-      filter
-    </div>
-    <div class="col-9">
+    <div class="col-md-12">
       <?= ProductWidget::widget([
-          'searchParams' => $searchParams,
+          'searchParams' => $productSearchParams,
       ]) ?>
     </div>
   </div>

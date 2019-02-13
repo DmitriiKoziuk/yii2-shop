@@ -13,6 +13,7 @@ use DmitriiKoziuk\yii2Shop\entities\Product;
 use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 use DmitriiKoziuk\yii2Shop\entities\ProductType;
 use DmitriiKoziuk\yii2Shop\entities\ProductTypeMargin;
+use DmitriiKoziuk\yii2Shop\data\ProductData;
 use DmitriiKoziuk\yii2Shop\data\ProductSkuData;
 use DmitriiKoziuk\yii2Shop\data\ProductTypeMarginData;
 use DmitriiKoziuk\yii2Shop\data\ProductTypeData;
@@ -180,10 +181,32 @@ class ProductService extends DBActionService
         }
     }
 
+    /**
+     * @param int $productId
+     * @return ProductData
+     * @throws EntityNotFoundException
+     */
+    public function getProductById(int $productId): ProductData
+    {
+        $productRecord = $this->_productRepository->getById($productId);
+        if (empty($productRecord)) {
+            throw new EntityNotFoundException("Product sku with id '{$productId}' not found.");
+        }
+        return new ProductData($productRecord);
+    }
+
+    /**
+     * @param int $productSkuId
+     * @return ProductSkuData
+     * @throws EntityNotFoundException
+     */
     public function getProductSkuById(int $productSkuId): ProductSkuData
     {
-        $sku = $this->_productSkuRepository->getById($productSkuId);
-        return new ProductSkuData($sku);
+        $productSkuRecord = $this->_productSkuRepository->getById($productSkuId);
+        if (empty($productSkuRecord)) {
+            throw new EntityNotFoundException("Product sku with id '{$productSkuId}' not found.");
+        }
+        return new ProductSkuData($productSkuRecord);
     }
 
     public function updateProductSkuSellPrice(int $productSkuId): void

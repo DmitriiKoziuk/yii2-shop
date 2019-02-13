@@ -26,4 +26,14 @@ class ProductTypeData
     {
         return $this->_productTypeRecord->margin_strategy;
     }
+
+    public function getProductSkuMetaTitleTemplate(): ?string
+    {
+        return $this->_productTypeRecord->product_sku_title_template;
+    }
+
+    public function getProductSkuMetaDescriptionTemplate(): ?string
+    {
+        return $this->_productTypeRecord->product_sku_description_template;
+    }
 }
