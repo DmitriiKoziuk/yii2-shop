@@ -7,7 +7,7 @@ class CategoryAsset extends AssetBundle
 {
     public $sourcePath = '@DmitriiKoziuk/yii2Shop/web/frontend/category';
     public $css = [
-        'css/shop-category.css',
+        'css/dk-shop-category.css',
     ];
     public $js = [
     ];
