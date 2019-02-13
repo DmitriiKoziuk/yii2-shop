@@ -3,7 +3,7 @@ namespace DmitriiKoziuk\yii2Shop\assets\frontend;
 
 use yii\web\AssetBundle;
 
-class ShopProductWidgetAsset extends AssetBundle
+class ProductWidgetAsset extends AssetBundle
 {
     public $sourcePath = '@DmitriiKoziuk/yii2Shop/web/frontend/product-widget';
     public $css = [
