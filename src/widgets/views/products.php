@@ -1,6 +1,6 @@
 <?php
 
-use frontend\themes\basic\assets\ShopProductWidgetAsset;
+use DmitriiKoziuk\yii2Shop\assets\frontend\ProductWidgetAsset;
 use DmitriiKoziuk\yii2FileManager\helpers\FileWebHelper;
 
 /**
@@ -12,7 +12,7 @@ use DmitriiKoziuk\yii2FileManager\helpers\FileWebHelper;
  * @var $fileWebHelper FileWebHelper
  */
 
-ShopProductWidgetAsset::register($this);
+ProductWidgetAsset::register($this);
 ?>
 
 <section class="products">

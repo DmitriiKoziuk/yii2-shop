@@ -1,14 +1,14 @@
 <?php
 
 use yii\helpers\Html;
-use frontend\themes\basic\assets\ShopBaseThemeAsset;
+use DmitriiKoziuk\yii2Shop\assets\frontend\BaseAsset;
 
 /**
  * @var $this    \yii\web\View
  * @var $content string
  */
 
-ShopBaseThemeAsset::register($this);
+BaseAsset::register($this);
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>

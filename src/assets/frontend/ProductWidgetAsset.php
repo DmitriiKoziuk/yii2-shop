@@ -3,11 +3,11 @@ namespace DmitriiKoziuk\yii2Shop\assets\frontend;
 
 use yii\web\AssetBundle;
 
-class CategoryAsset extends AssetBundle
+class ProductWidgetAsset extends AssetBundle
 {
-    public $sourcePath = '@DmitriiKoziuk/yii2Shop/web/frontend/category';
+    public $sourcePath = '@DmitriiKoziuk/yii2Shop/web/frontend/product-widget';
     public $css = [
-        'css/dk-shop-category.css',
+        'css/dk-shop-product-widget.css',
     ];
     public $js = [
     ];
