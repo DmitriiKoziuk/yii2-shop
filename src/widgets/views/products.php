@@ -1,6 +1,6 @@
 <?php
 
-use frontend\themes\basic\assets\ShopProductWidgetAsset;
+use DmitriiKoziuk\yii2Shop\assets\frontend\ShopProductWidgetAsset;
 use DmitriiKoziuk\yii2FileManager\helpers\FileWebHelper;
 
 /**
