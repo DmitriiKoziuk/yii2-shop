@@ -11,12 +11,20 @@ use DmitriiKoziuk\yii2FileManager\helpers\FileWebHelper;
  * @var $images \DmitriiKoziuk\yii2FileManager\entities\File[]
  * @var $mainImage \DmitriiKoziuk\yii2FileManager\entities\File|null
  * @var $fileWebHelper FileWebHelper
+ * @var $productSeoService \DmitriiKoziuk\yii2Shop\services\product\ProductSeoService
  */
 
 ProductSkuAsset::register($this);
 
-$this->title = $productSkuData->getMetaTitle();
-$this->registerMetaTag(['name' => 'description', 'content' => $productSkuData->getMetaDescription()]);
+$this->title = $productSeoService->getProductSkuMetaTitle($productData, $productSkuData, $productTypeData);
+$this->registerMetaTag([
+    'name' => 'description',
+    'content' => $productSeoService->getProductSkuMetaDescription(
+        $productData,
+        $productSkuData,
+        $productTypeData
+    ),
+]);
 $this->registerLinkTag(['rel' => 'canonical', 'href' => $productSkuData->getUrl()]);
 ?>
 
