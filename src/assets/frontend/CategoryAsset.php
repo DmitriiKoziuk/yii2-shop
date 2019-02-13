@@ -12,6 +12,6 @@ class CategoryAsset extends AssetBundle
     public $js = [
     ];
     public $depends = [
-        'DmitriiKoziuk\yii2Shop\assets\frontend\BaseThemeAsset',
+        'DmitriiKoziuk\yii2Shop\assets\frontend\BaseAsset',
     ];
 }
