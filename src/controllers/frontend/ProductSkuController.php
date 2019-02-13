@@ -12,6 +12,7 @@ use DmitriiKoziuk\yii2FileManager\helpers\FileWebHelper;
 use DmitriiKoziuk\yii2FileManager\services\FileService;
 use DmitriiKoziuk\yii2Shop\services\product\ProductService;
 use DmitriiKoziuk\yii2Shop\services\product\ProductTypeService;
+use DmitriiKoziuk\yii2Shop\services\product\ProductSeoService;
 use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 
 final class ProductSkuController extends Controller
@@ -21,7 +22,15 @@ final class ProductSkuController extends Controller
      */
     private $_productService;
 
+    /**
+     * @var ProductTypeService
+     */
     private $_productTypeService;
+
+    /**
+     * @var ProductSeoService
+     */
+    private $_productSeoService;
 
     /**
      * @var FileService
@@ -38,6 +47,7 @@ final class ProductSkuController extends Controller
         Module $module,
         ProductService $productService,
         ProductTypeService $productTypeService,
+        ProductSeoService $productSeoService,
         FileService $fileService,
         FileWebHelper $fileWebHelper,
         array $config = []
@@ -45,6 +55,7 @@ final class ProductSkuController extends Controller
         parent::__construct($id, $module, $config);
         $this->_productService = $productService;
         $this->_productTypeService = $productTypeService;
+        $this->_productSeoService = $productSeoService;
         $this->_fileWebHelper = $fileWebHelper;
         $this->_fileService = $fileService;
     }
@@ -83,6 +94,7 @@ final class ProductSkuController extends Controller
             'images' => $images,
             'mainImage' => $mainImage,
             'fileWebHelper' => $this->_fileWebHelper,
+            'productSeoService' => $this->_productSeoService,
         ]);
     }
 }
