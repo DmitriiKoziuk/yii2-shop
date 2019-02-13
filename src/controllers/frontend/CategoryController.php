@@ -1,29 +1,28 @@
 <?php
 namespace DmitriiKoziuk\yii2Shop\controllers\frontend;
 
+use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\base\Module;
-
+use DmitriiKoziuk\yii2Base\BaseModule;
+use DmitriiKoziuk\yii2Base\exceptions\EntityNotFoundException;
 use DmitriiKoziuk\yii2CustomUrls\data\UrlData;
 use DmitriiKoziuk\yii2CustomUrls\services\UrlFilterService;
-
-use DmitriiKoziuk\yii2Shop\entities\Category;
-use DmitriiKoziuk\yii2Shop\data\product\ProductSearchParams;
-use DmitriiKoziuk\yii2Shop\repositories\CategoryRepository;
+use DmitriiKoziuk\yii2Shop\services\category\CategoryService;
 
 final class CategoryController extends Controller
 {
-    private $_categoryRepository;
+    private $_categoryService;
 
     public function __construct(
         string $id,
         Module $module,
-        CategoryRepository $categoryRepository,
+        CategoryService $categoryService,
         array $config = []
     ) {
         parent::__construct($id, $module, $config);
-        $this->_categoryRepository = $categoryRepository;
+        $this->_categoryService = $categoryService;
     }
 
     /**
@@ -34,16 +33,16 @@ final class CategoryController extends Controller
      */
     public function actionIndex(UrlData $urlData, UrlFilterService $filterService)
     {
-        /** @var Category|null $category */
-        $category = $this->_categoryRepository->getById((int) $urlData->getEntityId());
-        if (empty($category)) {
-            throw new NotFoundHttpException('Page not found.');
+        try {
+            $categoryData = $this->_categoryService
+                ->getCategoryById((int) $urlData->getEntityId());
+        } catch (EntityNotFoundException $e) {
+            throw new NotFoundHttpException(
+                Yii::t(BaseModule::TRANSLATE, 'Page not found.')
+            );
         }
-        $searchParams = new ProductSearchParams();
-        $searchParams->category_id = $category->id;
         return $this->render('index', [
-            'category' => $category,
-            'searchParams' => $searchParams,
+            'categoryData' => $categoryData,
             'filterService' => $filterService,
         ]);
     }

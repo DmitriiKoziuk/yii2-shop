@@ -14,6 +14,11 @@ use DmitriiKoziuk\yii2FileManager\helpers\FileWebHelper;
  */
 
 CartViewAsset::register($this);
+$this->title = Yii::t(ShopModule::TRANSLATION_CART, 'Your Cart');
+$this->registerMetaTag([
+    'name' => 'description',
+    'content' => Yii::t(ShopModule::TRANSLATION_CART, 'Your Cart')
+]);
 ?>
 
 <div class="container cart">

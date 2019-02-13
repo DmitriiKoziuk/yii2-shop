@@ -53,6 +53,7 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
 {
     const ID = 'dk-shop';
 
+    const TRANSLATION = 'dk-shop';
     const TRANSLATION_PRODUCT = 'dk-shop-product';
     const TRANSLATION_PRODUCT_SKU = 'dk-shop-product-sku';
     const TRANSLATION_PRODUCT_TYPE = 'dk-shop-product-type';

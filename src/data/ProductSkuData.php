@@ -27,6 +27,16 @@ class ProductSkuData
         return $this->_productSku->id;
     }
 
+    public function getSlug(): string
+    {
+        return $this->_productSku->slug;
+    }
+
+    public function getUrl(): string
+    {
+        return $this->_productSku->url;
+    }
+
     public function getProductId(): int
     {
         return $this->_productSku->product_id;
@@ -49,6 +59,11 @@ class ProductSkuData
         return $this->_productSku->product->name . ' ' . $this->_productSku->name;
     }
 
+    public function getName(): string
+    {
+        return $this->_productSku->name;
+    }
+
     public function getTypeName(): string
     {
         return $this->_productSku->product->type->name;
@@ -60,8 +75,33 @@ class ProductSkuData
         return ceil($price);
     }
 
+    public function getPriceOnSite(): float
+    {
+        return $this->_productSku->price_on_site;
+    }
+
     public function isHasImages(): bool
     {
         return empty($this->_productSkuImages) ? false : true;
+    }
+
+    public function getMetaTitle(): ?string
+    {
+        return $this->_productSku->meta_title;
+    }
+
+    public function getMetaDescription(): ?string
+    {
+        return $this->_productSku->meta_description;
+    }
+
+    public function getShortDescription(): ?string
+    {
+        return $this->_productSku->short_description;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->_productSku->description;
     }
 }
