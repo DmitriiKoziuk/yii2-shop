@@ -2,6 +2,7 @@
 
 use DmitriiKoziuk\yii2Shop\assets\frontend\ProductSkuAsset;
 use DmitriiKoziuk\yii2FileManager\helpers\FileWebHelper;
+use DmitriiKoziuk\yii2Shop\ShopModule;
 
 /**
  * @var $this \yii\web\View
@@ -30,17 +31,15 @@ $this->registerLinkTag(['rel' => 'canonical', 'href' => $productSkuData->getUrl(
 
 <div class="product-sku">
   <div class="row">
-    <div class="col-12">
-      <div class="title">
-        <h1><?= $productData->getName() . ' ' . $productSkuData->getName() ?></h1>
-      </div>
+    <div class="col-md-12">
+      <h1><?= $productData->getName() . ' ' . $productSkuData->getName() ?></h1>
       <div class="row">
-        <div class="col-6 image-section">
-            <?php if (! empty($mainImage)): ?>
-              <img src="<?= $fileWebHelper->getFileFullWebPath($mainImage) ?>" alt="">
-            <?php endif; ?>
+        <div class="col-md-6 image-section">
+          <?php if (! empty($mainImage)): ?>
+            <img src="<?= $fileWebHelper->getFileFullWebPath($mainImage) ?>" alt="">
+          <?php endif; ?>
         </div>
-        <div class="col-6 buy-section">
+        <div class="col-md-6">
           <div class="price">
             <?= number_format(
                 $productSkuData->getPriceOnSite(),
@@ -48,11 +47,11 @@ $this->registerLinkTag(['rel' => 'canonical', 'href' => $productSkuData->getUrl(
                 '.',
                 ' '
             ) ?>
-            <span class="currency">грн.</span>
+            <span class="currency">currency name</span>
           </div>
           <div class="buttons">
             <a class="btn buy-button" href="/cart/add-product?product=<?= $productSkuData->getId() ?>">
-              <i class="fas fa-shopping-cart"></i> Купить
+              <?= Yii::t(ShopModule::TRANSLATION, 'Buy') ?>
             </a>
           </div>
         </div>

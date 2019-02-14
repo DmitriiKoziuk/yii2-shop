@@ -1,6 +1,5 @@
 <?php
 
-use DmitriiKoziuk\yii2Shop\assets\frontend\CategoryAsset;
 use DmitriiKoziuk\yii2Shop\widgets\ProductWidget;
 use DmitriiKoziuk\yii2Shop\data\product\ProductSearchParams;
 
@@ -9,8 +8,6 @@ use DmitriiKoziuk\yii2Shop\data\product\ProductSearchParams;
  * @var $categoryData \DmitriiKoziuk\yii2Shop\data\CategoryData
  * @var $filterService \DmitriiKoziuk\yii2CustomUrls\services\UrlFilterService
  */
-
-CategoryAsset::register($this);
 
 $productSearchParams = new ProductSearchParams();
 $productSearchParams->category_id = $categoryData->getId();
