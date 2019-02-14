@@ -1,20 +1,9 @@
-.product-sku {
-  background-color: #fff;
-}
-.product-sku .title {
-  border-bottom: 1px solid #ededed;
-  padding-right: 15px;
-  padding-left: 15px;
-}
 .product-sku .image-section {
   text-align: center;
 }
 .product-sku .image-section img {
   max-height: 500px;
   max-width: 500px;
-}
-.product-sku .buy-section {
-
 }
 .product-sku .price {
   margin-top: 20px;

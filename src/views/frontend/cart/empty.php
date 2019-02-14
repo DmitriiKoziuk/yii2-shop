@@ -12,6 +12,6 @@ $this->registerMetaTag([
 ]);
 ?>
 
-<div class="container">
-    <?= Yii::t(ShopModule::TRANSLATION_CART, 'Cart is empty') ?>
+<div class="cart-empty">
+  <?= Yii::t(ShopModule::TRANSLATION_CART, 'Cart is empty') ?>
 </div>
