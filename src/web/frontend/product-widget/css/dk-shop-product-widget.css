@@ -1,73 +1,64 @@
-section.products {
-  display: flex;
-}
-section.products .product {
+.products .product {
   width: 33%;
   padding: 5px;
   background-color: #fff;
   border: 2px solid #f6f6f6;
 }
-section.products .product:hover {
+.products .product:hover {
   border: 2px solid #FDB518;
 }
-section.products .product .image {
+.products .product .image {
   text-align: center;
 }
-section.products .product .image a {
+.products .product .image a {
   display: block;
 }
-section.products .product .image img {
+.products .product .image img {
   max-height: 250px;
 }
-section.products .product .title {
+.products .product .title {
 
 }
-section.products .product .title a {
+.products .product .title a {
   display: inline-block;
   padding-top: 15px;
   height: 65px;
   overflow: hidden;
 }
-section.products .product .title .type-name {
+.products .product .title .type-name {
   display: block;
   color: #666;
   font-size: 0.7em;
 }
-section.products .product .price-scope {
+.products .product .price-scope {
   margin-top: 15px;
 }
-section.products .product .price-scope [class*="col-"] {
-  padding-left: 0;
-  padding-right: 0;
-}
-section.products .product .price-scope .price {
+.products .product .price-scope .price {
   font-size: 1.5em;
 }
-section.products .product .price-scope .currency {
+.products .product .price-scope .currency {
   font-size: 0.7em;
   color: #666;
 }
-section.products .product .btn {
+.products .product .btn {
   display: inline-block;
   padding: 5px;
-  width: 2rem;
   text-align: center;
   color: #cec9c9;
   font-size: 1.4em;
 }
-section.products .product .btn:hover {
+.products .product .btn:hover {
   color: #dc9316;
 }
-section.products .product .buy-button {
+.products .product .buy-button {
   display: inline-block;
   padding: 5px;
   color: #fff;
   background-color: #fdb518;
   border-radius: 8px;
-  width: 3rem;
   text-align: center;
 }
-section.products .product .buy-button:hover {
+.products .product .buy-button:hover {
   color: black;
   background-color: #FFCC66;
 }
