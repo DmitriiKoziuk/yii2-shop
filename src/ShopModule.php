@@ -5,6 +5,7 @@ use yii\di\Container;
 use yii\db\Connection;
 use yii\web\Application as WebApp;
 use yii\base\Application as BaseApp;
+use yii\console\Application as ConsoleApp;
 use yii\queue\cli\Queue;
 use DmitriiKoziuk\yii2Base\BaseModule;
 use DmitriiKoziuk\yii2ModuleManager\interfaces\ModuleInterface;
@@ -167,6 +168,9 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
                 '/cart/add-product' => self::ID . '/cart/add-product',
                 '/cart/remove-product' => self::ID . '/cart/remove-product',
             ]);
+        }
+        if ($app instanceof ConsoleApp) {
+            $app->controllerMap['migrate']['migrationNamespaces'][] = __NAMESPACE__ . '\migrations';
         }
     }
 

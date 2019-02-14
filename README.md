@@ -55,5 +55,5 @@ The preferred way to install this extension is through [composer](http://getcomp
 3. Run command 
 
     ```
-    /path/to/php-bin/php /path/to/yii-application/yii migrate --migrationPath=@DmitriiKoziuk/yii2Shop/migrations
+    /path/to/php-bin/php /path/to/yii-application/yii migrate
     ```
