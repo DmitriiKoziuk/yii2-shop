@@ -79,7 +79,7 @@ $stageLog = $orderData->stageLog();
                     ['target' => '_blank']
                     ) ?>
             </td>
-            <td><?= $productData->getSku()->getPrice() ?></td>
+            <td><?= $productData->getSku()->getPriceOnSite() ?></td>
             <td><?= $productData->getQuantity() ?></td>
             <td><?= $productData->getFinalPrice() ?></td>
           </tr>

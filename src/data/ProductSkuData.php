@@ -69,12 +69,6 @@ class ProductSkuData
         return $this->_productSku->product->type->name;
     }
 
-    public function getPrice(): int
-    {
-        $price = $this->_productSku->price_on_site;
-        return ceil($price);
-    }
-
     public function getPriceOnSite(): float
     {
         return $this->_productSku->price_on_site;

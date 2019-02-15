@@ -34,7 +34,7 @@ class CartProductData
         if (empty($this->_cartProduct->productSku->price_on_site)) {
             return 0.00;
         } else {
-            $price = $this->getQuantity() * $this->_productSkuData->getPrice();
+            $price = $this->getQuantity() * $this->_productSkuData->getPriceOnSite();
             return ceil($price);
         }
     }
