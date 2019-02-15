@@ -3,11 +3,14 @@ namespace DmitriiKoziuk\yii2Shop\widgets;
 
 use yii\base\Widget;
 use DmitriiKoziuk\yii2FileManager\helpers\FileWebHelper;
-use DmitriiKoziuk\yii2FileManager\entities\File;
 use DmitriiKoziuk\yii2FileManager\services\FileService;
-use DmitriiKoziuk\yii2Shop\data\product\ProductSearchParams;
+use DmitriiKoziuk\yii2Shop\entities\Product;
 use DmitriiKoziuk\yii2Shop\entities\ProductSku;
+use DmitriiKoziuk\yii2Shop\data\ProductData;
+use DmitriiKoziuk\yii2Shop\data\product\ProductSearchParams;
+use DmitriiKoziuk\yii2Shop\services\product\ProductService;
 use DmitriiKoziuk\yii2Shop\services\product\ProductSearchService;
+use DmitriiKoziuk\yii2Shop\services\product\ProductTypeService;
 
 class ProductWidget extends Widget
 {
@@ -22,9 +25,9 @@ class ProductWidget extends Widget
     public $productPerPage = 20;
 
     /**
-     * @var \DmitriiKoziuk\yii2Shop\entities\Product[]
+     * @var ProductData[]
      */
-    private $_products;
+    private $_products = [];
 
     /**
      * @var \yii\data\Pagination
@@ -32,45 +35,42 @@ class ProductWidget extends Widget
     private $_pagination;
 
     /**
-     * @var array
-     */
-    private $_productsImages;
-
-    /**
-     * @var File[]
-     */
-    private $_productMainImages;
-
-    /**
      * @var FileWebHelper
      */
     private $_fileWebHelper;
 
     /**
+     * @throws \DmitriiKoziuk\yii2Base\exceptions\EntityNotFoundException
      * @throws \yii\base\InvalidConfigException
      * @throws \yii\di\NotInstantiableException
      */
     public function init()
     {
         parent::init();
+        /** @var ProductService $productService */
+        $productService = \Yii::$container->get(ProductService::class);
         /** @var ProductSearchService $productSearchService */
         $productSearchService = \Yii::$container->get(ProductSearchService::class);
-        $dataProvider = $productSearchService->searchBy($this->searchParams, $this->productPerPage);
-        $this->_products = $dataProvider->getModels();
-        $this->_pagination = $dataProvider->getPagination();
-        /** @var FileService _fileService */
+        /** @var ProductTypeService $productTypeService */
+        $productTypeService = \Yii::$container->get(ProductTypeService::class);
+        /** @var FileService $fileService */
         $fileService = \Yii::$container->get(FileService::class);
         /** @var FileWebHelper _fileWebHelper */
         $this->_fileWebHelper = \Yii::$container->get(FileWebHelper::class);
+
+        $dataProvider = $productSearchService->searchBy($this->searchParams, $this->productPerPage);
+        $this->_products = $this->_productModelsToData($dataProvider->getModels());
+        $this->_pagination = $dataProvider->getPagination();
         foreach ($this->_products as $product) {
-            $productMainSku = $product->getMainSku();
-            $this->_productsImages[ $productMainSku->id ] = $fileService->getImages(
+            $product->mainSku = $productService->getProductSkuById($product->getMainSkuId());
+            if (! empty($product->getTypeId())) {
+                $product->type = $productTypeService->getProductTypeById($product->getTypeId());
+            }
+            $product->images = $fileService->getImages(
                 ProductSku::FILE_ENTITY_NAME,
-                $productMainSku->id
+                $product->mainSku->getId()
             );
-            $this->_productMainImages[ $productMainSku->id ] = array_shift(
-                $this->_productsImages[ $productMainSku->id ]
-            );
+            $product->mainImage = array_shift($product->images);
         }
     }
 
@@ -79,9 +79,20 @@ class ProductWidget extends Widget
         return $this->render('products', [
             'products' => $this->_products,
             'pagination' => $this->_pagination,
-            'productImages' => $this->_productsImages,
-            'productMainImages' => $this->_productMainImages,
             'fileWebHelper' => $this->_fileWebHelper,
         ]);
+    }
+
+    /**
+     * @param Product[] $models
+     * @return ProductData[]
+     */
+    private function _productModelsToData(array $models): array
+    {
+        $list = [];
+        foreach ($models as $model) {
+            $list[] = new ProductData($model);
+        }
+        return $list;
     }
 }
