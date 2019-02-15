@@ -29,6 +29,7 @@ use DmitriiKoziuk\yii2Shop\entities\Customer;
 use DmitriiKoziuk\yii2Shop\exceptions\HackException;
 use DmitriiKoziuk\yii2Shop\exceptions\cart\CartNotFoundException;
 use DmitriiKoziuk\yii2Shop\exceptions\product\ProductSkuNotFoundException;
+use DmitriiKoziuk\yii2Shop\exceptions\product\ProductSkuSitePriceNotSet;
 use DmitriiKoziuk\yii2Shop\exceptions\cart\CartProductsNotFoundException;
 use DmitriiKoziuk\yii2Shop\exceptions\cart\AddProductToCartException;
 use DmitriiKoziuk\yii2Shop\exceptions\InputDataNotValidException;
@@ -108,6 +109,9 @@ class CartService extends DBActionService
                 if (empty($productSku)) {
                     throw new ProductSkuNotFoundException('Product sku not found.');
                 }
+                if (empty((float) $productSku->price_on_site)) {
+                    throw new ProductSkuSitePriceNotSet('Product sku site price not set.');
+                }
                 if (empty($cartProductInputForm->cartKey)) {
                     $cart = $this->_createCart(Yii::$app->security->generateRandomString());
                 } else {
@@ -126,7 +130,7 @@ class CartService extends DBActionService
                 $ex->addErrors([$e]);
                 throw $ex;
             }
-        } catch (ExternalComponentException | Exception $e) {
+        } catch (ExternalComponentException | ProductSkuSitePriceNotSet | Exception $e) {
             $newE = new AddProductToCartException();
             $newE->addErrors([$e]);
             throw $newE;
