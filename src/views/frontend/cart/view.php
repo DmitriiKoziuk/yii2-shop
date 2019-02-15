@@ -53,7 +53,9 @@ $this->registerMetaTag([
                 <?= $cartProduct->getFinalPrice() ?>
               </div>
               <div class="col-md-2">
-                <a href="<?= Url::to(['/cart/remove-product', 'id' => $productSku->getId()]) ?>">удалить</a>
+                <a href="<?= Url::to(['/cart/remove-product', 'id' => $productSku->getId()]) ?>">
+                  <?= Yii::t(ShopModule::TRANSLATION_CART, 'Remove product') ?>
+                </a>
               </div>
             </div>
             <?php endforeach; ?>
