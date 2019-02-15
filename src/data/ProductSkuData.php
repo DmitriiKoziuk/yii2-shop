@@ -104,4 +104,9 @@ class ProductSkuData
     {
         return $this->_productSku->description;
     }
+
+    public function isPriceOnSiteSet(): bool
+    {
+        return !empty((float) $this->_productSku->price_on_site);
+    }
 }
