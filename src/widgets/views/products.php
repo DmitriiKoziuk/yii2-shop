@@ -2,6 +2,7 @@
 
 use DmitriiKoziuk\yii2Shop\assets\frontend\ProductWidgetAsset;
 use DmitriiKoziuk\yii2FileManager\helpers\FileWebHelper;
+use DmitriiKoziuk\yii2Shop\ShopModule;
 
 /**
  * @var $this \yii\web\View
@@ -36,7 +37,7 @@ ProductWidgetAsset::register($this);
             <div class="title">
               <a href="<?= $product->mainSku->getUrl() ?>">
                 <span class="type-name"><?= $product->type->getName() ?></span>
-                  <?= $product->getName() ?> <?= $product->mainSku->getName() ?>
+                <?= $product->getName() ?> <?= $product->mainSku->getName() ?>
               </a>
             </div>
           </div>
@@ -61,7 +62,7 @@ ProductWidgetAsset::register($this);
                 <div class="col-md-6">
                   <?php if ($product->mainSku->isPriceOnSiteSet()): ?>
                   <a class="btn buy-button" href="/cart/add-product?product=<?= $product->mainSku->getId() ?>">
-                    Buy
+                    <?= Yii::t(ShopModule::TRANSLATION, 'Buy') ?>
                   </a>
                   <?php endif; ?>
                   <a class="btn favorite-button" href="/favorite/add?product=<?= $product->mainSku->getId() ?>">
