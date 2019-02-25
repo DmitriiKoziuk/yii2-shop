@@ -328,7 +328,11 @@ class ProductService extends DBActionService
         $productSku->product_id = $product->id;
         $productSku->setAttributes($productSkuInputForm->getAttributes());
         if (empty($productSku->slug)) {
-            $productSku->slug = $this->_defineSlug($productSku->name);
+            if (empty($productSku->name)) {
+                $productSku->slug = (string) ProductSku::getNextSortNumber($product->id);
+            } else {
+                $productSku->slug = $this->_defineSlug($productSku->name);
+            }
         }
         $productSku->url = $this->_defineProductSkuUrl($product, $productSku);
         $productSku->sort = ProductSku::getNextSortNumber($product->id);
