@@ -195,6 +195,15 @@ class ProductService extends DBActionService
         return new ProductData($productRecord);
     }
 
+    public function getProductByName(string $name): ?ProductData
+    {
+        $productEntity = $this->_productRepository->getByName($name);
+        if (empty($productEntity)) {
+            return null;
+        }
+        return new ProductData($productEntity);
+    }
+
     /**
      * @param int $productSkuId
      * @return ProductSkuData
