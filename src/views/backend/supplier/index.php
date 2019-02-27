@@ -34,7 +34,19 @@ $this->params['breadcrumbs'][] = $this->title;
             'created_at:datetime',
             'updated_at:datetime',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'template' => '{create-price} {view} {update} {delete}',
+                'buttons'  => [
+                    'create-price' => function ($url, $model) {
+                        /** @var \DmitriiKoziuk\yii2Shop\entities\Supplier $model */
+                        return Html::a(
+                            '<span class="glyphicon glyphicon-plus-sign"></span>',
+                            \yii\helpers\Url::to(['supplier-price/create', 'supplier_id' => $model->id])
+                        );
+                    }
+                ],
+            ],
         ],
     ]); ?>
 </div>

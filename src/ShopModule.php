@@ -31,6 +31,7 @@ use DmitriiKoziuk\yii2Shop\repositories\OrderRepository;
 use DmitriiKoziuk\yii2Shop\repositories\OrderStageLogRepository;
 use DmitriiKoziuk\yii2Shop\repositories\SupplierRepository;
 use DmitriiKoziuk\yii2Shop\repositories\SupplierProductSkuRepository;
+use DmitriiKoziuk\yii2Shop\repositories\SupplierPriceRepository;
 use DmitriiKoziuk\yii2Shop\repositories\BrandRepository;
 use DmitriiKoziuk\yii2Shop\services\currency\CurrencyService;
 use DmitriiKoziuk\yii2Shop\services\product\ProductService;
@@ -48,6 +49,7 @@ use DmitriiKoziuk\yii2Shop\services\order\OrderSearchService;
 use DmitriiKoziuk\yii2Shop\services\order\OrderWebService;
 use DmitriiKoziuk\yii2Shop\services\order\OrderStageLogService;
 use DmitriiKoziuk\yii2Shop\services\supplier\SupplierService;
+use DmitriiKoziuk\yii2Shop\services\supplier\SupplierPriceService;
 use DmitriiKoziuk\yii2Shop\services\brand\BrandService;
 
 final class ShopModule extends \yii\base\Module implements ModuleInterface
@@ -125,6 +127,7 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
             ['label' => 'Categories', 'url' => ['/' . $this::ID . '/category/index']],
             ['label' => 'Currency', 'url' => ['/' . $this::ID . '/currency/index']],
             ['label' => 'Suppliers', 'url' => ['/' . $this::ID . '/supplier/index']],
+            ['label' => 'Suppliers prices', 'url' => ['/' . $this::ID . '/supplier-price/index']],
             ['label' => 'Brands', 'url' => ['/' . $this::ID . '/brand/index']],
         ]];
     }
@@ -291,6 +294,9 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
         $this->diContainer->setSingleton(SupplierProductSkuRepository::class, function () {
             return new SupplierProductSkuRepository();
         });
+        $this->diContainer->setSingleton(SupplierPriceRepository::class, function () {
+            return new SupplierPriceRepository();
+        });
         $this->diContainer->setSingleton(BrandRepository::class, function () {
             return new BrandRepository();
         });
@@ -333,6 +339,8 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
         $supplierRepository = $this->diContainer->get(SupplierRepository::class);
         /** @var SupplierProductSkuRepository $supplierProductSkuRepository */
         $supplierProductSkuRepository = $this->diContainer->get(SupplierProductSkuRepository::class);
+        /** @var SupplierPriceRepository $supplierPriceRepository */
+        $supplierPriceRepository = $this->diContainer->get(SupplierPriceRepository::class);
         /** @var BrandRepository $brandRepository */
         $brandRepository = $this->diContainer->get(BrandRepository::class);
 
@@ -435,6 +443,15 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
                     $currencyService,
                     $this->queue,
                     $app->db
+                );
+            }
+        );
+        $this->diContainer->setSingleton(
+            SupplierPriceService::class,
+            function () use ($supplierPriceRepository) {
+                return new SupplierPriceService(
+                    $supplierPriceRepository,
+                    $this->queue
                 );
             }
         );
