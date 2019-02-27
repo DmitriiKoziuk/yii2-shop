@@ -17,7 +17,7 @@ final class Bootstrap implements BootstrapInterface
         $app->setComponents([
             'dkShopQueue' => [
                 'class' => \yii\queue\file\Queue::class,
-                'path' => '@console/runtime/queue',
+                'path' => '@console/runtime/queue/dk-shop-queue',
                 'as log' => \yii\queue\LogBehavior::class,
             ],
         ]);
