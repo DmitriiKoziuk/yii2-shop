@@ -195,6 +195,15 @@ class ProductService extends DBActionService
         return new ProductData($productRecord);
     }
 
+    public function getProductByName(string $name): ?ProductData
+    {
+        $productEntity = $this->_productRepository->getByName($name);
+        if (empty($productEntity)) {
+            return null;
+        }
+        return new ProductData($productEntity);
+    }
+
     /**
      * @param int $productSkuId
      * @return ProductSkuData
@@ -328,7 +337,11 @@ class ProductService extends DBActionService
         $productSku->product_id = $product->id;
         $productSku->setAttributes($productSkuInputForm->getAttributes());
         if (empty($productSku->slug)) {
-            $productSku->slug = $this->_defineSlug($productSku->name);
+            if (empty($productSku->name)) {
+                $productSku->slug = (string) ProductSku::getNextSortNumber($product->id);
+            } else {
+                $productSku->slug = $this->_defineSlug($productSku->name);
+            }
         }
         $productSku->url = $this->_defineProductSkuUrl($product, $productSku);
         $productSku->sort = ProductSku::getNextSortNumber($product->id);

@@ -14,14 +14,15 @@ final class Bootstrap implements BootstrapInterface
      */
     public function bootstrap($app)
     {
+        $app->setComponents([
+            'dkShopQueue' => [
+                'class' => \yii\queue\file\Queue::class,
+                'path' => '@console/runtime/queue/dk-shop-queue',
+                'as log' => \yii\queue\LogBehavior::class,
+            ],
+        ]);
+        $app->bootstrap[] = 'dkShopQueue';
         ModuleInitService::registerModule(ShopModule::class, function () use ($app) {
-            $app->setComponents([
-                'dkShopQueue' => [
-                    'class' => \yii\queue\file\Queue::class,
-                    'path' => '@console/runtime/queue',
-                    'as log' => \yii\queue\LogBehavior::class,
-                ],
-            ]);
             /** @var ConfigService $configService */
             $configService = Yii::$container->get(ConfigService::class);
             return [

@@ -10,6 +10,7 @@ use DmitriiKoziuk\yii2Shop\entities\SupplierProductSku;
 use DmitriiKoziuk\yii2Shop\data\SupplierData;
 use DmitriiKoziuk\yii2Shop\data\SupplierProductSkuData;
 use DmitriiKoziuk\yii2Shop\data\product\ProductSkuSearchParams;
+use DmitriiKoziuk\yii2Shop\forms\supplier\SupplierProductSkuUpdateForm;
 use DmitriiKoziuk\yii2Shop\forms\supplier\SupplierProductSkuCompositeUpdateForm;
 use DmitriiKoziuk\yii2Shop\services\currency\CurrencyService;
 use DmitriiKoziuk\yii2Shop\jobs\UpdateProductSkuSellPriceJob;
@@ -71,13 +72,32 @@ final class SupplierService extends DBActionService
         }
     }
 
-    public function addProductSku(int $supplierId, int $productSkuId): SupplierProductSku
-    {
+    public function addProductSku(
+        int $supplierId,
+        int $productSkuId,
+        string $supplierProductUniqueId = null
+    ): SupplierProductSku {
         $relation = new SupplierProductSku();
         $relation->supplier_id = $supplierId;
         $relation->product_sku_id = $productSkuId;
+        $relation->supplier_product_unique_id = $supplierProductUniqueId;
         $this->_supplierProductSkuRepository->save($relation);
         return $relation;
+    }
+
+    public function getSupplierById(int $id): ?SupplierData
+    {
+        $supplierData = $this->_supplierRepository->getById($id);
+        if (empty($supplierData)) {
+            return null;
+        }
+        return new SupplierData($supplierData);
+    }
+
+    public function getProductSkuBySupplierUniqueProductId(string $supplierProductUniqueId): ?int
+    {
+        return $this->_supplierProductSkuRepository
+            ->getProductSkuBySupplierUniqueProductId($supplierProductUniqueId);
     }
 
     /**
@@ -123,25 +143,35 @@ final class SupplierService extends DBActionService
         return $productSkuSuppliers;
     }
 
-    public function updateSupplierProductSkuData(
-        SupplierProductSkuCompositeUpdateForm $compositeUpdateForm
+    public function updateSuppliersProductSkuData(
+        SupplierProductSkuCompositeUpdateForm $compositeUpdateForm,
+        bool $updateProductSkuSellPrice = true
     ): void {
-        foreach ($compositeUpdateForm->getUpdateForms() as $form) {
-            $supplierProductSkuRecord = $this->_supplierProductSkuRepository
-                ->getProductSku($form->supplier_id, $form->product_sku_id);
-            if (empty($supplierProductSkuRecord)) {
-                throw new \Exception('Supplier product sku do not exist.');
-            }
-            $supplierProductSkuRecord->setAttributes($form->getUpdatedAttributes());
-            $changedAttributes = $supplierProductSkuRecord->getDirtyAttributes();
-            $this->_supplierProductSkuRepository->save($supplierProductSkuRecord);
-            if (
-                array_key_exists('purchase_price', $changedAttributes) &&
-                ! empty($changedAttributes['purchase_price'])
-            ) { //TODO optimize this
+        foreach ($compositeUpdateForm->getUpdateForms() as $updateForm) {
+            $this->updateSupplierProductSkuData($updateForm, $updateProductSkuSellPrice);
+        }
+    }
+
+    public function updateSupplierProductSkuData(
+        SupplierProductSkuUpdateForm $updateForm,
+        bool $updateProductSkuSellPrice = true
+    ): void {
+        $supplierProductSkuRecord = $this->_supplierProductSkuRepository
+            ->getProductSku($updateForm->supplier_id, $updateForm->product_sku_id);
+        if (empty($supplierProductSkuRecord)) {
+            throw new \Exception('Supplier product sku do not exist.');
+        }
+        $supplierProductSkuRecord->setAttributes($updateForm->getUpdatedAttributes());
+        $changedAttributes = $supplierProductSkuRecord->getDirtyAttributes();
+        $this->_supplierProductSkuRepository->save($supplierProductSkuRecord);
+        if (
+            array_key_exists('purchase_price', $changedAttributes) &&
+            ! empty($changedAttributes['purchase_price'])
+        ) { //TODO optimize this
+            if ($updateProductSkuSellPrice) {
                 $this->_queue->push(new UpdateProductSkuSellPriceJob([
                     'productSkuSearchParams' => new ProductSkuSearchParams([
-                        'product_sku_id' => $form->product_sku_id,
+                        'product_sku_id' => $updateForm->product_sku_id,
                     ]),
                 ]));
             }

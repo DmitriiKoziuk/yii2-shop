@@ -12,4 +12,11 @@ final class ProductRepository extends AbstractActiveRecordRepository
         $product = Product::find()->where(['id' => $id])->one();
         return $product;
     }
+
+    public function getByName(string $name): ?Product
+    {
+        /** @var Product|null $productEntity */
+        $productEntity = Product::find()->where(['name' => $name])->one();
+        return $productEntity;
+    }
 }

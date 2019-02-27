@@ -67,7 +67,7 @@ class ProductSku extends ActiveRecord
     {
         return [
             [
-                ['product_id', 'slug', 'url', 'stock_status', 'sell_price_strategy', 'sort'],
+                ['product_id', 'slug', 'url', 'sort'],
                 'required'
             ],
             [

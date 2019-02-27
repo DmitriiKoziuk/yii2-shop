@@ -22,6 +22,11 @@ class CurrencyData
         return $this->_currencyRecord->name;
     }
 
+    public function getCode()
+    {
+        return $this->_currencyRecord->code;
+    }
+
     public function getRate()
     {
         return $this->_currencyRecord->rate;

@@ -15,4 +15,16 @@ class SupplierProductSkuRepository extends AbstractActiveRecordRepository
             ])->one();
         return $supplierProductSku;
     }
+
+    public function getProductSkuBySupplierUniqueProductId(string $supplierProductUniqueId): ?int
+    {
+        /** @var SupplierProductSku|null $supplierProductSku */
+        $supplierProductSku = SupplierProductSku::find()
+            ->where(['supplier_product_unique_id' => $supplierProductUniqueId])
+            ->one();
+        if (empty($supplierProductSku)) {
+            return null;
+        }
+        return $supplierProductSku->product_sku_id;
+    }
 }

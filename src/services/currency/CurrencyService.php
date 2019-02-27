@@ -89,7 +89,7 @@ class CurrencyService extends DBActionService
     }
 
     /**
-     * @return CurrencyData[]
+     * @return CurrencyData[] index by currency id
      */
     public function getAllCurrencies(): array
     {
