@@ -72,11 +72,15 @@ final class SupplierService extends DBActionService
         }
     }
 
-    public function addProductSku(int $supplierId, int $productSkuId): SupplierProductSku
-    {
+    public function addProductSku(
+        int $supplierId,
+        int $productSkuId,
+        string $supplierProductUniqueId = null
+    ): SupplierProductSku {
         $relation = new SupplierProductSku();
         $relation->supplier_id = $supplierId;
         $relation->product_sku_id = $productSkuId;
+        $relation->supplier_product_unique_id = $supplierProductUniqueId;
         $this->_supplierProductSkuRepository->save($relation);
         return $relation;
     }
@@ -141,16 +145,16 @@ final class SupplierService extends DBActionService
 
     public function updateSuppliersProductSkuData(
         SupplierProductSkuCompositeUpdateForm $compositeUpdateForm,
-        bool $pushUpdateSellPriceJob = true
+        bool $updateProductSkuSellPrice = true
     ): void {
         foreach ($compositeUpdateForm->getUpdateForms() as $updateForm) {
-            $this->updateSupplierProductSkuData($updateForm, $pushUpdateSellPriceJob);
+            $this->updateSupplierProductSkuData($updateForm, $updateProductSkuSellPrice);
         }
     }
 
     public function updateSupplierProductSkuData(
         SupplierProductSkuUpdateForm $updateForm,
-        bool $pushUpdateSellPriceJob = true
+        bool $updateProductSkuSellPrice = true
     ): void {
         $supplierProductSkuRecord = $this->_supplierProductSkuRepository
             ->getProductSku($updateForm->supplier_id, $updateForm->product_sku_id);
@@ -164,7 +168,7 @@ final class SupplierService extends DBActionService
             array_key_exists('purchase_price', $changedAttributes) &&
             ! empty($changedAttributes['purchase_price'])
         ) { //TODO optimize this
-            if ($pushUpdateSellPriceJob) {
+            if ($updateProductSkuSellPrice) {
                 $this->_queue->push(new UpdateProductSkuSellPriceJob([
                     'productSkuSearchParams' => new ProductSkuSearchParams([
                         'product_sku_id' => $updateForm->product_sku_id,
