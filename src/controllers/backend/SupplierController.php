@@ -160,7 +160,7 @@ final class SupplierController extends Controller
                 $compositeForm->load(Yii::$app->request->post('SupplierProductSkuUpdateForm')) &&
                 $compositeForm->validate()
             ) {
-                $this->_supplierService->updateSupplierProductSkuData($compositeForm);
+                $this->_supplierService->updateSuppliersProductSkuData($compositeForm);
             }
         }
         $suppliersProductSkuData = $this->_supplierService->getAllProductSkuSuppliers($product_sku_id);
