@@ -34,10 +34,6 @@ class ProductSkuInputForm extends Model
     {
         return [
             [
-                ['name'], 'required',
-                'on' => [self::SCENARIO_CREATE]
-            ],
-            [
                 ['id', 'slug', 'url'], 'required',
                 'on' => [self::SCENARIO_UPDATE]
             ],
