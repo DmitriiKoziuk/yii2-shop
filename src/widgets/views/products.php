@@ -15,7 +15,7 @@ use DmitriiKoziuk\yii2Shop\ShopModule;
 ProductWidgetAsset::register($this);
 
 $defaultImageUrl = $this->assetManager
-  ->getBundle(BaseAsset::class)->baseUrl . '/images/no-image.jpg';
+  ->getBundle(BaseAsset::class)->baseUrl . BaseAsset::$defaultImageWebPath;
 ?>
 
 <div class="row products">

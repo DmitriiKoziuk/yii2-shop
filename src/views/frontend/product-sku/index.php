@@ -30,7 +30,7 @@ $this->registerMetaTag([
 $this->registerLinkTag(['rel' => 'canonical', 'href' => $productSkuData->getUrl()]);
 
 $defaultImageUrl = $this->assetManager
-        ->getBundle(BaseAsset::class)->baseUrl . '/images/no-image.jpg';
+    ->getBundle(BaseAsset::class)->baseUrl . BaseAsset::$defaultImageWebPath;
 ?>
 
 <div class="product-sku">
