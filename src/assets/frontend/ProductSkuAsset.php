@@ -10,6 +10,6 @@ class ProductSkuAsset extends AssetBundle
         'css/dk-shop-product-sku.css',
     ];
     public $depends = [
-        'yii\bootstrap\BootstrapAsset',
+        'DmitriiKoziuk\yii2Shop\assets\frontend\BaseAsset',
     ];
 }
