@@ -4,7 +4,7 @@ namespace DmitriiKoziuk\yii2Shop\repositories;
 use DmitriiKoziuk\yii2Base\repositories\AbstractActiveRecordRepository;
 use DmitriiKoziuk\yii2Shop\entities\Product;
 
-final class ProductRepository extends AbstractActiveRecordRepository
+class ProductRepository extends AbstractActiveRecordRepository
 {
     public function getById(int $id): ?Product
     {

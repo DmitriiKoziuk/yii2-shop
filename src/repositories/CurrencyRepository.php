@@ -4,7 +4,7 @@ namespace DmitriiKoziuk\yii2Shop\repositories;
 use DmitriiKoziuk\yii2Base\repositories\AbstractActiveRecordRepository;
 use DmitriiKoziuk\yii2Shop\entities\Currency;
 
-final class CurrencyRepository extends AbstractActiveRecordRepository
+class CurrencyRepository extends AbstractActiveRecordRepository
 {
     /**
      * @return Currency[]

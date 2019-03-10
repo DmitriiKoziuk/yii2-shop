@@ -8,7 +8,7 @@ use DmitriiKoziuk\yii2Shop\entities\Product;
 use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 use DmitriiKoziuk\yii2Shop\data\product\ProductSkuSearchParams;
 
-final class ProductSkuRepository extends AbstractActiveRecordRepository
+class ProductSkuRepository extends AbstractActiveRecordRepository
 {
     /**
      * @param $id

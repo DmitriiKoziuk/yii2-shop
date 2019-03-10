@@ -4,7 +4,7 @@ namespace DmitriiKoziuk\yii2Shop\repositories;
 use DmitriiKoziuk\yii2Base\repositories\AbstractActiveRecordRepository;
 use DmitriiKoziuk\yii2Shop\entities\CategoryProduct;
 
-final class CategoryProductRepository extends AbstractActiveRecordRepository
+class CategoryProductRepository extends AbstractActiveRecordRepository
 {
     /**
      * @param int $productId
