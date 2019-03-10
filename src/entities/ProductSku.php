@@ -4,6 +4,7 @@ namespace DmitriiKoziuk\yii2Shop\entities;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
+use DmitriiKoziuk\yii2Base\BaseModule;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 
 /**
@@ -41,6 +42,7 @@ class ProductSku extends ActiveRecord
     const STOCK_IN = 1;
     const STOCK_OUT = 2;
     const STOCK_AWAIT = 3;
+    const STOCK_STATUS_NOT_SET = 4;
 
     const SELL_PRICE_STRATEGY_MARGIN = 1;
     const SELL_PRICE_STRATEGY_STATIC = 2;
@@ -71,7 +73,15 @@ class ProductSku extends ActiveRecord
                 'required'
             ],
             [
-                ['product_id', 'stock_status', 'sell_price_strategy', 'created_at', 'updated_at', 'currency_id', 'sort'],
+                [
+                    'product_id',
+                    'stock_status',
+                    'sell_price_strategy',
+                    'created_at',
+                    'updated_at',
+                    'currency_id',
+                    'sort'
+                ],
                 'integer'
             ],
             [['name'], 'string', 'max' => 45],
@@ -82,7 +92,7 @@ class ProductSku extends ActiveRecord
             ['sort', 'unique', 'targetAttribute' => ['product_id', 'sort']],
             [['sell_price', 'old_price', 'price_on_site'], 'number'],
             [['sell_price', 'old_price', 'price_on_site'], 'default', 'value' => '0.00'],
-            [['stock_status'], 'default', 'value' => ProductSku::STOCK_AWAIT],
+            [['stock_status'], 'default', 'value' => ProductSku::STOCK_STATUS_NOT_SET],
             [['sell_price_strategy'], 'default', 'value' => ProductSku::SELL_PRICE_STRATEGY_STATIC],
             [['meta_title'], 'string', 'max' => 255],
             [['meta_description'], 'string', 'max' => 500],
@@ -127,8 +137,8 @@ class ProductSku extends ActiveRecord
             'short_description'   => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Short description'),
             'description'         => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Description'),
             'sort'                => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Sort'),
-            'created_at'          => Yii::t('app', 'Created At'),
-            'updated_at'          => Yii::t('app', 'Updated At'),
+            'created_at'          => Yii::t(BaseModule::TRANSLATE, 'Created At'),
+            'updated_at'          => Yii::t(BaseModule::TRANSLATE, 'Updated At'),
             'currency_id'         => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Currency ID'),
         ];
     }
@@ -226,9 +236,10 @@ class ProductSku extends ActiveRecord
     public static function getStockVariation($key = null)
     {
         $variation = [
-            static::STOCK_IN    => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'In Stock'),
-            static::STOCK_OUT   => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Out of Stock'),
-            static::STOCK_AWAIT => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Await'),
+            static::STOCK_IN             => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'In Stock'),
+            static::STOCK_OUT            => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Out of Stock'),
+            static::STOCK_AWAIT          => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Await'),
+            static::STOCK_STATUS_NOT_SET => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Not set'),
         ];
 
         if (! empty($key)) {
