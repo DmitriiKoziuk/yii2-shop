@@ -7,6 +7,11 @@ class ProductSearchParams extends Model
 {
     public $category_id;
 
+    /**
+     * @var int|array of ProductSku entity stock statuses.
+     */
+    public $stock_status;
+
     public function rules()
     {
         return [
@@ -14,6 +19,7 @@ class ProductSearchParams extends Model
             [['category_id'], 'filter', 'filter' => function ($value) {
                 return is_null($value) ? null : intval($value);
             }],
+            [['stock_status'], 'safe'],
         ];
     }
 
