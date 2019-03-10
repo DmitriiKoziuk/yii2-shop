@@ -227,9 +227,10 @@ class ProductSku extends ActiveRecord
     public static function getStockVariation($key = null)
     {
         $variation = [
-            static::STOCK_IN    => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'In Stock'),
-            static::STOCK_OUT   => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Out of Stock'),
-            static::STOCK_AWAIT => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Await'),
+            static::STOCK_IN             => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'In Stock'),
+            static::STOCK_OUT            => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Out of Stock'),
+            static::STOCK_AWAIT          => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Await'),
+            static::STOCK_STATUS_NOT_SET => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Not set'),
         ];
 
         if (! empty($key)) {
