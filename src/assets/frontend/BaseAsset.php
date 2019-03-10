@@ -5,7 +5,7 @@ use yii\web\AssetBundle;
 
 class BaseAsset extends AssetBundle
 {
-    public static $defaultImageWebPath = '/images/no-image.jpg';
+    public static $defaultImageWebPath = '/images/default-image.jpg';
 
     public $sourcePath = '@DmitriiKoziuk/yii2Shop/web/frontend/base';
     public $depends = [
