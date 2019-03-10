@@ -7,6 +7,8 @@
 }
 .products .product .image {
   text-align: center;
+  min-width: 250px;
+  min-height: 250px;
 }
 .products .product .image a {
   display: block;
