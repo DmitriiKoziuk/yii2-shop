@@ -31,18 +31,19 @@ $this->registerLinkTag(['rel' => 'canonical', 'href' => $productSkuData->getUrl(
 
 $defaultImageUrl = $this->assetManager
     ->getBundle(BaseAsset::class)->baseUrl . BaseAsset::$defaultImageWebPath;
+$productFullName = $productData->getName() . ' ' . $productSkuData->getName();
 ?>
 
 <div class="product-sku">
   <div class="row">
     <div class="col-md-12">
-      <h1><?= $productData->getName() . ' ' . $productSkuData->getName() ?></h1>
+      <h1><?= $productFullName ?></h1>
       <div class="row">
         <div class="col-md-6 image-section">
           <?php if (! empty($mainImage)): ?>
-          <img src="<?= $fileWebHelper->getFileFullWebPath($mainImage) ?>" alt="">
+          <img src="<?= $fileWebHelper->getFileFullWebPath($mainImage) ?>" alt="<?= $productFullName ?>">
           <?php else: ?>
-          <img src="<?= $defaultImageUrl ?>" alt="">
+          <img src="<?= $defaultImageUrl ?>" alt="<?= $productFullName ?>">
           <?php endif; ?>
         </div>
         <div class="col-md-6">
