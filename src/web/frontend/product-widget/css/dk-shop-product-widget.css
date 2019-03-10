@@ -21,17 +21,17 @@
 }
 .products .product .title a {
   display: inline-block;
-  padding-top: 15px;
+  padding-top: 10px;
   height: 65px;
   overflow: hidden;
 }
 .products .product .title .type-name {
   display: block;
   color: #666;
-  font-size: 0.7em;
 }
 .products .product .price-scope {
-  margin-top: 15px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 .products .product .price-scope .price {
   font-size: 1.5em;
