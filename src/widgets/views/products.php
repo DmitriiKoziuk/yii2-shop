@@ -36,7 +36,7 @@ ProductWidgetAsset::register($this);
           <div class="col-md-12">
             <div class="title">
               <a href="<?= $product->mainSku->getUrl() ?>">
-                <span class="type-name"><?= $product->type->getName() ?></span>
+                <span class="type-name"><?= ! empty($product->type) ? $product->type->getName() : '' ?></span>
                 <?= $product->getName() ?> <?= $product->mainSku->getName() ?>
               </a>
             </div>
