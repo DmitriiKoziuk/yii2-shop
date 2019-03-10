@@ -70,7 +70,7 @@ class ProductSkuInputForm extends Model
                 'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]
             ],
             [
-                ['stock_status'], 'default', 'value' => ProductSku::STOCK_AWAIT,
+                ['stock_status'], 'default', 'value' => ProductSku::STOCK_STATUS_NOT_SET,
                 'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]
             ],
             [

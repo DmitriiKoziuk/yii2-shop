@@ -2,6 +2,7 @@
 
 use DmitriiKoziuk\yii2Shop\widgets\ProductWidget;
 use DmitriiKoziuk\yii2Shop\data\product\ProductSearchParams;
+use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 
 /**
  * @var $this \yii\web\View
@@ -11,6 +12,7 @@ use DmitriiKoziuk\yii2Shop\data\product\ProductSearchParams;
 
 $productSearchParams = new ProductSearchParams();
 $productSearchParams->category_id = $categoryData->getId();
+$productSearchParams->stock_status = [ProductSku::STOCK_IN, ProductSku::STOCK_AWAIT];
 
 $this->title = $categoryData->getMetaTitle();
 $this->registerMetaTag(['name' => 'description', 'content' => $categoryData->getMetaDescription()]);
