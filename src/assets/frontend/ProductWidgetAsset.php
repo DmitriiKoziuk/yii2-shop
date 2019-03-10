@@ -10,6 +10,6 @@ class ProductWidgetAsset extends AssetBundle
         'css/dk-shop-product-widget.css',
     ];
     public $depends = [
-        'yii\bootstrap\BootstrapAsset',
+        'DmitriiKoziuk\yii2Shop\assets\frontend\BaseAsset',
     ];
 }
