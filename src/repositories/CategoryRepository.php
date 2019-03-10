@@ -4,7 +4,7 @@ namespace DmitriiKoziuk\yii2Shop\repositories;
 use DmitriiKoziuk\yii2Base\repositories\AbstractActiveRecordRepository;
 use DmitriiKoziuk\yii2Shop\entities\Category;
 
-final class CategoryRepository extends AbstractActiveRecordRepository
+class CategoryRepository extends AbstractActiveRecordRepository
 {
     public function getById(int $categoryId): ?Category
     {
