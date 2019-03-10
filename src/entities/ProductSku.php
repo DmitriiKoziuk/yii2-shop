@@ -73,7 +73,15 @@ class ProductSku extends ActiveRecord
                 'required'
             ],
             [
-                ['product_id', 'stock_status', 'sell_price_strategy', 'created_at', 'updated_at', 'currency_id', 'sort'],
+                [
+                    'product_id',
+                    'stock_status',
+                    'sell_price_strategy',
+                    'created_at',
+                    'updated_at',
+                    'currency_id',
+                    'sort'
+                ],
                 'integer'
             ],
             [['name'], 'string', 'max' => 45],
