@@ -307,7 +307,7 @@ class ProcessSupplierPriceJob extends BaseObject implements JobInterface
         foreach ($rowData as $key => $value) {
             switch ($columnTemplates[ $key ]) {
                 case '{purchasePrice}':
-                    $form->purchase_price = (float) trim($value);
+                    $form->purchase_price = str_replace(',', '.', trim($value));
                     break;
                 case '{currencyCode}':
                     $form->currency_id = $this->_currencies[ $value ];
