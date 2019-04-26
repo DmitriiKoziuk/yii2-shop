@@ -278,6 +278,11 @@ $this->registerAssetBundle(ProductAsset::class);
                           ) ?>
                       </div>
                     </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        Modules view
+                      </div>
+                    </div>
                   </div>
                 </div>
             </div>
