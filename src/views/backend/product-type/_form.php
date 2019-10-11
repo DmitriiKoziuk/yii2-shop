@@ -2,7 +2,6 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use DmitriiKoziuk\yii2Base\BaseModule;
 use DmitriiKoziuk\yii2Shop\entities\ProductType;
 
 /**
@@ -38,7 +37,7 @@ use DmitriiKoziuk\yii2Shop\entities\ProductType;
     <?= $form->field($productTypeInputForm, 'product_sku_description_template')->textarea(['maxlength' => true]) ?>
 
     <div class="form-group">
-        <?= Html::submitButton($productType->isNewRecord ? Yii::t(BaseModule::TRANSLATE, 'Create') : Yii::t('app', 'Update'), ['class' => $productType->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?= Html::submitButton($productType->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $productType->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

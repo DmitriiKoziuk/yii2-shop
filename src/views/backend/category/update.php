@@ -1,7 +1,6 @@
 <?php
 
 use yii\helpers\Html;
-use DmitriiKoziuk\yii2Base\BaseModule;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 
 /**
@@ -16,7 +15,7 @@ $this->title = Yii::t(ShopModule::TRANSLATION_CATEGORY, 'Update {modelClass}: ',
 ]) . $category->name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t(ShopModule::TRANSLATION_CATEGORY, 'Categories'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $category->name, 'url' => ['view', 'id' => $category->id]];
-$this->params['breadcrumbs'][] = Yii::t(BaseModule::TRANSLATE, 'Update');
+$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 ?>
 <div class="category-update">
 

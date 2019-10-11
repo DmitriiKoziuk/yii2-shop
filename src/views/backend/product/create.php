@@ -2,7 +2,6 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use DmitriiKoziuk\yii2Base\BaseModule;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 
 /**
@@ -39,7 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
 
         <div class="form-group">
-            <?= Html::submitButton(Yii::t(BaseModule::TRANSLATE, 'Create'), ['class' => 'btn btn-primary']) ?>
+            <?= Html::submitButton(Yii::t('app', 'Create'), ['class' => 'btn btn-primary']) ?>
         </div>
 
         <?php ActiveForm::end(); ?>

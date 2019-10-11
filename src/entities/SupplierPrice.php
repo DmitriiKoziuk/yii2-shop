@@ -4,7 +4,6 @@ namespace DmitriiKoziuk\yii2Shop\entities;
 
 use Yii;
 use yii\behaviors\TimestampBehavior;
-use DmitriiKoziuk\yii2Base\BaseModule;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 
 /**
@@ -63,10 +62,10 @@ class SupplierPrice extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id'          => Yii::t(BaseModule::TRANSLATE, 'ID'),
+            'id'          => Yii::t('app', 'ID'),
             'supplier_id' => Yii::t(ShopModule::TRANSLATION_SUPPLIER, 'Supplier ID'),
             'job_id'      => Yii::t(ShopModule::TRANSLATION_SUPPLIER, 'Job ID'),
-            'created_at'  => Yii::t(BaseModule::TRANSLATE, 'Created at'),
+            'created_at'  => Yii::t('app', 'Created at'),
         ];
     }
 }

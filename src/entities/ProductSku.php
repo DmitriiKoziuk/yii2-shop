@@ -4,7 +4,6 @@ namespace DmitriiKoziuk\yii2Shop\entities;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
-use DmitriiKoziuk\yii2Base\BaseModule;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 
 /**
@@ -137,8 +136,8 @@ class ProductSku extends ActiveRecord
             'short_description'   => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Short description'),
             'description'         => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Description'),
             'sort'                => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Sort'),
-            'created_at'          => Yii::t(BaseModule::TRANSLATE, 'Created At'),
-            'updated_at'          => Yii::t(BaseModule::TRANSLATE, 'Updated At'),
+            'created_at'          => Yii::t('app', 'Created At'),
+            'updated_at'          => Yii::t('app', 'Updated At'),
             'currency_id'         => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Currency ID'),
         ];
     }

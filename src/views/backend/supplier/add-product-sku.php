@@ -2,7 +2,6 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use DmitriiKoziuk\yii2Base\BaseModule;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 
 /**
@@ -40,7 +39,7 @@ $this->params['breadcrumbs'][] = Yii::t(ShopModule::TRANSLATION_SUPPLIER, 'Add s
           <?php endforeach; ?>
         </tbody>
       </table>
-      <?= Html::submitButton(Yii::t(BaseModule::TRANSLATE, 'Save'), ['class' => 'btn btn-success']); ?>
+      <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']); ?>
     <?php ActiveForm::end() ?>
   </div>
 </div>
