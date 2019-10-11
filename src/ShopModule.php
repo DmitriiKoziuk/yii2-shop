@@ -1,4 +1,5 @@
 <?php
+
 namespace DmitriiKoziuk\yii2Shop;
 
 use yii\di\Container;
@@ -7,12 +8,12 @@ use yii\web\Application as WebApp;
 use yii\base\Application as BaseApp;
 use yii\console\Application as ConsoleApp;
 use yii\queue\cli\Queue;
-use DmitriiKoziuk\yii2Base\BaseModule;
 use DmitriiKoziuk\yii2ModuleManager\interfaces\ModuleInterface;
+use DmitriiKoziuk\yii2ModuleManager\ModuleManager;
 use DmitriiKoziuk\yii2ConfigManager\ConfigManagerModule;
 use DmitriiKoziuk\yii2UserManager\UserManager;
+use DmitriiKoziuk\yii2UrlIndex\services\UrlIndexService;
 use DmitriiKoziuk\yii2CustomUrls\CustomUrlsModule;
-use DmitriiKoziuk\yii2CustomUrls\services\UrlIndexService;
 use DmitriiKoziuk\yii2FileManager\FileManagerModule;
 use DmitriiKoziuk\yii2FileManager\repositories\FileRepository;
 use DmitriiKoziuk\yii2Shop\repositories\CurrencyRepository;
@@ -135,7 +136,7 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
     public static function requireOtherModulesToBeActive(): array
     {
         return [
-            BaseModule::class,
+            ModuleManager::class,
             ConfigManagerModule::class,
             UserManager::class,
             FileManagerModule::class,
@@ -173,7 +174,10 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
             ]);
         }
         if ($app instanceof ConsoleApp) {
-            $app->controllerMap['migrate']['migrationNamespaces'][] = __NAMESPACE__ . '\migrations';
+            array_push(
+                $app->controllerMap['migrate']['migrationNamespaces'],
+                __NAMESPACE__ . '\migrations'
+            );
         }
     }
 
