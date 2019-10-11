@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace DmitriiKoziuk\yii2Shop;
 
@@ -109,9 +109,9 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
     {
         /** @var BaseApp $app */
         $app = $this->module;
-        $this->_initLocalProperties($app);
-        $this->_registerTranslation($app);
-        $this->_registerClassesToDIContainer($app);
+        $this->initLocalProperties($app);
+        $this->registerTranslation($app);
+        $this->registerClassesToDIContainer($app);
     }
 
     public static function getId(): string
@@ -148,7 +148,7 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
      * @param BaseApp $app
      * @throws \InvalidArgumentException
      */
-    private function _initLocalProperties(BaseApp $app)
+    private function initLocalProperties(BaseApp $app)
     {
         if (empty($this->backendAppId)) {
             throw new \InvalidArgumentException('Property backendAppId not set.');
@@ -184,7 +184,7 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
     /**
      * @param BaseApp $app
      */
-    private function _registerTranslation(BaseApp $app)
+    private function registerTranslation(BaseApp $app)
     {
         $translationData = [
             'class'          => 'yii\i18n\PhpMessageSource',
@@ -209,7 +209,7 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
      * @throws \yii\base\InvalidConfigException
      * @throws \yii\di\NotInstantiableException
      */
-    private function _registerClassesToDIContainer(BaseApp $app): void
+    private function registerClassesToDIContainer(BaseApp $app): void
     {
         $this->diContainer->setSingleton(ProductRepository::class, function () {
             return new ProductRepository();
