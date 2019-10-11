@@ -186,61 +186,22 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
      */
     private function _registerTranslation(BaseApp $app)
     {
-        $app->i18n->translations[self::ID] = [
+        $translationData = [
             'class'          => 'yii\i18n\PhpMessageSource',
             'sourceLanguage' => 'en',
             'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
         ];
-        $app->i18n->translations[self::TRANSLATION_PRODUCT] = [
-            'class'          => 'yii\i18n\PhpMessageSource',
-            'sourceLanguage' => 'en',
-            'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
-        ];
-        $app->i18n->translations[self::TRANSLATION_PRODUCT_SKU] = [
-            'class'          => 'yii\i18n\PhpMessageSource',
-            'sourceLanguage' => 'en',
-            'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
-        ];
-        $app->i18n->translations[self::TRANSLATION_PRODUCT_TYPE] = [
-            'class'          => 'yii\i18n\PhpMessageSource',
-            'sourceLanguage' => 'en',
-            'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
-        ];
-        $app->i18n->translations[self::TRANSLATION_PRODUCT_TYPE_MARGIN] = [
-            'class'          => 'yii\i18n\PhpMessageSource',
-            'sourceLanguage' => 'en',
-            'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
-        ];
-        $app->i18n->translations[self::TRANSLATION_CATEGORY] = [
-            'class'          => 'yii\i18n\PhpMessageSource',
-            'sourceLanguage' => 'en',
-            'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
-        ];
-        $app->i18n->translations[self::TRANSLATION_CURRENCY] = [
-            'class'          => 'yii\i18n\PhpMessageSource',
-            'sourceLanguage' => 'en',
-            'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
-        ];
-        $app->i18n->translations[self::TRANSLATION_CART] = [
-            'class'          => 'yii\i18n\PhpMessageSource',
-            'sourceLanguage' => 'en',
-            'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
-        ];
-        $app->i18n->translations[self::TRANSLATION_ORDER] = [
-            'class'          => 'yii\i18n\PhpMessageSource',
-            'sourceLanguage' => 'en',
-            'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
-        ];
-        $app->i18n->translations[self::TRANSLATION_SUPPLIER] = [
-            'class'          => 'yii\i18n\PhpMessageSource',
-            'sourceLanguage' => 'en',
-            'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
-        ];
-        $app->i18n->translations[self::TRANSLATION_BRAND] = [
-            'class'          => 'yii\i18n\PhpMessageSource',
-            'sourceLanguage' => 'en',
-            'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
-        ];
+        $app->i18n->translations[self::ID] = $translationData;
+        $app->i18n->translations[self::TRANSLATION_PRODUCT] = $translationData;
+        $app->i18n->translations[self::TRANSLATION_PRODUCT_SKU] = $translationData;
+        $app->i18n->translations[self::TRANSLATION_PRODUCT_TYPE] = $translationData;
+        $app->i18n->translations[self::TRANSLATION_PRODUCT_TYPE_MARGIN] = $translationData;
+        $app->i18n->translations[self::TRANSLATION_CATEGORY] = $translationData;
+        $app->i18n->translations[self::TRANSLATION_CURRENCY] = $translationData;
+        $app->i18n->translations[self::TRANSLATION_CART] = $translationData;
+        $app->i18n->translations[self::TRANSLATION_ORDER] = $translationData;
+        $app->i18n->translations[self::TRANSLATION_SUPPLIER] = $translationData;
+        $app->i18n->translations[self::TRANSLATION_BRAND] = $translationData;
     }
 
     /**
