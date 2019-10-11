@@ -4,7 +4,6 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
 use kartik\select2\Select2;
-use DmitriiKoziuk\yii2Base\BaseModule;
 use DmitriiKoziuk\yii2Shop\entities\Product;
 use DmitriiKoziuk\yii2Shop\helpers\CategoryHelper;
 use DmitriiKoziuk\yii2Shop\ShopModule;
@@ -122,7 +121,7 @@ $this->params['breadcrumbs'][] = $product->name;
   <div class="row" style="margin-top: 15px;">
     <div class="col-md-12">
       <div class="form-group">
-        <?= Html::submitButton(Yii::t(BaseModule::TRANSLATE, 'Update'), ['class' => 'btn btn-primary']) ?>
+        <?= Html::submitButton(Yii::t('app', 'Update'), ['class' => 'btn btn-primary']) ?>
         <?= Html::a(
             Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Create sku'),
             ['product/create-sku', 'product_id' => $product->id],

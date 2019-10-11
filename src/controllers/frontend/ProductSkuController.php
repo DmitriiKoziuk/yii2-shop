@@ -5,7 +5,6 @@ use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\base\Module;
-use DmitriiKoziuk\yii2Base\BaseModule;
 use DmitriiKoziuk\yii2Base\exceptions\EntityNotFoundException;
 use DmitriiKoziuk\yii2CustomUrls\data\UrlData;
 use DmitriiKoziuk\yii2FileManager\helpers\FileWebHelper;
@@ -76,7 +75,7 @@ final class ProductSkuController extends Controller
             }
         } catch (EntityNotFoundException $e) {
             throw new NotFoundHttpException(
-                Yii::t(BaseModule::TRANSLATE, 'Page not found.')
+                Yii::t('app', 'Page not found.')
             );
         }
         $images = $this->_fileService->getImages(

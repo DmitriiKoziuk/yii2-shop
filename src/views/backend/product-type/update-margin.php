@@ -2,7 +2,6 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use DmitriiKoziuk\yii2Base\BaseModule;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 use DmitriiKoziuk\yii2Shop\entities\ProductTypeMargin;
 
@@ -48,7 +47,7 @@ $this->params['breadcrumbs'][] = Yii::t(ShopModule::TRANSLATION_PRODUCT_TYPE_MAR
         <?php endforeach; ?>
         </tbody>
       </table>
-      <?= Html::submitButton(Yii::t(BaseModule::TRANSLATE, 'Update'), ['class' => 'btn btn-primary']) ?>
+      <?= Html::submitButton(Yii::t('app', 'Update'), ['class' => 'btn btn-primary']) ?>
     <?php ActiveForm::end(); ?>
   </div>
 </div>

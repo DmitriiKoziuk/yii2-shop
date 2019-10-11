@@ -3,7 +3,6 @@
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use yii\widgets\ActiveForm;
-use DmitriiKoziuk\yii2Base\BaseModule;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 
 /**
@@ -51,7 +50,7 @@ $currencies = ArrayHelper::map($allCurrencies, 'id', 'name');
         <?php endforeach; ?>
         </tbody>
       </table>
-      <?= Html::submitButton(Yii::t(BaseModule::TRANSLATE, 'Update'), ['class' => 'btn btn-primary']) ?>
+      <?= Html::submitButton(Yii::t('app', 'Update'), ['class' => 'btn btn-primary']) ?>
     <?php ActiveForm::end(); ?>
   </div>
 </div>
