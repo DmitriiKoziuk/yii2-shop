@@ -3,6 +3,7 @@ namespace DmitriiKoziuk\yii2Shop\services\category;
 
 use yii\db\Connection;
 use DmitriiKoziuk\yii2Base\services\DBActionService;
+use DmitriiKoziuk\yii2Base\traits\ModelValidatorTrait;
 use DmitriiKoziuk\yii2Base\exceptions\EntityNotFoundException;
 use DmitriiKoziuk\yii2UrlIndex\forms\UrlCreateForm;
 use DmitriiKoziuk\yii2UrlIndex\forms\UrlUpdateForm;
@@ -13,9 +14,12 @@ use DmitriiKoziuk\yii2Shop\entities\Category;
 use DmitriiKoziuk\yii2Shop\data\CategoryData;
 use DmitriiKoziuk\yii2Shop\helpers\UrlHelper;
 use DmitriiKoziuk\yii2Shop\repositories\CategoryRepository;
+use DmitriiKoziuk\yii2Shop\exceptions\category\CategoryInputFormNotValid;
 
 final class CategoryService extends DBActionService
 {
+    use ModelValidatorTrait;
+
     /**
      * @var CategoryRepository
      */
@@ -50,6 +54,11 @@ final class CategoryService extends DBActionService
      */
     public function createCategory(CategoryInputForm $categoryInputForm): Category
     {
+        $this->validateModels(
+            [$categoryInputForm],
+            new CategoryInputFormNotValid('Category input form not valid.')
+        );
+
         $this->beginTransaction();
         try {
             $category = new Category();
