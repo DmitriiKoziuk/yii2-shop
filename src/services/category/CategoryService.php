@@ -64,7 +64,7 @@ final class CategoryService extends DBActionService
             $category = new Category();
             $category->setAttributes($categoryInputForm->getAttributes());
             $category->slug = $this->_defineSlug($category->name);
-            $category->url = $this->_defineUrl($category);
+            $category->url = $this->defineUrl($category);
             $this->_categoryRepository->save($category);
             $this->_categoryClosureService->updateRelations($category);
             $this->_addCategoryUrlToIndex($category);
@@ -90,7 +90,7 @@ final class CategoryService extends DBActionService
             $changedAttributesList = $category->getDirtyAttributes();
             if (isset($changedAttributesList['slug'])) {
                 $category->slug = $this->_defineSlug($category->slug);
-                $category->url  = $this->_defineUrl($category);
+                $category->url  = $this->defineUrl($category);
             }
             $this->_categoryRepository->save($category);
             if (isset($changedAttributesList['slug'])) {
@@ -98,7 +98,7 @@ final class CategoryService extends DBActionService
                 $this->_updateChildrenUrl($category);
             }
             if (isset($changedAttributesList['parent_id'])) {
-                $category->url = $this->_defineUrl($category);
+                $category->url = $this->defineUrl($category);
                 $this->_categoryRepository->save($category);
                 $this->_updateChildrenUrl($category);
                 $this->_categoryClosureService->updateRelations($category);
@@ -134,7 +134,7 @@ final class CategoryService extends DBActionService
      * @param Category $category
      * @return string
      */
-    private function _defineUrl(Category $category): string
+    public function defineUrl(Category $category): string
     {
         if (empty($category->parent_id)) {
             $url = $category->slug;
@@ -153,7 +153,7 @@ final class CategoryService extends DBActionService
     private function _updateChildrenUrl(Category $category)
     {
         foreach ($category->directChildren as $child) {
-            $child->url = $this->_defineUrl($child);
+            $child->url = $this->defineUrl($child);
             $this->_categoryRepository->save($child);
             $this->_updateChildrenUrl($child);
         }
