@@ -54,6 +54,10 @@ class CategoryServiceCreateCategoryTest extends \Codeception\Test\Unit
         $categoryInputForm = new CategoryInputForm($categoryAttributes);
         $this->assertTrue($categoryInputForm->validate());
         $createdCategory = $categoryService->createCategory($categoryInputForm);
+        $this->assertEquals(
+            $createdCategory->getAttributes(['name']),
+            $categoryAttributes
+        );
         $this->assertInstanceOf(Category::class, $createdCategory);
         $this->tester->seeRecord(Category::class, ['name' => $categoryAttributes['name']]);
         $this->tester->seeRecord(UrlEntity::class, ['url' => $createdCategory->url]);
