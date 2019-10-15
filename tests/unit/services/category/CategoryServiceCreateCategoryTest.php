@@ -6,6 +6,7 @@ use Yii;
 use yii\di\Container;
 use DmitriiKoziuk\yii2UrlIndex\entities\UrlEntity;
 use DmitriiKoziuk\yii2Shop\tests\_fixtures\CategoryFixture;
+use DmitriiKoziuk\yii2Shop\tests\_fixtures\CategoryClosureFixture;
 use DmitriiKoziuk\yii2Shop\forms\CategoryInputForm;
 use DmitriiKoziuk\yii2Shop\services\category\CategoryService;
 use DmitriiKoziuk\yii2Shop\entities\Category;
@@ -24,6 +25,10 @@ class CategoryServiceCreateCategoryTest extends \Codeception\Test\Unit
             'category' => [
                 'class' => CategoryFixture::class,
                 'dataFile' => codecept_data_dir() . 'category_data.php'
+            ],
+            'category-closure' => [
+                'class' => CategoryClosureFixture::class,
+                'dataFile' => codecept_data_dir() . 'category_closure_data.php'
             ],
         ];
     }
