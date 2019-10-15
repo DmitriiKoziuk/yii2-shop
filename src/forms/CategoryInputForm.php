@@ -20,6 +20,14 @@ class CategoryInputForm extends Model
             [['name'], 'required'],
             [['name', 'name_on_site'], 'string', 'max' => 45],
             [['slug'], 'string', 'max' => 60],
+            [['url'], function ($attribute) {
+                if (
+                    ! is_null($this->$attribute) &&
+                    '/' !== ($firstChar = mb_substr($this->$attribute, 0, 1))
+                ) {
+                    $this->addError($attribute, 'Url must start from "/" character.');
+                }
+            }],
             [['description'], 'string'],
             [['meta_title'], 'string', 'max' => 255],
             [['meta_description'], 'string', 'max' => 500],
