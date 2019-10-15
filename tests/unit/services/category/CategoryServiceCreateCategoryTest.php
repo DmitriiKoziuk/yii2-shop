@@ -58,4 +58,35 @@ class CategoryServiceCreateCategoryTest extends \Codeception\Test\Unit
         $this->tester->seeRecord(Category::class, ['name' => $categoryAttributes['name']]);
         $this->tester->seeRecord(UrlEntity::class, ['url' => $createdCategory->url]);
     }
+
+    public function testCreateSubcategory()
+    {
+        $parentCategoryId = 1;
+        $this->tester->seeRecord(Category::class, ['id' => $parentCategoryId]);
+        /** @var CategoryService $categoryService */
+        $categoryService = Yii::$container->get(CategoryService::class);
+        $categoryAttributes = [
+            'parent_id' => $parentCategoryId,
+            'name' => 'Some sub category name',
+        ];
+        $this->tester->dontSeeRecord(Category::class, ['name' => $categoryAttributes['name']]);
+        $categoryInputForm = new CategoryInputForm($categoryAttributes);
+        $this->assertTrue($categoryInputForm->validate());
+        $createdCategory = $categoryService->createCategory($categoryInputForm);
+        $this->assertEquals(
+            $createdCategory->getAttributes(['parent_id', 'name']),
+            $categoryAttributes
+        );
+        $this->assertInstanceOf(Category::class, $createdCategory);
+        $this->tester->seeRecord(Category::class, ['name' => $categoryAttributes['name']]);
+        /** @var Category $parentCategory */
+        $parentCategory = Category::find()
+            ->with(['children'])
+            ->where(['id' => $parentCategoryId])
+            ->one();
+        $this->assertIsArray($parentCategory->children);
+        $this->assertArrayHasKey($createdCategory->id, $parentCategory->children);
+        $this->assertEquals($createdCategory['name'], $parentCategory->children[ $createdCategory->id ]->name);
+        $this->tester->seeRecord(UrlEntity::class, ['url' => $createdCategory->url]);
+    }
 }
