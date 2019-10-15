@@ -152,13 +152,13 @@ final class CategoryService extends DBActionService
 
     private function _addCategoryUrlToIndex(Category $category): void
     {
-        $this->_urlIndexService->addUrlToIndex(
+        $this->_urlIndexService->addUrl(
             new UrlCreateForm([
                 'url' => $category->url,
                 'module_name' => ShopModule::ID,
                 'controller_name' => Category::FRONTEND_CONTROLLER_NAME,
                 'action_name' => Category::FRONTEND_ACTION_NAME,
-                'entity_id' => (string) $category->id
+                'entity_id' => (string) $category->id,
             ])
         );
     }
