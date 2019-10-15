@@ -63,7 +63,7 @@ final class CategoryService extends DBActionService
         try {
             $category = new Category();
             $category->setAttributes($categoryInputForm->getAttributes());
-            $category->slug = $this->_defineSlug($category->name);
+            $category->slug = $this->defineSlug($category->name);
             $category->url = $this->defineUrl($category);
             $this->_categoryRepository->save($category);
             $this->_categoryClosureService->updateRelations($category);
@@ -89,7 +89,7 @@ final class CategoryService extends DBActionService
             $category->setAttributes($categoryInputForm->getChangedAttributes());
             $changedAttributesList = $category->getDirtyAttributes();
             if (isset($changedAttributesList['slug'])) {
-                $category->slug = $this->_defineSlug($category->slug);
+                $category->slug = $this->defineSlug($category->slug);
                 $category->url  = $this->defineUrl($category);
             }
             $this->_categoryRepository->save($category);
@@ -125,7 +125,7 @@ final class CategoryService extends DBActionService
         return new CategoryData($categoryRecord);
     }
 
-    private function _defineSlug($string): string
+    private function defineSlug($string): string
     {
         return UrlHelper::slugFromString($string);
     }
