@@ -3,14 +3,14 @@
 return [
     [
         'id' => 1,
-        'name' => 'Electronics',
+        'name' => 'First category',
         'name_on_site' => null,
-        'slug' => 'electronics',
-        'url' => '/Electronics',
+        'slug' => 'First-category',
+        'url' => '/First-level-category',
         'parent_id' => null,
-        'meta_title' => 'Electronics title',
-        'meta_description' => 'Electronics description',
-        'description' => 'Electronics content',
+        'meta_title' => 'First category title',
+        'meta_description' => 'First category description',
+        'description' => 'First category content',
         'created_at' => '1392559490',
         'updated_at' => '1392559490'
     ],
