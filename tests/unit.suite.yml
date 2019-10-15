@@ -1,0 +1,11 @@
+# Codeception Test Suite Configuration
+#
+# Suite for unit or integration tests.
+suite_namespace: DmitriiKoziuk\yii2Shop\tests\unit
+actor: UnitTester
+modules:
+    enabled:
+        - Yii2:
+            part: [orm, email, fixtures]
+        - Asserts
+    step_decorators: ~
