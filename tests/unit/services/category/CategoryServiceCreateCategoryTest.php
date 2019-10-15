@@ -93,4 +93,68 @@ class CategoryServiceCreateCategoryTest extends \Codeception\Test\Unit
         $this->assertEquals($createdCategory['name'], $parentCategory->children[ $createdCategory->id ]->name);
         $this->tester->seeRecord(UrlEntity::class, ['url' => $createdCategory->url]);
     }
+
+    /**
+     * Test creation subcategory chain where next category is child for previous.
+     * @throws \Throwable
+     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\di\NotInstantiableException
+     */
+    public function testCreateSubcategoryChain()
+    {
+        $subCategoryChain = [
+            'Second level category',
+            'Third level category',
+            'Fourth level category',
+            'Fifth level category',
+            'Sixth level category',
+            'Seventh level category',
+            'Eighth level category',
+            'Ninth level category',
+            'Tenth level category',
+        ];
+        $createdCategories = [];
+        $rootCategory = 1;
+        $parentCategoryId = $rootCategory;
+        $this->tester->seeRecord(Category::class, ['id' => $parentCategoryId]);
+        /** @var CategoryService $categoryService */
+        $categoryService = Yii::$container->get(CategoryService::class);
+        /**
+         * creat subcategory chain where next category is child for previous
+         */
+        foreach ($subCategoryChain as $subCategoryName) {
+            $categoryAttributes = [
+                'parent_id' => $parentCategoryId,
+                'name' => $subCategoryName,
+            ];
+            $this->tester->dontSeeRecord(Category::class, ['name' => $categoryAttributes['name']]);
+            $categoryInputForm = new CategoryInputForm($categoryAttributes);
+            $this->assertTrue($categoryInputForm->validate());
+            $createdCategory = $categoryService->createCategory($categoryInputForm);
+            $this->assertEquals(
+                $createdCategory->getAttributes(['parent_id', 'name']),
+                $categoryAttributes
+            );
+            $this->assertInstanceOf(Category::class, $createdCategory);
+            $this->tester->seeRecord(Category::class, [
+                'id' => $createdCategory->id,
+                'name' => $categoryAttributes['name'],
+            ]);
+            $parentCategoryId = $createdCategory->id;
+            $createdCategories[ $createdCategory->id ] = $createdCategory;
+        }
+        /**
+         * is first parent category has all child
+         */
+        /** @var Category $parentCategory */
+        $parentCategory = Category::find()
+            ->with(['children'])
+            ->where(['id' => $rootCategory])
+            ->one();
+        $this->assertIsArray($parentCategory->children);
+        foreach ($createdCategories as $createdCategory) {
+            $this->assertArrayHasKey($createdCategory->id, $parentCategory->children);
+            $this->assertEquals($createdCategory['name'], $parentCategory->children[ $createdCategory->id ]->name);
+        }
+    }
 }
