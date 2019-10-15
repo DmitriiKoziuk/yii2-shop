@@ -9,6 +9,7 @@ use DmitriiKoziuk\yii2Shop\tests\_fixtures\CategoryFixture;
 use DmitriiKoziuk\yii2Shop\forms\CategoryInputForm;
 use DmitriiKoziuk\yii2Shop\services\category\CategoryService;
 use DmitriiKoziuk\yii2Shop\entities\Category;
+use DmitriiKoziuk\yii2Shop\exceptions\category\CategoryInputFormNotValid;
 
 class CategoryServiceCreateCategoryTest extends \Codeception\Test\Unit
 {
@@ -30,6 +31,15 @@ class CategoryServiceCreateCategoryTest extends \Codeception\Test\Unit
     protected function _after()
     {
         Yii::$container = new Container();
+    }
+
+    public function testCategoryInputFormNotValid()
+    {
+        /** @var CategoryService $categoryService */
+        $categoryService = Yii::$container->get(CategoryService::class);
+        $categoryInputForm = new CategoryInputForm();
+        $this->expectException(CategoryInputFormNotValid::class);
+        $categoryService->createCategory($categoryInputForm);
     }
 
     public function testCreateRootCategory()
