@@ -1,13 +1,14 @@
 <?php
 
+use yii\web\View;
 use DmitriiKoziuk\yii2Shop\widgets\ProductWidget;
+use DmitriiKoziuk\yii2Shop\data\CategoryData;
 use DmitriiKoziuk\yii2Shop\data\product\ProductSearchParams;
 use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 
 /**
- * @var $this \yii\web\View
- * @var $categoryData \DmitriiKoziuk\yii2Shop\data\CategoryData
- * @var $filterService \DmitriiKoziuk\yii2CustomUrls\services\UrlFilterService
+ * @var $this View
+ * @var $categoryData CategoryData
  */
 
 $productSearchParams = new ProductSearchParams();

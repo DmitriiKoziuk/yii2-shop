@@ -6,8 +6,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\base\Module;
 use DmitriiKoziuk\yii2Base\exceptions\EntityNotFoundException;
-use DmitriiKoziuk\yii2CustomUrls\data\UrlData;
-use DmitriiKoziuk\yii2CustomUrls\services\UrlFilterService;
+use DmitriiKoziuk\yii2UrlIndex\forms\UrlUpdateForm;
 use DmitriiKoziuk\yii2Shop\services\category\CategoryService;
 
 final class CategoryController extends Controller
@@ -25,16 +24,15 @@ final class CategoryController extends Controller
     }
 
     /**
-     * @param UrlData $urlData
-     * @param UrlFilterService $filterService
+     * @param UrlUpdateForm $url
      * @return string
      * @throws NotFoundHttpException
      */
-    public function actionIndex(UrlData $urlData, UrlFilterService $filterService)
+    public function actionIndex(UrlUpdateForm $url)
     {
         try {
             $categoryData = $this->_categoryService
-                ->getCategoryById((int) $urlData->getEntityId());
+                ->getCategoryById((int) $url->entity_id);
         } catch (EntityNotFoundException $e) {
             throw new NotFoundHttpException(
                 Yii::t('app', 'Page not found.')
@@ -42,7 +40,6 @@ final class CategoryController extends Controller
         }
         return $this->render('index', [
             'categoryData' => $categoryData,
-            'filterService' => $filterService,
         ]);
     }
 }
