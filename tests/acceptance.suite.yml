@@ -1,0 +1,23 @@
+# Codeception Test Suite Configuration
+#
+# Suite for acceptance tests.
+# Perform tests in browser using the WebDriver or PhpBrowser.
+# If you need both WebDriver and PHPBrowser tests - create a separate suite.
+suite_namespace: DmitriiKoziuk\yii2Shop\tests\acceptance
+actor: AcceptanceTester
+modules:
+    enabled:
+        - Yii2:
+              part: [init, orm, fixtures]
+    step_decorators: ~
+env:
+    backend:
+        modules:
+            enabled:
+                - PhpBrowser:
+                    url: http://b.shop.yii2-extensions.t/
+    frontend:
+        modules:
+            enabled:
+                - PhpBrowser:
+                    url: http://yii2-shop.yii2-extensions.t/

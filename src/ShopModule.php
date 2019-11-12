@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace DmitriiKoziuk\yii2Shop;
 
 use yii\di\Container;
@@ -7,12 +8,12 @@ use yii\web\Application as WebApp;
 use yii\base\Application as BaseApp;
 use yii\console\Application as ConsoleApp;
 use yii\queue\cli\Queue;
-use DmitriiKoziuk\yii2Base\BaseModule;
 use DmitriiKoziuk\yii2ModuleManager\interfaces\ModuleInterface;
+use DmitriiKoziuk\yii2ModuleManager\ModuleManager;
 use DmitriiKoziuk\yii2ConfigManager\ConfigManagerModule;
 use DmitriiKoziuk\yii2UserManager\UserManager;
+use DmitriiKoziuk\yii2UrlIndex\services\UrlIndexService;
 use DmitriiKoziuk\yii2CustomUrls\CustomUrlsModule;
-use DmitriiKoziuk\yii2CustomUrls\services\UrlIndexService;
 use DmitriiKoziuk\yii2FileManager\FileManagerModule;
 use DmitriiKoziuk\yii2FileManager\repositories\FileRepository;
 use DmitriiKoziuk\yii2Shop\repositories\CurrencyRepository;
@@ -33,6 +34,7 @@ use DmitriiKoziuk\yii2Shop\repositories\SupplierRepository;
 use DmitriiKoziuk\yii2Shop\repositories\SupplierProductSkuRepository;
 use DmitriiKoziuk\yii2Shop\repositories\SupplierPriceRepository;
 use DmitriiKoziuk\yii2Shop\repositories\BrandRepository;
+use DmitriiKoziuk\yii2Shop\repositories\EavRepository;
 use DmitriiKoziuk\yii2Shop\services\currency\CurrencyService;
 use DmitriiKoziuk\yii2Shop\services\product\ProductService;
 use DmitriiKoziuk\yii2Shop\services\product\ProductTypeService;
@@ -51,6 +53,8 @@ use DmitriiKoziuk\yii2Shop\services\order\OrderStageLogService;
 use DmitriiKoziuk\yii2Shop\services\supplier\SupplierService;
 use DmitriiKoziuk\yii2Shop\services\supplier\SupplierPriceService;
 use DmitriiKoziuk\yii2Shop\services\brand\BrandService;
+use DmitriiKoziuk\yii2Shop\services\eav\ProductSkuEavAttributesService;
+use DmitriiKoziuk\yii2Shop\services\eav\EavService;
 
 final class ShopModule extends \yii\base\Module implements ModuleInterface
 {
@@ -108,9 +112,9 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
     {
         /** @var BaseApp $app */
         $app = $this->module;
-        $this->_initLocalProperties($app);
-        $this->_registerTranslation($app);
-        $this->_registerClassesToDIContainer($app);
+        $this->initLocalProperties($app);
+        $this->registerTranslation($app);
+        $this->registerClassesToDIContainer($app);
     }
 
     public static function getId(): string
@@ -129,13 +133,20 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
             ['label' => 'Suppliers', 'url' => ['/' . $this::ID . '/supplier/index']],
             ['label' => 'Suppliers prices', 'url' => ['/' . $this::ID . '/supplier-price/index']],
             ['label' => 'Brands', 'url' => ['/' . $this::ID . '/brand/index']],
+            ['label' => 'Eav value types', 'url' => ['/' . $this::ID . '/eav-value-type/index']],
+            ['label' => 'Eav value type units', 'url' => ['/' . $this::ID . '/eav-value-type-unit/index']],
+            ['label' => 'Eav Attributes', 'url' => ['/' . $this::ID . '/eav-attribute/index']],
+            ['label' => 'Eav value double', 'url' => ['/' . $this::ID . '/eav-value-double/index']],
+            ['label' => 'Eav value varchar', 'url' => ['/' . $this::ID . '/eav-value-varchar/index']],
+            ['label' => 'Eav value text', 'url' => ['/' . $this::ID . '/eav-value-text/index']],
+            ['label' => 'Product type attributes', 'url' => ['/' . $this::ID . '/product-type-attribute/index']],
         ]];
     }
 
     public static function requireOtherModulesToBeActive(): array
     {
         return [
-            BaseModule::class,
+            ModuleManager::class,
             ConfigManagerModule::class,
             UserManager::class,
             FileManagerModule::class,
@@ -147,7 +158,7 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
      * @param BaseApp $app
      * @throws \InvalidArgumentException
      */
-    private function _initLocalProperties(BaseApp $app)
+    private function initLocalProperties(BaseApp $app)
     {
         if (empty($this->backendAppId)) {
             throw new \InvalidArgumentException('Property backendAppId not set.');
@@ -173,70 +184,34 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
             ]);
         }
         if ($app instanceof ConsoleApp) {
-            $app->controllerMap['migrate']['migrationNamespaces'][] = __NAMESPACE__ . '\migrations';
+            array_push(
+                $app->controllerMap['migrate']['migrationNamespaces'],
+                __NAMESPACE__ . '\migrations'
+            );
         }
     }
 
     /**
      * @param BaseApp $app
      */
-    private function _registerTranslation(BaseApp $app)
+    private function registerTranslation(BaseApp $app)
     {
-        $app->i18n->translations[self::ID] = [
+        $translationData = [
             'class'          => 'yii\i18n\PhpMessageSource',
             'sourceLanguage' => 'en',
             'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
         ];
-        $app->i18n->translations[self::TRANSLATION_PRODUCT] = [
-            'class'          => 'yii\i18n\PhpMessageSource',
-            'sourceLanguage' => 'en',
-            'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
-        ];
-        $app->i18n->translations[self::TRANSLATION_PRODUCT_SKU] = [
-            'class'          => 'yii\i18n\PhpMessageSource',
-            'sourceLanguage' => 'en',
-            'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
-        ];
-        $app->i18n->translations[self::TRANSLATION_PRODUCT_TYPE] = [
-            'class'          => 'yii\i18n\PhpMessageSource',
-            'sourceLanguage' => 'en',
-            'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
-        ];
-        $app->i18n->translations[self::TRANSLATION_PRODUCT_TYPE_MARGIN] = [
-            'class'          => 'yii\i18n\PhpMessageSource',
-            'sourceLanguage' => 'en',
-            'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
-        ];
-        $app->i18n->translations[self::TRANSLATION_CATEGORY] = [
-            'class'          => 'yii\i18n\PhpMessageSource',
-            'sourceLanguage' => 'en',
-            'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
-        ];
-        $app->i18n->translations[self::TRANSLATION_CURRENCY] = [
-            'class'          => 'yii\i18n\PhpMessageSource',
-            'sourceLanguage' => 'en',
-            'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
-        ];
-        $app->i18n->translations[self::TRANSLATION_CART] = [
-            'class'          => 'yii\i18n\PhpMessageSource',
-            'sourceLanguage' => 'en',
-            'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
-        ];
-        $app->i18n->translations[self::TRANSLATION_ORDER] = [
-            'class'          => 'yii\i18n\PhpMessageSource',
-            'sourceLanguage' => 'en',
-            'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
-        ];
-        $app->i18n->translations[self::TRANSLATION_SUPPLIER] = [
-            'class'          => 'yii\i18n\PhpMessageSource',
-            'sourceLanguage' => 'en',
-            'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
-        ];
-        $app->i18n->translations[self::TRANSLATION_BRAND] = [
-            'class'          => 'yii\i18n\PhpMessageSource',
-            'sourceLanguage' => 'en',
-            'basePath'       => '@DmitriiKoziuk/yii2Shop/messages',
-        ];
+        $app->i18n->translations[self::ID] = $translationData;
+        $app->i18n->translations[self::TRANSLATION_PRODUCT] = $translationData;
+        $app->i18n->translations[self::TRANSLATION_PRODUCT_SKU] = $translationData;
+        $app->i18n->translations[self::TRANSLATION_PRODUCT_TYPE] = $translationData;
+        $app->i18n->translations[self::TRANSLATION_PRODUCT_TYPE_MARGIN] = $translationData;
+        $app->i18n->translations[self::TRANSLATION_CATEGORY] = $translationData;
+        $app->i18n->translations[self::TRANSLATION_CURRENCY] = $translationData;
+        $app->i18n->translations[self::TRANSLATION_CART] = $translationData;
+        $app->i18n->translations[self::TRANSLATION_ORDER] = $translationData;
+        $app->i18n->translations[self::TRANSLATION_SUPPLIER] = $translationData;
+        $app->i18n->translations[self::TRANSLATION_BRAND] = $translationData;
     }
 
     /**
@@ -244,7 +219,7 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
      * @throws \yii\base\InvalidConfigException
      * @throws \yii\di\NotInstantiableException
      */
-    private function _registerClassesToDIContainer(BaseApp $app): void
+    private function registerClassesToDIContainer(BaseApp $app): void
     {
         $this->diContainer->setSingleton(ProductRepository::class, function () {
             return new ProductRepository();
@@ -300,6 +275,9 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
         $this->diContainer->setSingleton(BrandRepository::class, function () {
             return new BrandRepository();
         });
+        $this->diContainer->setSingleton(EavRepository::class, function () {
+            return new EavRepository();
+        });
 
         /** @var CurrencyRepository $currencyRepository */
         $currencyRepository = $this->diContainer->get(CurrencyRepository::class);
@@ -343,6 +321,8 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
         $supplierPriceRepository = $this->diContainer->get(SupplierPriceRepository::class);
         /** @var BrandRepository $brandRepository */
         $brandRepository = $this->diContainer->get(BrandRepository::class);
+        /** @var EavRepository $eavRepository */
+        $eavRepository = $this->diContainer->get(EavRepository::class);
 
         $this->diContainer->setSingleton(
             CurrencyService::class,
@@ -576,5 +556,16 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
                 );
             }
         );
+        $this->diContainer->setSingleton(
+            ProductSkuEavAttributesService::class,
+            function () use (
+                $app
+            ) {
+                return new ProductSkuEavAttributesService($app->db);
+            }
+        );
+        $this->diContainer->setSingleton(EavService::class, function () use ($eavRepository) {
+            return new EavService($eavRepository);
+        });
     }
 }

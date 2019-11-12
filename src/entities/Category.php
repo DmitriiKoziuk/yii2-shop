@@ -168,7 +168,8 @@ class Category extends ActiveRecord
             ->viaTable(CategoryClosure::tableName(), ['ancestor' => 'id'], function ($q) {
                 /** @var $q ActiveQuery */
                 $q->orderBy('depth');
-            });
+            })
+            ->indexBy('id');
     }
 
     public function setChildren(array $children)

@@ -4,9 +4,9 @@ namespace DmitriiKoziuk\yii2Shop\services\product;
 use yii\db\Connection;
 use DmitriiKoziuk\yii2Base\services\DBActionService;
 use DmitriiKoziuk\yii2Base\exceptions\EntityNotFoundException;
-use DmitriiKoziuk\yii2CustomUrls\forms\UrlCreateForm;
-use DmitriiKoziuk\yii2CustomUrls\forms\UrlUpdateForm;
-use DmitriiKoziuk\yii2CustomUrls\services\UrlIndexService;
+use DmitriiKoziuk\yii2UrlIndex\forms\UrlCreateForm;
+use DmitriiKoziuk\yii2UrlIndex\forms\UrlUpdateForm;
+use DmitriiKoziuk\yii2UrlIndex\services\UrlIndexService;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 use DmitriiKoziuk\yii2Shop\helpers\UrlHelper;
 use DmitriiKoziuk\yii2Shop\entities\Product;
@@ -614,7 +614,7 @@ class ProductService extends DBActionService
 
     private function _addProductUrlToIndex(Product $product): void
     {
-        $this->_urlIndexService->addUrlToIndex(new UrlCreateForm([
+        $this->_urlIndexService->addUrl(new UrlCreateForm([
             'url' => $product->url,
             'module_name' => ShopModule::ID,
             'controller_name' => ShopModule::PRODUCT_FRONTEND_CONTROLLER_NAME,
@@ -625,7 +625,7 @@ class ProductService extends DBActionService
 
     private function _addProductSkuUrlToIndex(ProductSku $productSku)
     {
-        $this->_urlIndexService->addUrlToIndex(new UrlCreateForm([
+        $this->_urlIndexService->addUrl(new UrlCreateForm([
             'url' => $productSku->url,
             'module_name' => ShopModule::ID,
             'controller_name' => ShopModule::PRODUCT_SKU_FRONTEND_CONTROLLER_NAME,

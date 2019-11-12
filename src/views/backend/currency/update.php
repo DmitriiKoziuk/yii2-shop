@@ -2,7 +2,6 @@
 
 use yii\helpers\Html;
 use DmitriiKoziuk\yii2Shop\ShopModule;
-use DmitriiKoziuk\yii2Base\BaseModule as BaseModule;
 
 /**
  * @var $this              yii\web\View
@@ -15,7 +14,7 @@ $this->title = Yii::t(ShopModule::TRANSLATION_CURRENCY, 'Update {modelClass}: ',
 ]) . $currency->name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t(ShopModule::TRANSLATION_CURRENCY, 'Currencies'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $currency->name, 'url' => ['view', 'id' => $currency->id]];
-$this->params['breadcrumbs'][] = Yii::t(BaseModule::TRANSLATE, 'Update');
+$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 ?>
 <div class="currency-update">
 

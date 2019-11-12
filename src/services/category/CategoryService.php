@@ -3,19 +3,23 @@ namespace DmitriiKoziuk\yii2Shop\services\category;
 
 use yii\db\Connection;
 use DmitriiKoziuk\yii2Base\services\DBActionService;
+use DmitriiKoziuk\yii2Base\traits\ModelValidatorTrait;
 use DmitriiKoziuk\yii2Base\exceptions\EntityNotFoundException;
-use DmitriiKoziuk\yii2CustomUrls\forms\UrlCreateForm;
-use DmitriiKoziuk\yii2CustomUrls\forms\UrlUpdateForm;
-use DmitriiKoziuk\yii2CustomUrls\services\UrlIndexService;
+use DmitriiKoziuk\yii2UrlIndex\forms\UrlCreateForm;
+use DmitriiKoziuk\yii2UrlIndex\forms\UrlUpdateForm;
+use DmitriiKoziuk\yii2UrlIndex\services\UrlIndexService;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 use DmitriiKoziuk\yii2Shop\forms\CategoryInputForm;
 use DmitriiKoziuk\yii2Shop\entities\Category;
 use DmitriiKoziuk\yii2Shop\data\CategoryData;
 use DmitriiKoziuk\yii2Shop\helpers\UrlHelper;
 use DmitriiKoziuk\yii2Shop\repositories\CategoryRepository;
+use DmitriiKoziuk\yii2Shop\exceptions\category\CategoryInputFormNotValid;
 
 final class CategoryService extends DBActionService
 {
+    use ModelValidatorTrait;
+
     /**
      * @var CategoryRepository
      */
@@ -50,12 +54,17 @@ final class CategoryService extends DBActionService
      */
     public function createCategory(CategoryInputForm $categoryInputForm): Category
     {
+        $this->validateModels(
+            [$categoryInputForm],
+            new CategoryInputFormNotValid('Category input form not valid.')
+        );
+
         $this->beginTransaction();
         try {
             $category = new Category();
             $category->setAttributes($categoryInputForm->getAttributes());
-            $category->slug = $this->_defineSlug($category->name);
-            $category->url = $this->_defineUrl($category);
+            $category->slug = $this->defineSlug($category->name);
+            $category->url = $this->defineUrl($category);
             $this->_categoryRepository->save($category);
             $this->_categoryClosureService->updateRelations($category);
             $this->_addCategoryUrlToIndex($category);
@@ -80,8 +89,8 @@ final class CategoryService extends DBActionService
             $category->setAttributes($categoryInputForm->getChangedAttributes());
             $changedAttributesList = $category->getDirtyAttributes();
             if (isset($changedAttributesList['slug'])) {
-                $category->slug = $this->_defineSlug($category->slug);
-                $category->url  = $this->_defineUrl($category);
+                $category->slug = $this->defineSlug($category->slug);
+                $category->url  = $this->defineUrl($category);
             }
             $this->_categoryRepository->save($category);
             if (isset($changedAttributesList['slug'])) {
@@ -89,7 +98,7 @@ final class CategoryService extends DBActionService
                 $this->_updateChildrenUrl($category);
             }
             if (isset($changedAttributesList['parent_id'])) {
-                $category->url = $this->_defineUrl($category);
+                $category->url = $this->defineUrl($category);
                 $this->_categoryRepository->save($category);
                 $this->_updateChildrenUrl($category);
                 $this->_categoryClosureService->updateRelations($category);
@@ -116,7 +125,7 @@ final class CategoryService extends DBActionService
         return new CategoryData($categoryRecord);
     }
 
-    private function _defineSlug($string): string
+    private function defineSlug($string): string
     {
         return UrlHelper::slugFromString($string);
     }
@@ -125,7 +134,7 @@ final class CategoryService extends DBActionService
      * @param Category $category
      * @return string
      */
-    private function _defineUrl(Category $category): string
+    public function defineUrl(Category $category): string
     {
         if (empty($category->parent_id)) {
             $url = $category->slug;
@@ -144,7 +153,7 @@ final class CategoryService extends DBActionService
     private function _updateChildrenUrl(Category $category)
     {
         foreach ($category->directChildren as $child) {
-            $child->url = $this->_defineUrl($child);
+            $child->url = $this->defineUrl($child);
             $this->_categoryRepository->save($child);
             $this->_updateChildrenUrl($child);
         }
@@ -152,13 +161,13 @@ final class CategoryService extends DBActionService
 
     private function _addCategoryUrlToIndex(Category $category): void
     {
-        $this->_urlIndexService->addUrlToIndex(
+        $this->_urlIndexService->addUrl(
             new UrlCreateForm([
                 'url' => $category->url,
                 'module_name' => ShopModule::ID,
                 'controller_name' => Category::FRONTEND_CONTROLLER_NAME,
                 'action_name' => Category::FRONTEND_ACTION_NAME,
-                'entity_id' => (string) $category->id
+                'entity_id' => (string) $category->id,
             ])
         );
     }

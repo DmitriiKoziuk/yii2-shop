@@ -1,5 +1,6 @@
 <?php
-namespace DmitriiKoziuk\yii2Base\tests;
+
+namespace DmitriiKoziuk\yii2Shop\tests;
 
 /**
  * Inherited Methods
@@ -12,13 +13,14 @@ namespace DmitriiKoziuk\yii2Base\tests;
  * @method void am($role)
  * @method void lookForwardTo($achieveValue)
  * @method void comment($description)
- * @method \Codeception\Lib\Friend haveFriend($name, $actorClass = NULL)
+ * @method void pause()
  *
  * @SuppressWarnings(PHPMD)
- */
+*/
 class UnitTester extends \Codeception\Actor
 {
     use _generated\UnitTesterActions;
+
    /**
     * Define custom actions here
     */
