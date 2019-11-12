@@ -6,9 +6,9 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\base\Module;
 use DmitriiKoziuk\yii2Base\exceptions\EntityNotFoundException;
-use DmitriiKoziuk\yii2CustomUrls\data\UrlData;
 use DmitriiKoziuk\yii2FileManager\helpers\FileWebHelper;
 use DmitriiKoziuk\yii2FileManager\services\FileService;
+use DmitriiKoziuk\yii2UrlIndex\forms\UrlUpdateForm;
 use DmitriiKoziuk\yii2Shop\services\product\ProductService;
 use DmitriiKoziuk\yii2Shop\services\product\ProductTypeService;
 use DmitriiKoziuk\yii2Shop\services\product\ProductSeoService;
@@ -60,14 +60,14 @@ final class ProductSkuController extends Controller
     }
 
     /**
-     * @param UrlData $urlData
+     * @param UrlUpdateForm $url
      * @return string
      * @throws NotFoundHttpException
      */
-    public function actionIndex(UrlData $urlData)
+    public function actionIndex(UrlUpdateForm $url)
     {
         try {
-            $productSkuData = $this->_productService->getProductSkuById((int) $urlData->getEntityId());
+            $productSkuData = $this->_productService->getProductSkuById((int) $url->entity_id);
             $productData = $this->_productService->getProductById($productSkuData->getProductId());
             $productTypeData = null;
             if (! empty($productData->getTypeId())) {

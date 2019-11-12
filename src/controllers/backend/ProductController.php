@@ -22,6 +22,7 @@ use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuInputForm;
 use DmitriiKoziuk\yii2Shop\services\product\ProductService;
 use DmitriiKoziuk\yii2Shop\services\supplier\SupplierService;
 use DmitriiKoziuk\yii2Shop\services\brand\BrandService;
+use DmitriiKoziuk\yii2Shop\services\eav\ProductSkuEavAttributesService;
 
 /**
  * ProductController implements the CRUD actions for Product model.
@@ -53,6 +54,8 @@ final class ProductController extends Controller
      */
     private $_fileWebHelper;
 
+    private $productSkuEavAttributesService;
+
     public function __construct(
         string $id,
         Module $module,
@@ -61,6 +64,7 @@ final class ProductController extends Controller
         BrandService $brandService,
         FileRepository $fileRepository,
         FileWebHelper $fileWebHelper,
+        ProductSkuEavAttributesService $updateProductSkuAttributesService,
         array $config = []
     ) {
         parent::__construct($id, $module, $config);
@@ -69,6 +73,7 @@ final class ProductController extends Controller
         $this->_brandService = $brandService;
         $this->_fileRepository = $fileRepository;
         $this->_fileWebHelper = $fileWebHelper;
+        $this->productSkuEavAttributesService = $updateProductSkuAttributesService;
     }
 
     /**
@@ -204,6 +209,12 @@ final class ProductController extends Controller
         $productSkuIds = ArrayHelper::map($productSkuInputForms, 'id', 'id');
         $productSkusSuppliers = $this->_supplierService->getProductSkusSuppliers($productSkuIds);
         $brands = $this->_brandService->getAllBrands();
+        if (Yii::$app->request->isPost && ! empty(Yii::$app->request->post('productSku'))) {
+            $this->productSkuEavAttributesService->update(
+                Yii::$app->request->post('productSku'),
+                $product->type_id
+            );
+        }
         return $this->render('update', [
             'product' => $product,
             'categories' => $categories,

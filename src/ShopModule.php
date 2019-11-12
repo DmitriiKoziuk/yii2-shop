@@ -34,6 +34,7 @@ use DmitriiKoziuk\yii2Shop\repositories\SupplierRepository;
 use DmitriiKoziuk\yii2Shop\repositories\SupplierProductSkuRepository;
 use DmitriiKoziuk\yii2Shop\repositories\SupplierPriceRepository;
 use DmitriiKoziuk\yii2Shop\repositories\BrandRepository;
+use DmitriiKoziuk\yii2Shop\repositories\EavRepository;
 use DmitriiKoziuk\yii2Shop\services\currency\CurrencyService;
 use DmitriiKoziuk\yii2Shop\services\product\ProductService;
 use DmitriiKoziuk\yii2Shop\services\product\ProductTypeService;
@@ -52,6 +53,8 @@ use DmitriiKoziuk\yii2Shop\services\order\OrderStageLogService;
 use DmitriiKoziuk\yii2Shop\services\supplier\SupplierService;
 use DmitriiKoziuk\yii2Shop\services\supplier\SupplierPriceService;
 use DmitriiKoziuk\yii2Shop\services\brand\BrandService;
+use DmitriiKoziuk\yii2Shop\services\eav\ProductSkuEavAttributesService;
+use DmitriiKoziuk\yii2Shop\services\eav\EavService;
 
 final class ShopModule extends \yii\base\Module implements ModuleInterface
 {
@@ -130,6 +133,13 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
             ['label' => 'Suppliers', 'url' => ['/' . $this::ID . '/supplier/index']],
             ['label' => 'Suppliers prices', 'url' => ['/' . $this::ID . '/supplier-price/index']],
             ['label' => 'Brands', 'url' => ['/' . $this::ID . '/brand/index']],
+            ['label' => 'Eav value types', 'url' => ['/' . $this::ID . '/eav-value-type/index']],
+            ['label' => 'Eav value type units', 'url' => ['/' . $this::ID . '/eav-value-type-unit/index']],
+            ['label' => 'Eav Attributes', 'url' => ['/' . $this::ID . '/eav-attribute/index']],
+            ['label' => 'Eav value double', 'url' => ['/' . $this::ID . '/eav-value-double/index']],
+            ['label' => 'Eav value varchar', 'url' => ['/' . $this::ID . '/eav-value-varchar/index']],
+            ['label' => 'Eav value text', 'url' => ['/' . $this::ID . '/eav-value-text/index']],
+            ['label' => 'Product type attributes', 'url' => ['/' . $this::ID . '/product-type-attribute/index']],
         ]];
     }
 
@@ -265,6 +275,9 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
         $this->diContainer->setSingleton(BrandRepository::class, function () {
             return new BrandRepository();
         });
+        $this->diContainer->setSingleton(EavRepository::class, function () {
+            return new EavRepository();
+        });
 
         /** @var CurrencyRepository $currencyRepository */
         $currencyRepository = $this->diContainer->get(CurrencyRepository::class);
@@ -308,6 +321,8 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
         $supplierPriceRepository = $this->diContainer->get(SupplierPriceRepository::class);
         /** @var BrandRepository $brandRepository */
         $brandRepository = $this->diContainer->get(BrandRepository::class);
+        /** @var EavRepository $eavRepository */
+        $eavRepository = $this->diContainer->get(EavRepository::class);
 
         $this->diContainer->setSingleton(
             CurrencyService::class,
@@ -541,5 +556,16 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
                 );
             }
         );
+        $this->diContainer->setSingleton(
+            ProductSkuEavAttributesService::class,
+            function () use (
+                $app
+            ) {
+                return new ProductSkuEavAttributesService($app->db);
+            }
+        );
+        $this->diContainer->setSingleton(EavService::class, function () use ($eavRepository) {
+            return new EavService($eavRepository);
+        });
     }
 }

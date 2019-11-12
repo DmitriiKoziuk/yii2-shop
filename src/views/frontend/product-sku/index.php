@@ -4,6 +4,7 @@ use DmitriiKoziuk\yii2Shop\assets\frontend\BaseAsset;
 use DmitriiKoziuk\yii2Shop\assets\frontend\ProductSkuAsset;
 use DmitriiKoziuk\yii2FileManager\helpers\FileWebHelper;
 use DmitriiKoziuk\yii2Shop\ShopModule;
+use DmitriiKoziuk\yii2Shop\widgets\frontend\ProductSkuViewAttributesWidget;
 
 /**
  * @var $this \yii\web\View
@@ -63,6 +64,13 @@ $productFullName = $productData->getName() . ' ' . $productSkuData->getName();
             </a>
           </div>
           <?php endif; ?>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <?= ProductSkuViewAttributesWidget::widget([
+              'productSkuId' => $productSkuData->getId(),
+          ]) ?>
         </div>
       </div>
     </div>

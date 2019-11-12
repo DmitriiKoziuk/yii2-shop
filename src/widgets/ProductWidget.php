@@ -1,11 +1,14 @@
 <?php
+
 namespace DmitriiKoziuk\yii2Shop\widgets;
 
 use yii\base\Widget;
+use DmitriiKoziuk\yii2Base\exceptions\EntityNotFoundException;
 use DmitriiKoziuk\yii2FileManager\helpers\FileWebHelper;
 use DmitriiKoziuk\yii2FileManager\services\FileService;
 use DmitriiKoziuk\yii2Shop\entities\Product;
 use DmitriiKoziuk\yii2Shop\entities\ProductSku;
+use DmitriiKoziuk\yii2Shop\entities\categoryFaceted\EavAttributeEntity;
 use DmitriiKoziuk\yii2Shop\data\ProductData;
 use DmitriiKoziuk\yii2Shop\data\product\ProductSearchParams;
 use DmitriiKoziuk\yii2Shop\services\product\ProductService;
@@ -22,7 +25,17 @@ class ProductWidget extends Widget
     /**
      * @var int
      */
-    public $productPerPage = 20;
+    public $productPerPage = 2;
+
+    /**
+     * @var string
+     */
+    public $indexPageUrl;
+
+    /**
+     * @var EavAttributeEntity[]
+     */
+    public $filteredAttributes;
 
     /**
      * @var ProductData[]
@@ -40,7 +53,7 @@ class ProductWidget extends Widget
     private $_fileWebHelper;
 
     /**
-     * @throws \DmitriiKoziuk\yii2Base\exceptions\EntityNotFoundException
+     * @throws EntityNotFoundException
      * @throws \yii\base\InvalidConfigException
      * @throws \yii\di\NotInstantiableException
      */
@@ -58,7 +71,12 @@ class ProductWidget extends Widget
         /** @var FileWebHelper _fileWebHelper */
         $this->_fileWebHelper = \Yii::$container->get(FileWebHelper::class);
 
-        $dataProvider = $productSearchService->searchBy($this->searchParams, $this->productPerPage);
+        $dataProvider = $productSearchService->searchBy(
+            $this->searchParams,
+            $this->productPerPage,
+            ProductSearchService::SEARCH_PRODUCT,
+            $this->filteredAttributes
+        );
         $this->_products = $this->_productModelsToData($dataProvider->getModels());
         $this->_pagination = $dataProvider->getPagination();
         foreach ($this->_products as $product) {
@@ -80,6 +98,7 @@ class ProductWidget extends Widget
             'products' => $this->_products,
             'pagination' => $this->_pagination,
             'fileWebHelper' => $this->_fileWebHelper,
+            'indexPageUrl' => $this->indexPageUrl,
         ]);
     }
 
