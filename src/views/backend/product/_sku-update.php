@@ -9,6 +9,7 @@ use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 use DmitriiKoziuk\yii2Shop\entities\Currency;
 use DmitriiKoziuk\yii2Shop\assets\backend\ProductAsset;
 use DmitriiKoziuk\yii2FileManager\helpers\FileWebHelper;
+use DmitriiKoziuk\yii2Shop\widgets\backend\ProductSkuUpdateAttributesWidget;
 
 /**
  * @var $this \yii\web\View
@@ -151,6 +152,16 @@ $this->registerAssetBundle(ProductAsset::class);
                                   >
                                     <span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span>
                                   </button>
+                                  <button
+                                      class="btn btn-default"
+                                      type="button"
+                                      data-toggle="collapse"
+                                      data-target="#collapseAttributes-<?=$key?>"
+                                      aria-expanded="false"
+                                      aria-controls="collapseAttributes"
+                                  >
+                                    <span class="glyphicon glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                                  </button>
                                 </div>
                             </div>
                         </div>
@@ -278,11 +289,13 @@ $this->registerAssetBundle(ProductAsset::class);
                           ) ?>
                       </div>
                     </div>
-                    <div class="row">
-                      <div class="col-md-12">
-                        Modules view
-                      </div>
-                    </div>
+                  </div>
+                </div>
+                <div class="collapse" id="collapseAttributes-<?=$key?>">
+                  <div class="collapse-inside">
+                    <?= ProductSkuUpdateAttributesWidget::widget([
+                        'productSkuId' => $productSkuInputForm->id,
+                    ]) ?>
                   </div>
                 </div>
             </div>

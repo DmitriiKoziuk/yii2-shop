@@ -4,6 +4,7 @@ namespace DmitriiKoziuk\yii2Shop\entities;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
+use yii\helpers\ArrayHelper;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 
 /**
@@ -29,7 +30,10 @@ use DmitriiKoziuk\yii2Shop\ShopModule;
  * @property int    $currency_id
  *
  * @property Currency $currency
- * @property Product  $product
+ * @property Product  $produc
+ * @property EavValueVarcharEntity[] $eavVarcharValues
+ * @property EavValueTextEntity[] $eavTextValues
+ * @property EavValueDoubleEntity[] $eavDoubleValues
  */
 class ProductSku extends ActiveRecord
 {
@@ -266,5 +270,35 @@ class ProductSku extends ActiveRecord
     {
         $count = (int) ProductSku::find()->where(['product_id' => $productID])->count();
         return ++$count;
+    }
+
+    public function getEavAttributes()
+    {
+        return ArrayHelper::merge(
+            $this->eavVarcharValues,
+            $this->eavTextValues,
+            $this->eavDoubleValues
+        );
+    }
+
+    public function getEavVarcharValues()
+    {
+        return $this->hasMany(EavValueVarcharEntity::class, ['id' => 'value_id'])
+            ->viaTable(EavValueVarcharProductSkuEntity::tableName(), ['product_sku_id' => 'id'])
+            ->indexBy('id');
+    }
+
+    public function getEavTextValues()
+    {
+        return $this->hasMany(EavValueTextEntity::class, ['id' => 'value_id'])
+            ->viaTable(EavValueTextProductSkuEntity::tableName(), ['product_sku_id' => 'id'])
+            ->indexBy('id');
+    }
+
+    public function getEavDoubleValues()
+    {
+        return $this->hasMany(EavValueDoubleEntity::class, ['id' => 'value_id'])
+            ->viaTable(EavValueDoubleProductSkuEntity::tableName(), ['product_sku_id' => 'id'])
+            ->indexBy('id');
     }
 }

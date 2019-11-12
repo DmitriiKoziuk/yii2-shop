@@ -4,12 +4,14 @@ use DmitriiKoziuk\yii2Shop\assets\frontend\BaseAsset;
 use DmitriiKoziuk\yii2Shop\assets\frontend\ProductWidgetAsset;
 use DmitriiKoziuk\yii2FileManager\helpers\FileWebHelper;
 use DmitriiKoziuk\yii2Shop\ShopModule;
+use DmitriiKoziuk\yii2Shop\widgets\frontend\LinkPagerWidget;
 
 /**
  * @var $this \yii\web\View
  * @var $products \DmitriiKoziuk\yii2Shop\data\ProductData[]
  * @var $pagination \yii\data\Pagination
  * @var $fileWebHelper FileWebHelper
+ * @var $indexPageUrl string
  */
 
 ProductWidgetAsset::register($this);
@@ -86,4 +88,13 @@ $defaultImageUrl = $this->assetManager
     </div>
   </div>
   <?php endforeach; ?>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <?= LinkPagerWidget::widget([
+        'pagination' => $pagination,
+        'indexPageUrl' => $indexPageUrl,
+    ]) ?>
+  </div>
 </div>
