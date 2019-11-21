@@ -43,8 +43,8 @@ final class CategoryController extends Controller
     {
         try {
             $categoryData = $this->_categoryService->getCategoryById((int) $url->entity_id);
-            $filteredAttributes = $this->eavService->getFilteredAttributesAndValues($filterParams);
-            $facetedAttributes = $this->eavService->getFacetedAttributesAndValues($categoryData->getId(), $filteredAttributes);
+            $filteredAttributes = $this->eavService->getFilteredAttributesWithValues($filterParams);
+            $facetedAttributes = $this->eavService->getFacetedAttributesWithValues($categoryData->getId(), $filteredAttributes);
         } catch (EntityNotFoundException $e) {
             throw new NotFoundHttpException(
                 Yii::t('app', 'Page not found.')

@@ -27,7 +27,7 @@ class EavService
      * @return EavAttributeEntity[]
      * @throws Exception
      */
-    public function getFacetedAttributesAndValues(int $categoryId, array $filteredAttributes = null): array
+    public function getFacetedAttributesWithValues(int $categoryId, array $filteredAttributes = null): array
     {
         $varcharValues = $this->eavRepository->getFacetedVarcharValues($categoryId, $filteredAttributes);
         $doubleValues = $this->eavRepository->getFacetedDoubleValues($categoryId, $filteredAttributes);
@@ -35,7 +35,7 @@ class EavService
         return $attributes;
     }
 
-    public function getFilteredAttributesAndValues(array $filterParams = []): array
+    public function getFilteredAttributesWithValues(array $filterParams = []): array
     {
         $filteredAttributes = [];
         if (! empty($filterParams)) {
