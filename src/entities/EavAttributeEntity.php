@@ -49,6 +49,7 @@ class EavAttributeEntity extends \yii\db\ActiveRecord
             [['selectable', 'multiple', 'value_type_id', 'default_value_type_unit_id'], 'integer'],
             [['name'], 'string', 'max' => 100],
             [['code'], 'string', 'max' => 120],
+            [['selectable', 'multiple'], 'default', 'value' => 0],
             [
                 ['value_type_id'],
                 'exist',
