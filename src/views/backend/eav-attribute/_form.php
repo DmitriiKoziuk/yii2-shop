@@ -19,6 +19,10 @@ use DmitriiKoziuk\yii2Shop\entities\EavValueTypeUnitEntity;
 
     <?php if (! $model->isNewRecord): ?>
 
+      <?= $form->field($model, 'name_for_product')->textInput(['maxlength' => true]) ?>
+
+      <?= $form->field($model, 'name_for_filter')->textInput(['maxlength' => true]) ?>
+
       <?= $form->field($model, 'code')->textInput(['maxlength' => true]) ?>
 
     <?php endif; ?>
@@ -37,6 +41,14 @@ use DmitriiKoziuk\yii2Shop\entities\EavValueTypeUnitEntity;
         0 => 'No',
         1 => 'Yes',
     ]) ?>
+
+    <?php if (! $model->isNewRecord): ?>
+
+      <?= $form->field($model, 'description_backend')->textarea(['maxlength' => true]) ?>
+
+      <?= $form->field($model, 'description_frontend')->textarea(['maxlength' => true]) ?>
+
+    <?php endif; ?>
 
     <?= $form->field($model, 'value_type_id')->dropDownList(ArrayHelper::map(
         EavValueTypeEntity::find()->all(),
