@@ -28,6 +28,7 @@ use DmitriiKoziuk\yii2Shop\helpers\CategoryProductFacetedNavigationHelper;
       ) ?>">
         <?= $value->value ?>
         <?= ! empty($value->unit) ? $value->unit->name : ''; ?>
+        ( <?= $value->count ?> )
       </a>
     </li>
     <?php endforeach; ?>
