@@ -55,6 +55,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     return empty($model->unit) ? null : "{$model->unit->name} ({$model->unit->abbreviation})";
                 },
             ],
+            [
+                'label' => 'Product sku number',
+                'content' => function ($model) {
+                    /** @var EavValueDoubleEntity $model */
+                    return $model->getRelatedProductSkuNumber();
+                }
+            ],
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

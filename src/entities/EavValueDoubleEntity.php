@@ -69,4 +69,11 @@ class EavValueDoubleEntity extends \yii\db\ActiveRecord
     {
         return $this->hasOne(EavValueTypeUnitEntity::class, ['id' => 'value_type_unit_id']);
     }
+
+    public function getRelatedProductSkuNumber()
+    {
+        return EavValueDoubleProductSkuEntity::find()
+            ->where(['value_id' => $this->id])
+            ->count();
+    }
 }
