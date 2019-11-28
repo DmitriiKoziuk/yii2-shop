@@ -25,7 +25,7 @@ $defaultImageUrl = $this->assetManager
       <div class="thumbnail">
         <a href="<?= $product->getUrl() ?>">
           <?php if (! empty($product->isMainImageSet())): ?>
-          <img src="<?= $product->getMainImage()->getThumbnail(100, 100) ?>" alt="<?= $product->getFullName() ?>">
+          <img src="<?= $product->getMainImage()->getThumbnail(200, 200) ?>" alt="<?= $product->getFullName() ?>">
           <?php else: ?>
           <img src="<?= $defaultImageUrl ?>" alt="">
           <?php endif; ?>
