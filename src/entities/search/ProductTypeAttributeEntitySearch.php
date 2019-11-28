@@ -17,7 +17,7 @@ class ProductTypeAttributeEntitySearch extends ProductTypeAttributeEntity
     public function rules()
     {
         return [
-            [['product_type_id', 'attribute_id'], 'integer'],
+            [['product_type_id', 'attribute_id', 'view_attribute_at_product_preview'], 'integer'],
         ];
     }
 

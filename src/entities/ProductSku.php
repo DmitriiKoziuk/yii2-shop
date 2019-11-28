@@ -63,6 +63,11 @@ class ProductSku extends ActiveRecord
     private $images;
 
     /**
+     * @var array|null
+     */
+    private $previewAttributes;
+
+    /**
      * {@inheritdoc}
      */
     public static function tableName()
@@ -172,6 +177,11 @@ class ProductSku extends ActiveRecord
     public function isCurrencySet(): bool
     {
         return empty($this->currency_id) ? false : true;
+    }
+
+    public function isPreviewAttributeSet(): bool
+    {
+        return empty($this->getPreviewValues()) ? false : true;
     }
 
     /**
@@ -349,5 +359,42 @@ class ProductSku extends ActiveRecord
         return $this->hasMany(EavValueDoubleEntity::class, ['id' => 'value_id'])
             ->viaTable(EavValueDoubleProductSkuEntity::tableName(), ['product_sku_id' => 'id'])
             ->indexBy('id');
+    }
+
+    public function getPreviewValues(): array
+    {
+        $values = [];
+        if ($this->product->isTypeSet()) {
+            if (is_null($this->previewAttributes)) {
+                $this->previewAttributes = $this->getPreviewAttributeIds();
+            }
+            foreach ($this->eavVarcharValues as $value) {
+                if (array_key_exists($value->attribute_id, $this->previewAttributes)) {
+                    $values[] = $value;
+                }
+            }
+            foreach ($this->eavDoubleValues as $value) {
+                if (array_key_exists($value->attribute_id, $this->previewAttributes)) {
+                    $values[] = $value;
+                }
+            }
+            foreach ($this->eavTextValues as $value) {
+                if (array_key_exists($value->attribute_id, $this->previewAttributes)) {
+                    $values[] = $value;
+                }
+            }
+        }
+        return $values;
+    }
+
+    private function getPreviewAttributeIds()
+    {
+        return ProductTypeAttributeEntity::find()
+            ->where([
+                'product_type_id' => $this->product->type->id,
+                'view_attribute_at_product_preview' => ProductTypeAttributeEntity::PREVIEW_YES,
+            ])
+            ->indexBy('attribute_id')
+            ->all();
     }
 }

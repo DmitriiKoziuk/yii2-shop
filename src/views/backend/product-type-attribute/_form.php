@@ -27,6 +27,11 @@ use DmitriiKoziuk\yii2Shop\entities\EavAttributeEntity;
         'name'
     ))->label('Attribute') ?>
 
+    <?= $form->field($model, 'view_attribute_at_product_preview')->dropDownList([
+        0 => 'No',
+        1 => 'Yes',
+    ])->label('Attribute') ?>
+
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
     </div>

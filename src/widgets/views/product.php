@@ -5,6 +5,7 @@ use yii\data\Pagination;
 use DmitriiKoziuk\yii2Shop\assets\frontend\BaseAsset;
 use DmitriiKoziuk\yii2Shop\data\frontend\product\ProductData;
 use DmitriiKoziuk\yii2Shop\data\frontend\product\ProductSkuData;
+use DmitriiKoziuk\yii2Shop\widgets\ProductPreviewAttributesWidget;
 use DmitriiKoziuk\yii2Shop\widgets\frontend\LinkPagerWidget;
 
 /**
@@ -49,6 +50,11 @@ $defaultImageUrl = $this->assetManager
           <p>
             <a href="<?= $product->getUrl() ?>" class="btn btn-primary" role="button">View</a>
             <a href="/cart/add-product?product=<?= $product->getId() ?>" class="btn btn-default" role="button">Buy</a>
+          </p>
+          <p>
+            <?= ProductPreviewAttributesWidget::widget([
+                'product' => $product,
+            ]) ?>
           </p>
         </div>
       </div>
