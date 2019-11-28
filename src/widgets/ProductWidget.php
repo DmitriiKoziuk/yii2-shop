@@ -35,6 +35,11 @@ class ProductWidget extends Widget
     public $filteredAttributes;
 
     /**
+     * @var array
+     */
+    public $filterParams;
+
+    /**
      * @var ProductData[]
      */
     private $_products = [];
@@ -80,6 +85,7 @@ class ProductWidget extends Widget
             'products' => $this->_products,
             'pagination' => $this->_pagination,
             'indexPageUrl' => $this->indexPageUrl,
+            'filterParams' => $this->filterParams,
         ]);
     }
 

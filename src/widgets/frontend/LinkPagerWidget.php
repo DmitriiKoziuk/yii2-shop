@@ -4,6 +4,7 @@ namespace DmitriiKoziuk\yii2Shop\widgets\frontend;
 
 use yii\base\Widget;
 use yii\data\Pagination;
+use yii\helpers\Url;
 
 class LinkPagerWidget extends Widget
 {
@@ -13,8 +14,15 @@ class LinkPagerWidget extends Widget
      */
     public $pagination;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     public $indexPageUrl;
+
+    /**
+     * @var array
+     */
+    public $filterParams;
 
     public function run()
     {
@@ -34,9 +42,25 @@ class LinkPagerWidget extends Widget
         $currentPage = $this->pagination->getPage();
         $buttons = [];
         for ($i = 1; $i <= $pageCount; $i++) {
+            if ($i == 1) {
+                $url = Url::to([
+                    '/customUrl/create',
+                    'url' => $this->indexPageUrl,
+                    'filterParams' => $this->filterParams,
+                ]);
+            } else {
+                $url = Url::to([
+                    '/customUrl/create',
+                    'url' => $this->indexPageUrl,
+                    'filterParams' => $this->filterParams,
+                    'getParams' => [
+                        'page' => $i,
+                    ],
+                ]);
+            }
             $buttons[] = [
                 'label' => $i,
-                'url' => $i == 1 ? $this->indexPageUrl : $this->indexPageUrl . '?page=' . $i,
+                'url' => $url,
                 'active' => $i == $currentPage ? true : false,
             ];
         }
