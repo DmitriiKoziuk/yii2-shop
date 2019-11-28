@@ -27,10 +27,14 @@ class m191021_090814_create_dk_shop_eav_attributes_table extends Migration
         $this->createTable($this->eavAttributeTableName, [
             'id' => $this->primaryKey(),
             'name' => $this->string(100)->notNull(),
+            'name_for_product' => $this->string(100)->null()->defaultValue(NULL),
+            'name_for_filter' => $this->string(100)->null()->defaultValue(NULL),
             'code' => $this->string(120)->notNull(),
             'storage_type' => 'ENUM("varchar","text","double") NOT NULL',
             'selectable' => $this->tinyInteger(1)->notNull()->defaultValue(0),
             'multiple' => $this->tinyInteger(1)->notNull()->defaultValue(0),
+            'description_backend' => $this->text()->null()->defaultValue(NULL),
+            'description_frontend' => $this->text()->null()->defaultValue(NULL),
             'value_type_id' => $this->integer()->null()->defaultValue(null),
             'default_value_type_unit_id' => $this->integer()->null()->defaultValue(NULL),
         ], $tableOptions);

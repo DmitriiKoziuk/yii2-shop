@@ -96,6 +96,18 @@ use DmitriiKoziuk\yii2Shop\entities\EavValueVarcharEntity;
                     ]
                 ) ?>
               </div>
+              <div class="col-md-4">
+                <?php if (! is_null($attribute->valueType) && ! empty($attribute->valueType->units)): ?>
+                  <?= Html::dropDownList(
+                      "productSku[$productSkuId][{$attribute->id}][1][unit_id]",
+                        empty($value->unit) ? $attribute->default_value_type_unit_id : $value->unit->id,
+                      ArrayHelper::map($attribute->valueType->units, 'id', 'name'),
+                      [
+                          'class' => 'form-control',
+                      ]
+                  ) ?>
+                <?php endif; ?>
+              </div>
             </div>
           <?php endif; ?>
             <?php if ($attribute->selectable && $attribute->multiple): ?>

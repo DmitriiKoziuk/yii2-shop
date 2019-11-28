@@ -31,6 +31,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'id',
             'name',
+            'name_for_product',
+            'name_for_filter',
             'code',
             'storage_type',
             'selectable',

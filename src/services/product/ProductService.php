@@ -1,11 +1,12 @@
 <?php
 namespace DmitriiKoziuk\yii2Shop\services\product;
 
+use Exception;
 use yii\db\Connection;
 use DmitriiKoziuk\yii2Base\services\DBActionService;
 use DmitriiKoziuk\yii2Base\exceptions\EntityNotFoundException;
 use DmitriiKoziuk\yii2UrlIndex\forms\UrlCreateForm;
-use DmitriiKoziuk\yii2UrlIndex\forms\UrlUpdateForm;
+use DmitriiKoziuk\yii2UrlIndex\forms\UpdateEntityUrlForm;
 use DmitriiKoziuk\yii2UrlIndex\services\UrlIndexService;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 use DmitriiKoziuk\yii2Shop\helpers\UrlHelper;
@@ -13,6 +14,9 @@ use DmitriiKoziuk\yii2Shop\entities\Product;
 use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 use DmitriiKoziuk\yii2Shop\entities\ProductType;
 use DmitriiKoziuk\yii2Shop\entities\ProductTypeMargin;
+use DmitriiKoziuk\yii2Shop\entities\EavValueDoubleEntity;
+use DmitriiKoziuk\yii2Shop\entities\EavValueTextEntity;
+use DmitriiKoziuk\yii2Shop\entities\EavValueVarcharEntity;
 use DmitriiKoziuk\yii2Shop\data\ProductData;
 use DmitriiKoziuk\yii2Shop\data\ProductSkuData;
 use DmitriiKoziuk\yii2Shop\data\ProductTypeMarginData;
@@ -22,6 +26,7 @@ use DmitriiKoziuk\yii2Shop\forms\product\ProductInputForm;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuInputForm;
 use DmitriiKoziuk\yii2Shop\repositories\ProductRepository;
 use DmitriiKoziuk\yii2Shop\repositories\ProductSkuRepository;
+use DmitriiKoziuk\yii2Shop\services\eav\ProductSkuEavAttributesService;
 use DmitriiKoziuk\yii2Shop\services\category\CategoryProductService;
 use DmitriiKoziuk\yii2Shop\services\category\CategoryProductSkuService;
 use DmitriiKoziuk\yii2Shop\services\supplier\SupplierService;
@@ -48,6 +53,11 @@ class ProductService extends DBActionService
      * @var ProductMarginService
      */
     private $_productTypeMarginService;
+
+    /**
+     * @var ProductSkuEavAttributesService
+     */
+    private $productSkuEavAttributesService;
 
     /**
      * @var SupplierService
@@ -79,6 +89,7 @@ class ProductService extends DBActionService
         ProductSkuRepository $_productSkuRepository,
         ProductTypeService $productTypeService,
         ProductMarginService $productTypeMarginService,
+        ProductSkuEavAttributesService $productSkuEavAttributesService,
         SupplierService $supplierService,
         UrlIndexService $urlIndexService,
         CategoryProductService $categoryProductService,
@@ -91,6 +102,7 @@ class ProductService extends DBActionService
         $this->_productSkuRepository = $_productSkuRepository;
         $this->_productTypeService = $productTypeService;
         $this->_productTypeMarginService = $productTypeMarginService;
+        $this->productSkuEavAttributesService = $productSkuEavAttributesService;
         $this->_supplierService = $supplierService;
         $this->_urlIndexService = $urlIndexService;
         $this->_categoryProductService = $categoryProductService;
@@ -346,6 +358,9 @@ class ProductService extends DBActionService
         $productSku->url = $this->_defineProductSkuUrl($product, $productSku);
         $productSku->sort = ProductSku::getNextSortNumber($product->id);
         $this->_productSkuRepository->save($productSku);
+        if ($product->isMainSkuSet()) {
+            $this->duplicateEavAttributes($product->getMainSku(), $productSku);
+        }
         $this->_addProductSkuUrlToIndex($productSku);
         return $productSku;
     }
@@ -634,9 +649,14 @@ class ProductService extends DBActionService
         ]));
     }
 
+    /**
+     * @param Product $product
+     * @throws \DmitriiKoziuk\yii2UrlIndex\exceptions\EntityUrlNotFoundException
+     * @throws \DmitriiKoziuk\yii2UrlIndex\exceptions\UrlAlreadyHasBeenTakenException
+     */
     private function _updateProductUrlInIndex(Product $product): void
     {
-        $this->_urlIndexService->updateUrlInIndex(new UrlUpdateForm([
+        $this->_urlIndexService->updateEntityUrl(new UpdateEntityUrlForm([
             'url' => $product->url,
             'module_name' => ShopModule::ID,
             'controller_name' => ShopModule::PRODUCT_FRONTEND_CONTROLLER_NAME,
@@ -645,14 +665,48 @@ class ProductService extends DBActionService
         ]));
     }
 
+    /**
+     * @param ProductSku $productSku
+     * @throws \DmitriiKoziuk\yii2UrlIndex\exceptions\EntityUrlNotFoundException
+     * @throws \DmitriiKoziuk\yii2UrlIndex\exceptions\UrlAlreadyHasBeenTakenException
+     */
     private function _updateProductSkuUrlInIndex(ProductSku $productSku): void
     {
-        $this->_urlIndexService->updateUrlInIndex(new UrlUpdateForm([
+        $this->_urlIndexService->updateEntityUrl(new UpdateEntityUrlForm([
             'url' => $productSku->url,
             'module_name' => ShopModule::ID,
             'controller_name' => ShopModule::PRODUCT_SKU_FRONTEND_CONTROLLER_NAME,
             'action_name' => ShopModule::PRODUCT_SKU_FRONTEND_ACTION_NAME,
             'entity_id' => (string) $productSku->id,
         ]));
+    }
+
+    /**
+     * @param ProductSku $source
+     * @param ProductSku $destination
+     * @throws \Exception
+     */
+    private function duplicateEavAttributes(ProductSku $source, ProductSku $destination): void
+    {
+        $this->_duplicateEavAttributes($source->eavVarcharValues, $destination);
+        $this->_duplicateEavAttributes($source->eavDoubleValues, $destination);
+        $this->_duplicateEavAttributes($source->eavTextValues, $destination);
+    }
+
+    /**
+     * @param EavValueVarcharEntity[]|EavValueDoubleEntity[]|EavValueTextEntity[] $values
+     * @param ProductSku $destination
+     * @throws Exception
+     */
+    private function _duplicateEavAttributes(array $values, ProductSku $destination): void
+    {
+        foreach ($values as $value) {
+            $eavAttribute = $value->eavAttribute;
+            $this->productSkuEavAttributesService->createRelation(
+                $eavAttribute->storage_type,
+                $destination->id,
+                $value->id
+            );
+        }
     }
 }

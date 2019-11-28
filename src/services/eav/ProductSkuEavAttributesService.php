@@ -68,7 +68,7 @@ class ProductSkuEavAttributesService extends DBActionService
         array $productSkuValues
     ) {
         if (! $attribute->selectable) {
-            $this->updateNonSelectableValues(
+            $this->updateNonSelectableSingleValue(
                 $attribute,
                 $productSkuId,
                 $values,
@@ -99,71 +99,54 @@ class ProductSkuEavAttributesService extends DBActionService
      * @throws Exception
      * @throws \Throwable
      */
-    private function updateNonSelectableValues(
+    private function updateNonSelectableSingleValue(
         EavAttributeEntity $attribute,
         int $productSkuId,
         array $values,
         array $productSkuValues
     ) {
         $value = array_shift($values);
-        $productSkuRelatedValue = null;
+        $oldValue = null;
         if (! empty($productSkuValues[ $attribute->id ])) {
-            $productSkuRelatedValue = array_shift($productSkuValues[ $attribute->id ]);
+            $oldValue = array_shift($productSkuValues[ $attribute->id ]);
         }
 
-        // create value and relation
-        if (! empty($value['value']) && empty($productSkuRelatedValue)) {
-            if (EavAttributeEntity::STORAGE_TYPE_DOUBLE == $attribute->storage_type) {
-                $existValue = $this->createDoubleValue(
-                    $attribute->id,
-                    (float) $value['value'],
-                    isset($value['unit_id']) ? (int) $value['unit_id'] : null
-                );
-            } elseif (EavAttributeEntity::STORAGE_TYPE_VARCHAR == $attribute->storage_type) {
-                $existValue = $this->createVarcharValue(
-                    $attribute->id,
-                    $value['value']
-                );
-            } elseif (EavAttributeEntity::STORAGE_TYPE_TEXT == $attribute->storage_type) {
-                $existValue = $this->createTextValue(
-                    $attribute->id,
-                    $value['value']
-                );
-            } else {
-                throw new Exception('Non exist storage type.');
-            }
-            $this->createRelation(
-                $attribute->storage_type,
-                $productSkuId,
-                $existValue->id
-            );
-        }
-
-        // update related value
-        if (! empty($value['value']) && ! empty($productSkuRelatedValue)) {
+        if (! empty($value['value'])) {
             switch ($attribute->storage_type) {
                 case EavAttributeEntity::STORAGE_TYPE_DOUBLE:
                     $this->updateDoubleValue(
-                        $productSkuRelatedValue,
+                        $productSkuId,
                         (float) $value['value'],
+                        $attribute,
+                        $oldValue,
                         isset($value['unit_id']) ? (int) $value['unit_id'] : null
                     );
                     break;
                 case EavAttributeEntity::STORAGE_TYPE_VARCHAR:
-                    $this->updateVarcharValue($productSkuRelatedValue, $value['value']);
+                    $this->updateVarcharValue(
+                        $productSkuId,
+                        $value['value'],
+                        $attribute,
+                        $oldValue
+                    );
                     break;
                 case EavAttributeEntity::STORAGE_TYPE_TEXT:
-                    $this->updateTextValue($productSkuRelatedValue, $value['value']);
+                    $this->updateTextValue(
+                        $value['value'],
+                        $attribute,
+                        $oldValue
+                    );
                     break;
                 default:
                     throw new Exception('Non exist storage type.');
             }
         }
 
-        // delete relation and value if is empty
-        if (empty($value['value']) && ! empty($productSkuRelatedValue)) {
-            $this->deleteRelation($attribute, $productSkuRelatedValue->id, $productSkuId);
-            $this->deleteValue($productSkuRelatedValue);
+        if (empty($value['value']) && ! empty($oldValue)) {
+            $this->deleteRelation($attribute, $oldValue->id, $productSkuId);
+            if ($attribute->storage_type === EavAttributeEntity::STORAGE_TYPE_TEXT) {
+                $this->deleteValue($oldValue);
+            }
         }
     }
 
@@ -333,7 +316,7 @@ class ProductSkuEavAttributesService extends DBActionService
      * @param int $valueId
      * @throws Exception
      */
-    private function createRelation(string $valueStorageType, int $productSkuId, int $valueId)
+    public function createRelation(string $valueStorageType, int $productSkuId, int $valueId)
     {
         switch ($valueStorageType) {
             case EavAttributeEntity::STORAGE_TYPE_DOUBLE:
@@ -387,16 +370,17 @@ class ProductSkuEavAttributesService extends DBActionService
     /**
      * @param int $attributeId
      * @param float $value
-     * @param int|null $unit
+     * @param int|null $unitId
      * @return EavValueDoubleEntity
      * @throws Exception
      */
-    private function createDoubleValue(int $attributeId, float $value, int $unit = null): EavValueDoubleEntity
+    private function createDoubleValue(int $attributeId, float $value, int $unitId = null): EavValueDoubleEntity
     {
         $newValue = new EavValueDoubleEntity();
         $newValue->attribute_id = $attributeId;
-        $newValue->value = $value;
-        $newValue->value_type_unit_id = $unit;
+        $newValue->value = (string) $value;
+        $newValue->value_type_unit_id = $unitId;
+        $newValue->code = (string) $value;
         if (! $newValue->save()) {
             throw new Exception('Not save.');
         }
@@ -439,48 +423,89 @@ class ProductSkuEavAttributesService extends DBActionService
     }
 
     /**
-     * @param EavValueDoubleEntity $entity
+     * @param int $productSkuId
      * @param float $newValue
-     * @param int|null $unit
+     * @param EavAttributeEntity $attributeEntity
+     * @param EavValueDoubleEntity|null $oldValueEntity
+     * @param int|null $unitId
      * @throws Exception
+     * @throws \Throwable
      */
-    private function updateDoubleValue(EavValueDoubleEntity $entity, float $newValue, int $unit = null)
-    {
-        if ($entity->value != $newValue || $entity->value_type_unit_id != $unit) {
-            $entity->value = $newValue;
-            $entity->value_type_unit_id = $unit;
-            if (!$entity->save()) {
-                throw new Exception('Cant save double value.');
+    private function updateDoubleValue(
+        int $productSkuId,
+        float $newValue,
+        EavAttributeEntity $attributeEntity,
+        EavValueDoubleEntity $oldValueEntity = null,
+        int $unitId = null
+    ) {
+        if (! empty($oldValueEntity) && ($oldValueEntity->value != $newValue || $oldValueEntity->value_type_unit_id != $unitId)) {
+            $this->deleteRelation($attributeEntity, $oldValueEntity->id, $productSkuId);
+        }
+        if (empty($oldValueEntity) || ($oldValueEntity->value != $newValue || $oldValueEntity->value_type_unit_id != $unitId)) {
+            /** @var EavValueDoubleEntity $existValue */
+            $existValue = EavValueDoubleEntity::find()
+                ->where([
+                    'attribute_id' => $attributeEntity->id,
+                    'value' => $newValue,
+                    'value_type_unit_id' => $unitId
+                ])->one();
+            if (empty($existValue)) {
+                $createdValueEntity = $this->createDoubleValue($attributeEntity->id, $newValue, $unitId);
+                $this->createRelation($attributeEntity->storage_type, $productSkuId, $createdValueEntity->id);
+            } else {
+                $this->createRelation($attributeEntity->storage_type, $productSkuId, $existValue->id);
             }
         }
     }
 
     /**
-     * @param EavValueVarcharEntity $entity
+     * @param int $productSkuId
      * @param string $newValue
+     * @param EavAttributeEntity $attributeEntity
+     * @param EavValueVarcharEntity|null $oldValueEntity
      * @throws Exception
+     * @throws \Throwable
      */
-    private function updateVarcharValue(EavValueVarcharEntity $entity, string $newValue)
-    {
-        if ($entity->value != $newValue) {
-            $entity->value = $newValue;
-            $entity->code = Inflector::slug($newValue);
-            if (!$entity->save()) {
-                throw new Exception('Cant save double value.');
+    private function updateVarcharValue(
+        int $productSkuId,
+        string $newValue,
+        EavAttributeEntity $attributeEntity,
+        EavValueVarcharEntity $oldValueEntity = null
+    ) {
+        if (! empty($oldValueEntity) && $oldValueEntity->value != $newValue) {
+            $this->deleteRelation($attributeEntity, $oldValueEntity->id, $productSkuId);
+        }
+        if (empty($oldValueEntity) || $oldValueEntity->value != $newValue) {
+            $existValue = EavValueVarcharEntity::find()
+                ->where([
+                    'attribute_id' => $attributeEntity->id,
+                    'value' => $newValue
+                ])->one();
+            if (empty($existValue)) {
+                $createdValueEntity = $this->createVarcharValue($attributeEntity->id, $newValue);
+                $this->createRelation($attributeEntity->storage_type, $productSkuId, $createdValueEntity->id);
+            } else {
+                $this->createRelation($attributeEntity->storage_type, $productSkuId, $existValue->id);
             }
         }
     }
 
     /**
-     * @param EavValueTextEntity $entity
      * @param string $newValue
+     * @param EavAttributeEntity $attributeEntity
+     * @param EavValueTextEntity $oldValueEntity
      * @throws Exception
      */
-    private function updateTextValue(EavValueTextEntity $entity, string $newValue)
-    {
-        if ($entity->value != $newValue) {
-            $entity->value = $newValue;
-            if (!$entity->save()) {
+    private function updateTextValue(
+        string $newValue,
+        EavAttributeEntity $attributeEntity,
+        EavValueTextEntity $oldValueEntity = null
+    ) {
+        if (empty($oldValueEntity)) {
+            $this->createTextValue($attributeEntity->id, $newValue);
+        } else {
+            $oldValueEntity->value = $newValue;
+            if (!$oldValueEntity->save()) {
                 throw new Exception('Cant save double value.');
             }
         }

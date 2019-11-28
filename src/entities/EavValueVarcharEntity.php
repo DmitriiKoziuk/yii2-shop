@@ -54,4 +54,11 @@ class EavValueVarcharEntity extends \yii\db\ActiveRecord
     {
         return $this->hasOne(EavAttributeEntity::class, ['id' => 'attribute_id']);
     }
+
+    public function getRelatedProductSkuNumber()
+    {
+        return EavValueVarcharProductSkuEntity::find()
+            ->where(['value_id' => $this->id])
+            ->count();
+    }
 }
