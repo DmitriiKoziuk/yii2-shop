@@ -5,6 +5,7 @@ use DmitriiKoziuk\yii2Shop\data\CategoryData;
 use DmitriiKoziuk\yii2Shop\data\product\ProductSearchParams;
 use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 use DmitriiKoziuk\yii2Shop\entities\categoryFaceted\EavAttributeEntity;
+use DmitriiKoziuk\yii2Shop\widgets\SubcategoriesWidget;
 use DmitriiKoziuk\yii2Shop\widgets\ProductWidget;
 use DmitriiKoziuk\yii2Shop\widgets\frontend\CategoryProductFacetedNavigationWidget;
 
@@ -30,16 +31,9 @@ $this->params['breadcrumbs'] = $categoryData->getBreadcrumb();
 <div class="category">
   <div class="row">
     <div class="col-md-3">
-      <?php if ($categoryData->isHasChildrenCategories()): ?>
-      <h4>Categories</h4>
-      <ul>
-        <?php foreach ($categoryData->getChildrenCategories() as $category) ?>
-        <li>
-          <a href="<?= $category->url ?>"><?= $category->getFrontendName() ?></a>
-        </li>
-        <?php ?>
-      </ul>
-      <?php endif; ?>
+      <?= SubcategoriesWidget::widget([
+          'category' => $categoryData,
+      ]) ?>
 
       <?= CategoryProductFacetedNavigationWidget::widget([
           'facetedAttributes' => $facetedAttributes,
