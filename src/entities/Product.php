@@ -153,4 +153,9 @@ class Product extends ActiveRecord
     {
         return empty($this->category_id) ? false : true;
     }
+
+    public function isTypeSet()
+    {
+        return empty($this->type_id) ? false : true;
+    }
 }

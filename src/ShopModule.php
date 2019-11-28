@@ -2,6 +2,7 @@
 
 namespace DmitriiKoziuk\yii2Shop;
 
+use DmitriiKoziuk\yii2Shop\services\product\ProductSkuSearchService;
 use yii\di\Container;
 use yii\db\Connection;
 use yii\web\Application as WebApp;
@@ -483,6 +484,9 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
         );
         $this->diContainer->setSingleton(ProductSearchService::class, function () {
             return new ProductSearchService();
+        });
+        $this->diContainer->setSingleton(ProductSkuSearchService::class, function () {
+            return new ProductSkuSearchService();
         });
         $this->diContainer->setSingleton(
             CartService::class,

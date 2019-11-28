@@ -1,0 +1,64 @@
+<?php declare(strict_types=1);
+
+namespace DmitriiKoziuk\yii2Shop\data\frontend\product;
+
+use DmitriiKoziuk\yii2FileManager\entities\FileEntity;
+use DmitriiKoziuk\yii2Shop\entities\Product;
+
+class ProductData
+{
+    protected $product;
+
+    public function __construct(Product $product)
+    {
+        $this->product = $product;
+    }
+
+    public function isMainImageSet(): bool
+    {
+        return empty($this->product->getMainSku()->getMainImage()) ? false : true;
+    }
+
+    public function isTypeSet(): bool
+    {
+        return $this->product->isTypeSet();
+    }
+
+    public function isPriceSet(): bool
+    {
+        return $this->product->getMainSku()->isSitePriceSet();
+    }
+
+    public function getId(): int
+    {
+        return $this->product->getMainSku()->id;
+    }
+
+    public function getFullName(): string
+    {
+        return $this->product->name . ' ' . $this->product->getMainSku()->name;
+    }
+
+    public function getUrl(): string
+    {
+        return $this->product->getMainSku()->url;
+    }
+
+    public function getMainImage(): ?FileEntity
+    {
+        return $this->product->getMainSku()->getMainImage();
+    }
+
+    public function getTypeName(): string
+    {
+        if ($this->isTypeSet()) {
+            return $this->product->type->name;
+        }
+        return '';
+    }
+
+    public function getPrice(): string
+    {
+        return $this->product->getMainSku()->price_on_site;
+    }
+}
