@@ -36,14 +36,14 @@ $defaultImageUrl = $this->assetManager
               <?= $product->getFullName() ?>
           </h4>
           <p>
-            <?php if ($product->isPriceSet()): ?>
+            <?php if ($product->isPriceSet() && $product->isCurrencySet()): ?>
               <?= number_format(
                   $product->getPrice(),
                   0,
                   '.',
                   ' '
               ) ?>
-              <span class="currency">currency</span>
+              <span class="currency"><?= $product->getCurrencySymbol() ?></span>
             <?php endif; ?>
           </p>
           <p>
