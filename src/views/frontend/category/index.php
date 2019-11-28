@@ -14,6 +14,7 @@ use DmitriiKoziuk\yii2Shop\widgets\frontend\CategoryProductFacetedNavigationWidg
  * @var $facetedAttributes EavAttributeEntity[]
  * @var $indexPageUrl string
  * @var $getParams array|null
+ * @var $filterParams array,
  * @var $filteredAttributes EavAttributeEntity[]
  */
 
@@ -40,6 +41,7 @@ $this->registerLinkTag(['rel' => 'canonical', 'href' => $categoryData->getUrl()]
           'searchParams' => $productSearchParams,
           'indexPageUrl' => $indexPageUrl,
           'filteredAttributes' => $filteredAttributes,
+          'filterParams' => $filterParams,
       ]) ?>
     </div>
   </div>

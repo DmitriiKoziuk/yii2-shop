@@ -54,6 +54,7 @@ final class CategoryController extends Controller
             'categoryData' => $categoryData,
             'indexPageUrl' => $url->url,
             'getParams' => $getParams,
+            'filterParams' => $filterParams,
             'facetedAttributes' => $facetedAttributes,
             'filteredAttributes' => $filteredAttributes,
         ]);
