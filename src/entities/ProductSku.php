@@ -169,6 +169,11 @@ class ProductSku extends ActiveRecord
         return empty($this->price_on_site) ? false : true;
     }
 
+    public function isCurrencySet(): bool
+    {
+        return empty($this->currency_id) ? false : true;
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */

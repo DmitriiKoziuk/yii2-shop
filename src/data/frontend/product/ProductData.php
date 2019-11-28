@@ -29,6 +29,11 @@ class ProductData
         return $this->product->getMainSku()->isSitePriceSet();
     }
 
+    public function isCurrencySet(): bool
+    {
+        return $this->product->getMainSku()->isCurrencySet();
+    }
+
     public function getId(): int
     {
         return $this->product->getMainSku()->id;
@@ -60,5 +65,10 @@ class ProductData
     public function getPrice(): string
     {
         return $this->product->getMainSku()->price_on_site;
+    }
+
+    public function getCurrencySymbol(): string
+    {
+        return  $this->product->getMainSku()->currency->symbol;
     }
 }

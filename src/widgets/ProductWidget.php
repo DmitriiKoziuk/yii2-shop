@@ -81,7 +81,7 @@ class ProductWidget extends Widget
 
     public function run()
     {
-        return $this->render('products', [
+        return $this->render('product', [
             'products' => $this->_products,
             'pagination' => $this->_pagination,
             'indexPageUrl' => $this->indexPageUrl,
