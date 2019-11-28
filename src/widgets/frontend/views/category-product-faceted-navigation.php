@@ -13,6 +13,7 @@ use DmitriiKoziuk\yii2Shop\helpers\CategoryProductFacetedNavigationHelper;
 
 ?>
 
+<h4>Features</h4>
 <div class="faceted-navigation">
   <?php foreach ($attributes as $attribute): ?>
   <div class="attribute-tile">
@@ -28,6 +29,7 @@ use DmitriiKoziuk\yii2Shop\helpers\CategoryProductFacetedNavigationHelper;
       ) ?>">
         <?= $value->value ?>
         <?= ! empty($value->unit) ? $value->unit->name : ''; ?>
+        ( <?= $value->count ?> )
       </a>
     </li>
     <?php endforeach; ?>

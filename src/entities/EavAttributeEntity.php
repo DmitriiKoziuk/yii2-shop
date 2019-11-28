@@ -9,10 +9,14 @@ use Exception;
  *
  * @property int $id
  * @property string $name
+ * @property string $name_for_product
+ * @property string $name_for_filter
  * @property string $code
  * @property string $storage_type
  * @property int $selectable
  * @property int $multiple
+ * @property string $description_backend
+ * @property string $description_frontend
  * @property int $value_type_id
  * @property int $default_value_type_unit_id
  *
@@ -47,8 +51,12 @@ class EavAttributeEntity extends \yii\db\ActiveRecord
             [['name', 'code', 'storage_type'], 'required'],
             [['storage_type'], 'string'],
             [['selectable', 'multiple', 'value_type_id', 'default_value_type_unit_id'], 'integer'],
-            [['name'], 'string', 'max' => 100],
+            [['name', 'name_for_product', 'name_for_filter'], 'string', 'max' => 100],
             [['code'], 'string', 'max' => 120],
+            [['name_for_product', 'name_for_filter'], 'default', 'value' => null],
+            [['description_backend', 'description_frontend'], 'string'],
+            [['description_backend', 'description_frontend'], 'default', 'value' => null],
+            [['selectable', 'multiple'], 'default', 'value' => 0],
             [
                 ['value_type_id'],
                 'exist',
@@ -74,10 +82,14 @@ class EavAttributeEntity extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'name' => 'Name',
+            'name_for_product' => 'Name For Product',
+            'name_for_filter' => 'Name For Filter',
             'code' => 'Code',
             'storage_type' => 'Storage Type',
             'selectable' => 'Selectable',
             'multiple' => 'Multiple',
+            'description_backend' => 'Description Backend',
+            'description_frontend' => 'Description Frontend',
             'value_type_id' => 'Value Type ID',
             'default_value_type_unit_id' => 'Default value type unit id',
         ];

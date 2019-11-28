@@ -5,6 +5,7 @@ use DmitriiKoziuk\yii2Shop\data\CategoryData;
 use DmitriiKoziuk\yii2Shop\data\product\ProductSearchParams;
 use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 use DmitriiKoziuk\yii2Shop\entities\categoryFaceted\EavAttributeEntity;
+use DmitriiKoziuk\yii2Shop\widgets\SubcategoriesWidget;
 use DmitriiKoziuk\yii2Shop\widgets\ProductWidget;
 use DmitriiKoziuk\yii2Shop\widgets\frontend\CategoryProductFacetedNavigationWidget;
 
@@ -14,6 +15,7 @@ use DmitriiKoziuk\yii2Shop\widgets\frontend\CategoryProductFacetedNavigationWidg
  * @var $facetedAttributes EavAttributeEntity[]
  * @var $indexPageUrl string
  * @var $getParams array|null
+ * @var $filterParams array,
  * @var $filteredAttributes EavAttributeEntity[]
  */
 
@@ -24,10 +26,15 @@ $productSearchParams->stock_status = [ProductSku::STOCK_IN, ProductSku::STOCK_AW
 $this->title = $categoryData->getMetaTitle();
 $this->registerMetaTag(['name' => 'description', 'content' => $categoryData->getMetaDescription()]);
 $this->registerLinkTag(['rel' => 'canonical', 'href' => $categoryData->getUrl()]);
+$this->params['breadcrumbs'] = $categoryData->getBreadcrumb();
 ?>
 <div class="category">
   <div class="row">
     <div class="col-md-3">
+      <?= SubcategoriesWidget::widget([
+          'category' => $categoryData,
+      ]) ?>
+
       <?= CategoryProductFacetedNavigationWidget::widget([
           'facetedAttributes' => $facetedAttributes,
           'filteredAttributes' => $filteredAttributes,
@@ -40,6 +47,7 @@ $this->registerLinkTag(['rel' => 'canonical', 'href' => $categoryData->getUrl()]
           'searchParams' => $productSearchParams,
           'indexPageUrl' => $indexPageUrl,
           'filteredAttributes' => $filteredAttributes,
+          'filterParams' => $filterParams,
       ]) ?>
     </div>
   </div>

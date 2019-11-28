@@ -15,6 +15,11 @@ class CategoryData
         $this->_categoryRecord = $categoryRecord;
     }
 
+    public function isHasChildrenCategories()
+    {
+        return empty($this->_categoryRecord->children) ? false : true;
+    }
+
     public function getId(): int
     {
         return $this->_categoryRecord->id;
@@ -48,5 +53,32 @@ class CategoryData
     public function getMetaDescription(): string
     {
         return $this->_categoryRecord->meta_description ?? '';
+    }
+
+    /**
+     * @return array
+     */
+    public function getBreadcrumb(): array
+    {
+        $breadcrumbs = [];
+        $parentCategories = $this->_categoryRecord->parents;
+        foreach ($parentCategories as $parentCategory) {
+            $breadcrumbs[] = [
+                'label' => $parentCategory->getFrontendName(),
+                'url' => $parentCategory->url,
+            ];
+        }
+        $breadcrumbs[] = [
+            'label' => $this->_categoryRecord->getFrontendName(),
+        ];
+        return $breadcrumbs;
+    }
+
+    /**
+     * @return Category[]
+     */
+    public function getChildrenCategories(): array
+    {
+        return $this->_categoryRecord->children;
     }
 }

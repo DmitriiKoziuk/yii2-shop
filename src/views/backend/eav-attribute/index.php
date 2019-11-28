@@ -32,6 +32,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'id',
             'name',
+            'name_for_product',
+            'name_for_filter',
             'code',
             [
                 'attribute' => 'storage_type',

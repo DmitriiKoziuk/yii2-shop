@@ -6,6 +6,8 @@ use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 use yii\helpers\ArrayHelper;
 use DmitriiKoziuk\yii2Shop\ShopModule;
+use DmitriiKoziuk\yii2FileManager\entities\FileEntity;
+use DmitriiKoziuk\yii2FileManager\repositories\FileRepository;
 
 /**
  * This is the model class for table "{{%dk_shop_product_skus}}".
@@ -30,7 +32,7 @@ use DmitriiKoziuk\yii2Shop\ShopModule;
  * @property int    $currency_id
  *
  * @property Currency $currency
- * @property Product  $produc
+ * @property Product  $product
  * @property EavValueVarcharEntity[] $eavVarcharValues
  * @property EavValueTextEntity[] $eavTextValues
  * @property EavValueDoubleEntity[] $eavDoubleValues
@@ -49,6 +51,21 @@ class ProductSku extends ActiveRecord
 
     const SELL_PRICE_STRATEGY_MARGIN = 1;
     const SELL_PRICE_STRATEGY_STATIC = 2;
+
+    /**
+     * @var FileRepository
+     */
+    private $fileRepository;
+
+    /**
+     * @var FileEntity[]
+     */
+    private $images;
+
+    /**
+     * @var array|null
+     */
+    private $previewAttributes;
 
     /**
      * {@inheritdoc}
@@ -146,6 +163,27 @@ class ProductSku extends ActiveRecord
         ];
     }
 
+    public function init()
+    {
+        parent::init();
+        $this->fileRepository = Yii::$container->get(FileRepository::class);
+    }
+
+    public function isSitePriceSet(): bool
+    {
+        return empty($this->price_on_site) ? false : true;
+    }
+
+    public function isCurrencySet(): bool
+    {
+        return empty($this->currency_id) ? false : true;
+    }
+
+    public function isPreviewAttributeSet(): bool
+    {
+        return empty($this->getPreviewValues()) ? false : true;
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -236,6 +274,27 @@ class ProductSku extends ActiveRecord
         return $this->product->brand_id;
     }
 
+
+    public function getImages(): array
+    {
+        if (is_null($this->images)) {
+            $this->images = $this->fileRepository->getEntityImages(
+                self::FILE_ENTITY_NAME,
+                (string) $this->id
+            );
+        }
+        return $this->images;
+    }
+
+    public function getMainImage(): ?FileEntity
+    {
+        $idx = array_key_first($this->getImages());
+        if (is_null($idx)) {
+            return null;
+        }
+        return $this->getImages()[ $idx ];
+    }
+
     public static function getStockVariation($key = null)
     {
         $variation = [
@@ -300,5 +359,42 @@ class ProductSku extends ActiveRecord
         return $this->hasMany(EavValueDoubleEntity::class, ['id' => 'value_id'])
             ->viaTable(EavValueDoubleProductSkuEntity::tableName(), ['product_sku_id' => 'id'])
             ->indexBy('id');
+    }
+
+    public function getPreviewValues(): array
+    {
+        $values = [];
+        if ($this->product->isTypeSet()) {
+            if (is_null($this->previewAttributes)) {
+                $this->previewAttributes = $this->getPreviewAttributeIds();
+            }
+            foreach ($this->eavVarcharValues as $value) {
+                if (array_key_exists($value->attribute_id, $this->previewAttributes)) {
+                    $values[] = $value;
+                }
+            }
+            foreach ($this->eavDoubleValues as $value) {
+                if (array_key_exists($value->attribute_id, $this->previewAttributes)) {
+                    $values[] = $value;
+                }
+            }
+            foreach ($this->eavTextValues as $value) {
+                if (array_key_exists($value->attribute_id, $this->previewAttributes)) {
+                    $values[] = $value;
+                }
+            }
+        }
+        return $values;
+    }
+
+    private function getPreviewAttributeIds()
+    {
+        return ProductTypeAttributeEntity::find()
+            ->where([
+                'product_type_id' => $this->product->type->id,
+                'view_attribute_at_product_preview' => ProductTypeAttributeEntity::PREVIEW_YES,
+            ])
+            ->indexBy('attribute_id')
+            ->all();
     }
 }

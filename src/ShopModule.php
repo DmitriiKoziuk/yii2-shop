@@ -2,6 +2,7 @@
 
 namespace DmitriiKoziuk\yii2Shop;
 
+use DmitriiKoziuk\yii2Shop\services\product\ProductSkuSearchService;
 use yii\di\Container;
 use yii\db\Connection;
 use yii\web\Application as WebApp;
@@ -435,12 +436,22 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
                 );
             }
         );
+        $this->diContainer->setSingleton(
+            ProductSkuEavAttributesService::class,
+            function () use (
+                $app
+            ) {
+                return new ProductSkuEavAttributesService($app->db);
+            }
+        );
         /** @var SupplierService $supplierService */
         $supplierService = $this->diContainer->get(SupplierService::class);
         /** @var CategoryProductService $categoryProductService */
         $categoryProductService = $this->diContainer->get(CategoryProductService::class);
         /** @var CategoryProductSkuService $categoryProductSkuService */
         $categoryProductSkuService = $this->diContainer->get(CategoryProductSkuService::class);
+        /** @var ProductSkuEavAttributesService $productSkuEavAttributesService */
+        $productSkuEavAttributesService = $this->diContainer->get(ProductSkuEavAttributesService::class);
         $this->diContainer->setSingleton(
             ProductService::class,
             function () use (
@@ -448,6 +459,7 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
                 $productSkuRepository,
                 $productTypeService,
                 $productMarginService,
+                $productSkuEavAttributesService,
                 $supplierService,
                 $currencyRepository,
                 $urlService,
@@ -460,6 +472,7 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
                     $productSkuRepository,
                     $productTypeService,
                     $productMarginService,
+                    $productSkuEavAttributesService,
                     $supplierService,
                     $urlService,
                     $categoryProductService,
@@ -471,6 +484,9 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
         );
         $this->diContainer->setSingleton(ProductSearchService::class, function () {
             return new ProductSearchService();
+        });
+        $this->diContainer->setSingleton(ProductSkuSearchService::class, function () {
+            return new ProductSkuSearchService();
         });
         $this->diContainer->setSingleton(
             CartService::class,
@@ -554,14 +570,6 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
                     $brandRepository,
                     $app->db
                 );
-            }
-        );
-        $this->diContainer->setSingleton(
-            ProductSkuEavAttributesService::class,
-            function () use (
-                $app
-            ) {
-                return new ProductSkuEavAttributesService($app->db);
             }
         );
         $this->diContainer->setSingleton(EavService::class, function () use ($eavRepository) {

@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace DmitriiKoziuk\yii2Shop\services\product;
 
 use yii\db\ActiveQuery;
@@ -13,7 +14,7 @@ use DmitriiKoziuk\yii2Shop\entities\categoryFaceted\EavAttributeEntity;
 use DmitriiKoziuk\yii2Shop\entities\EavValueDoubleProductSkuEntity;
 use DmitriiKoziuk\yii2Shop\entities\EavValueVarcharProductSkuEntity;
 
-class ProductSearchService
+class ProductSkuSearchService
 {
     public function searchBy(
         ProductSearchParams $params,
@@ -24,16 +25,18 @@ class ProductSearchService
             throw new \BadMethodCallException('Search params not valid.');
         }
 
-        $query = Product::find();
+        $query = ProductSku::find();
         $query->innerJoin(
-            ProductSku::tableName(),
+            Product::tableName(),
             [
                 ProductSku::tableName() . '.product_id' => new Expression(
                     Product::tableName() . '.id'
                 ),
-                ProductSku::tableName() . '.stock_status' => $params->stock_status,
             ]
         );
+        if (! empty($params->stock_status)) {
+            $query->andWhere([ProductSku::tableName() . '.stock_status' => $params->stock_status]);
+        }
         if (! empty($params->getCategoryId())) {
             $query->innerJoin(
                 CategoryProduct::tableName(),
@@ -55,7 +58,6 @@ class ProductSearchService
         if (! empty($filteredAttributes)) {
             $this->includeEavAttributesToSearchQuery($query, $filteredAttributes);
         }
-        $query->distinct();
         return new ActiveDataProvider([
             'query' => $query,
             'pagination' => [

@@ -6,8 +6,16 @@
 
 ?>
 
-<?php foreach ($buttons as $button): ?>
-
-  <a href="<?= $button['url'] ?>"><?= $button['label'] ?></a>
-
-<?php endforeach; ?>
+<nav>
+  <ul class="pagination">
+    <?php foreach ($buttons as $button): ?>
+    <li class="<?= $button['active'] == true ? 'active' : '' ?>">
+      <?php if ($button['active']): ?>
+      <span><?= $button['label'] ?></span>
+      <?php else: ?>
+      <a href="<?= $button['url'] ?>"><?= $button['label'] ?></a>
+      <?php endif; ?>
+    </li>
+    <?php endforeach; ?>
+  </ul>
+</nav>
