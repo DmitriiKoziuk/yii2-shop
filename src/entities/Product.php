@@ -148,4 +148,9 @@ class Product extends ActiveRecord
     {
         return empty($this->main_sku_id) ? false : true;
     }
+
+    public function isCategorySet(): bool
+    {
+        return empty($this->category_id) ? false : true;
+    }
 }

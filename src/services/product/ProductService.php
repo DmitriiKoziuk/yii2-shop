@@ -361,6 +361,9 @@ class ProductService extends DBActionService
         if ($product->isMainSkuSet()) {
             $this->duplicateEavAttributes($product->getMainSku(), $productSku);
         }
+        if ($product->isCategorySet()) {
+            $this->_categoryProductSkuService->updateRelation($productSku->id, $product->category_id);
+        }
         $this->_addProductSkuUrlToIndex($productSku);
         return $productSku;
     }
