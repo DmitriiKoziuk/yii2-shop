@@ -58,10 +58,11 @@ class LinkPagerWidget extends Widget
                     ],
                 ]);
             }
+            $isActive = $i == ($currentPage + 1) ? true : false;
             $buttons[] = [
                 'label' => $i,
                 'url' => $url,
-                'active' => $i == $currentPage ? true : false,
+                'active' => $isActive,
             ];
         }
 
