@@ -30,6 +30,17 @@ $this->params['breadcrumbs'] = $categoryData->getBreadcrumb();
 <div class="category">
   <div class="row">
     <div class="col-md-3">
+      <?php if ($categoryData->isHasChildrenCategories()): ?>
+      <h4>Categories</h4>
+      <ul>
+        <?php foreach ($categoryData->getChildrenCategories() as $category) ?>
+        <li>
+          <a href="<?= $category->url ?>"><?= $category->getFrontendName() ?></a>
+        </li>
+        <?php ?>
+      </ul>
+      <?php endif; ?>
+
       <?= CategoryProductFacetedNavigationWidget::widget([
           'facetedAttributes' => $facetedAttributes,
           'filteredAttributes' => $filteredAttributes,
