@@ -14,7 +14,7 @@ use DmitriiKoziuk\yii2Shop\widgets\frontend\LinkPagerWidget;
  * @var $products ProductData[]|ProductSkuData[]
  * @var $pagination Pagination
  * @var $indexPageUrl string
- * @var $filterParams array,
+ * @var $filterParams array
  */
 
 ProductWidgetAsset::register($this);
