@@ -49,4 +49,23 @@ class CategoryData
     {
         return $this->_categoryRecord->meta_description ?? '';
     }
+
+    /**
+     * @return array
+     */
+    public function getBreadcrumb(): array
+    {
+        $breadcrumbs = [];
+        $parentCategories = $this->_categoryRecord->parents;
+        foreach ($parentCategories as $parentCategory) {
+            $breadcrumbs[] = [
+                'label' => $parentCategory->getFrontendName(),
+                'url' => $parentCategory->url,
+            ];
+        }
+        $breadcrumbs[] = [
+            'label' => $this->_categoryRecord->getFrontendName(),
+        ];
+        return $breadcrumbs;
+    }
 }

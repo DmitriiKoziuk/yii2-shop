@@ -25,6 +25,7 @@ $productSearchParams->stock_status = [ProductSku::STOCK_IN, ProductSku::STOCK_AW
 $this->title = $categoryData->getMetaTitle();
 $this->registerMetaTag(['name' => 'description', 'content' => $categoryData->getMetaDescription()]);
 $this->registerLinkTag(['rel' => 'canonical', 'href' => $categoryData->getUrl()]);
+$this->params['breadcrumbs'] = $categoryData->getBreadcrumb();
 ?>
 <div class="category">
   <div class="row">

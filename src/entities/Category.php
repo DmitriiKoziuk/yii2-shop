@@ -210,4 +210,9 @@ class Category extends ActiveRecord
         }
         return $r;
     }
+
+    public function getFrontendName()
+    {
+        return $this->name_on_site ?? $this->name;
+    }
 }
