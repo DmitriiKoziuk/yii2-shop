@@ -2,8 +2,11 @@
 
 namespace DmitriiKoziuk\yii2Shop\data\frontend\product;
 
-use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 use DmitriiKoziuk\yii2FileManager\entities\FileEntity;
+use DmitriiKoziuk\yii2Shop\entities\EavValueDoubleEntity;
+use DmitriiKoziuk\yii2Shop\entities\EavValueTextEntity;
+use DmitriiKoziuk\yii2Shop\entities\EavValueVarcharEntity;
+use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 
 class ProductSkuData extends ProductData
 {
@@ -26,6 +29,16 @@ class ProductSkuData extends ProductData
     public function isPriceSet(): bool
     {
         return $this->productSku->isSitePriceSet();
+    }
+
+    public function isCurrencySet(): bool
+    {
+        return $this->productSku->isCurrencySet();
+    }
+
+    public function isPreviewAttributesSet(): bool
+    {
+        return $this->productSku->isPreviewAttributeSet();
     }
 
     public function getId(): int
@@ -59,5 +72,18 @@ class ProductSkuData extends ProductData
     public function getPrice(): string
     {
         return $this->productSku->price_on_site;
+    }
+
+    public function getCurrencySymbol(): string
+    {
+        return  $this->productSku->currency->symbol;
+    }
+
+    /**
+     * @return EavValueVarcharEntity[]|EavValueDoubleEntity[]|EavValueTextEntity[]
+     */
+    public function getProductPreviewValues(): array
+    {
+        return $this->product->getMainSku()->getPreviewValues();
     }
 }
