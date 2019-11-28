@@ -15,6 +15,11 @@ class CategoryData
         $this->_categoryRecord = $categoryRecord;
     }
 
+    public function isHasChildrenCategories()
+    {
+        return empty($this->_categoryRecord->children) ? false : true;
+    }
+
     public function getId(): int
     {
         return $this->_categoryRecord->id;
@@ -67,5 +72,13 @@ class CategoryData
             'label' => $this->_categoryRecord->getFrontendName(),
         ];
         return $breadcrumbs;
+    }
+
+    /**
+     * @return Category[]
+     */
+    public function getChildrenCategories(): array
+    {
+        return $this->_categoryRecord->children;
     }
 }
