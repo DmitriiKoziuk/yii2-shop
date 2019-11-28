@@ -1,7 +1,7 @@
 <?php
 namespace DmitriiKoziuk\yii2Shop\data;
 
-use DmitriiKoziuk\yii2FileManager\entities\File;
+use DmitriiKoziuk\yii2FileManager\entities\FileEntity;
 use DmitriiKoziuk\yii2Shop\entities\Product;
 
 class ProductData
@@ -17,12 +17,12 @@ class ProductData
     public $mainSku;
 
     /**
-     * @var File[]
+     * @var FileEntity[]
      */
     public $images;
 
     /**
-     * @var File
+     * @var FileEntity
      */
     public $mainImage;
 

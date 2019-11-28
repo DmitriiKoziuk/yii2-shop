@@ -1,16 +1,18 @@
 <?php
 
+use yii\web\View;
+use yii\data\Pagination;
 use DmitriiKoziuk\yii2Shop\assets\frontend\BaseAsset;
 use DmitriiKoziuk\yii2Shop\assets\frontend\ProductWidgetAsset;
-use DmitriiKoziuk\yii2FileManager\helpers\FileWebHelper;
+use DmitriiKoziuk\yii2Shop\data\frontend\product\ProductData;
+use DmitriiKoziuk\yii2Shop\data\frontend\product\ProductSkuData;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 use DmitriiKoziuk\yii2Shop\widgets\frontend\LinkPagerWidget;
 
 /**
- * @var $this \yii\web\View
- * @var $products \DmitriiKoziuk\yii2Shop\data\ProductData[]
- * @var $pagination \yii\data\Pagination
- * @var $fileWebHelper FileWebHelper
+ * @var $this View
+ * @var $products ProductData[]|ProductSkuData[]
+ * @var $pagination Pagination
  * @var $indexPageUrl string
  */
 
@@ -28,11 +30,9 @@ $defaultImageUrl = $this->assetManager
         <div class="row">
           <div class="col-md-12">
             <div class="image">
-              <a href="<?= $product->mainSku->getUrl() ?>">
-                <?php if (! empty($product->mainImage)): ?>
-                <img src="<?= $fileWebHelper->getFileFullWebPath(
-                    $product->mainImage
-                ) ?>" alt="<?= $product->getName() . ' ' . $product->mainSku->getName() ?>">
+              <a href="<?= $product->getUrl() ?>">
+                <?php if (! empty($product->isMainImageSet())): ?>
+                <img src="<?= $product->getMainImage()->getThumbnail(100, 100) ?>" alt="<?= $product->getFullName() ?>">
                 <?php else: ?>
                 <img src="<?= $defaultImageUrl ?>" alt="">
                 <?php endif; ?>
@@ -43,9 +43,9 @@ $defaultImageUrl = $this->assetManager
         <div class="row">
           <div class="col-md-12">
             <div class="title">
-              <a href="<?= $product->mainSku->getUrl() ?>">
-                <span class="type-name"><?= ! empty($product->type) ? $product->type->getName() : '' ?></span>
-                <?= $product->getName() ?> <?= $product->mainSku->getName() ?>
+              <a href="<?= $product->getUrl() ?>">
+                <span class="type-name"><?= $product->getTypeName() ?></span>
+                <?= $product->getFullName() ?>
               </a>
             </div>
           </div>
@@ -56,9 +56,9 @@ $defaultImageUrl = $this->assetManager
               <div class="row align-items-center">
                 <div class="col-md-6">
                   <div class="price">
-                    <?php if ($product->mainSku->isPriceOnSiteSet()): ?>
+                    <?php if ($product->isPriceSet()): ?>
                     <?= number_format(
-                        $product->mainSku->getPriceOnSite(),
+                        $product->getPrice(),
                         0,
                         '.',
                         ' '
@@ -68,15 +68,15 @@ $defaultImageUrl = $this->assetManager
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <?php if ($product->mainSku->isPriceOnSiteSet()): ?>
-                  <a class="btn buy-button" href="/cart/add-product?product=<?= $product->mainSku->getId() ?>">
+                  <?php if ($product->isPriceSet()): ?>
+                  <a class="btn buy-button" href="/cart/add-product?product=<?= $product->getId() ?>">
                     <?= Yii::t(ShopModule::TRANSLATION, 'Buy') ?>
                   </a>
                   <?php endif; ?>
-                  <a class="btn favorite-button" href="/favorite/add?product=<?= $product->mainSku->getId() ?>">
+                  <a class="btn favorite-button" href="/favorite/add?product=<?= $product->getId() ?>">
                     F
                   </a>
-                  <a class="btn compare-button" href="/compare/add?product=<?= $product->mainSku->getId() ?>">
+                  <a class="btn compare-button" href="/compare/add?product=<?= $product->getId() ?>">
                     C
                   </a>
                 </div>

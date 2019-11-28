@@ -6,6 +6,8 @@ use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 use yii\helpers\ArrayHelper;
 use DmitriiKoziuk\yii2Shop\ShopModule;
+use DmitriiKoziuk\yii2FileManager\entities\FileEntity;
+use DmitriiKoziuk\yii2FileManager\repositories\FileRepository;
 
 /**
  * This is the model class for table "{{%dk_shop_product_skus}}".
@@ -30,7 +32,7 @@ use DmitriiKoziuk\yii2Shop\ShopModule;
  * @property int    $currency_id
  *
  * @property Currency $currency
- * @property Product  $produc
+ * @property Product  $product
  * @property EavValueVarcharEntity[] $eavVarcharValues
  * @property EavValueTextEntity[] $eavTextValues
  * @property EavValueDoubleEntity[] $eavDoubleValues
@@ -49,6 +51,16 @@ class ProductSku extends ActiveRecord
 
     const SELL_PRICE_STRATEGY_MARGIN = 1;
     const SELL_PRICE_STRATEGY_STATIC = 2;
+
+    /**
+     * @var FileRepository
+     */
+    private $fileRepository;
+
+    /**
+     * @var FileEntity[]
+     */
+    private $images;
 
     /**
      * {@inheritdoc}
@@ -146,6 +158,17 @@ class ProductSku extends ActiveRecord
         ];
     }
 
+    public function init()
+    {
+        parent::init();
+        $this->fileRepository = Yii::$container->get(FileRepository::class);
+    }
+
+    public function isSitePriceSet(): bool
+    {
+        return empty($this->price_on_site) ? false : true;
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -234,6 +257,27 @@ class ProductSku extends ActiveRecord
     public function getBrandId(): ?int
     {
         return $this->product->brand_id;
+    }
+
+
+    public function getImages(): array
+    {
+        if (is_null($this->images)) {
+            $this->images = $this->fileRepository->getEntityImages(
+                self::FILE_ENTITY_NAME,
+                (string) $this->id
+            );
+        }
+        return $this->images;
+    }
+
+    public function getMainImage(): ?FileEntity
+    {
+        $idx = array_key_first($this->getImages());
+        if (is_null($idx)) {
+            return null;
+        }
+        return $this->getImages()[ $idx ];
     }
 
     public static function getStockVariation($key = null)
