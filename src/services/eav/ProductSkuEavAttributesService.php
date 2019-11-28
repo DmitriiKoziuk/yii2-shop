@@ -316,7 +316,7 @@ class ProductSkuEavAttributesService extends DBActionService
      * @param int $valueId
      * @throws Exception
      */
-    private function createRelation(string $valueStorageType, int $productSkuId, int $valueId)
+    public function createRelation(string $valueStorageType, int $productSkuId, int $valueId)
     {
         switch ($valueStorageType) {
             case EavAttributeEntity::STORAGE_TYPE_DOUBLE:

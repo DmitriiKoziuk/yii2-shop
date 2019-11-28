@@ -143,4 +143,9 @@ class Product extends ActiveRecord
     {
         return $this->skus[ $this->main_sku_id ];
     }
+
+    public function isMainSkuSet(): bool
+    {
+        return empty($this->main_sku_id) ? false : true;
+    }
 }
