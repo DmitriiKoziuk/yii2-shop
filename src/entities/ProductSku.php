@@ -1,4 +1,5 @@
 <?php
+
 namespace DmitriiKoziuk\yii2Shop\entities;
 
 use Yii;
@@ -8,6 +9,7 @@ use yii\helpers\ArrayHelper;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 use DmitriiKoziuk\yii2FileManager\entities\FileEntity;
 use DmitriiKoziuk\yii2FileManager\repositories\FileRepository;
+use DmitriiKoziuk\yii2Shop\interfaces\productEav\ProductEavValueInterface;
 
 /**
  * This is the model class for table "{{%dk_shop_product_skus}}".
@@ -63,7 +65,7 @@ class ProductSku extends ActiveRecord
     private $images;
 
     /**
-     * @var array|null
+     * @var null|ProductTypeAttributeEntity[]
      */
     private $previewAttributes;
 
@@ -361,12 +363,15 @@ class ProductSku extends ActiveRecord
             ->indexBy('id');
     }
 
+    /**
+     * @return ProductEavValueInterface[]
+     */
     public function getPreviewValues(): array
     {
         $values = [];
         if ($this->product->isTypeSet()) {
             if (is_null($this->previewAttributes)) {
-                $this->previewAttributes = $this->getPreviewAttributeIds();
+                $this->previewAttributes = $this->getPreviewAttributes();
             }
             foreach ($this->eavVarcharValues as $value) {
                 if (array_key_exists($value->attribute_id, $this->previewAttributes)) {
@@ -383,11 +388,15 @@ class ProductSku extends ActiveRecord
                     $values[] = $value;
                 }
             }
+            $this->sortPreviewValues($values, $this->previewAttributes);
         }
         return $values;
     }
 
-    private function getPreviewAttributeIds()
+    /**
+     * @return ProductTypeAttributeEntity[]
+     */
+    private function getPreviewAttributes(): array
     {
         return ProductTypeAttributeEntity::find()
             ->where([
@@ -396,5 +405,25 @@ class ProductSku extends ActiveRecord
             ])
             ->indexBy('attribute_id')
             ->all();
+    }
+
+    /**
+     * @param array $values
+     * @param ProductTypeAttributeEntity[] $previewAttributes
+     * @return void
+     */
+    private function sortPreviewValues(array &$values, array &$previewAttributes): void
+    {
+        usort(
+            $values,
+            function (
+                ProductEavValueInterface $previousValue,
+                ProductEavValueInterface $currentValue
+            ) use ($previewAttributes) {
+                $previousValueSort = $previewAttributes[ $previousValue->getEavAttributeId() ]->sort;
+                $currentValueSort = $previewAttributes[ $currentValue->getEavAttributeId() ]->sort;
+                return $previousValueSort <=> $currentValueSort;
+            }
+        );
     }
 }

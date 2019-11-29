@@ -28,6 +28,7 @@ class m191021_091234_create_dk_shop_product_type_attribute_table extends Migrati
             'product_type_id' => $this->integer()->notNull(),
             'attribute_id' => $this->integer()->notNull(),
             'view_attribute_at_product_preview' => $this->tinyInteger()->notNull()->defaultValue(0),
+            'sort' => $this->smallInteger()->notNull()->defaultValue(1),
         ], $tableOptions);
         $this->addPrimaryKey(
             'dk_shop_product_type_attribute_primary_key',
