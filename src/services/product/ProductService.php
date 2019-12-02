@@ -22,7 +22,7 @@ use DmitriiKoziuk\yii2Shop\data\ProductSkuData;
 use DmitriiKoziuk\yii2Shop\data\ProductTypeMarginData;
 use DmitriiKoziuk\yii2Shop\data\ProductTypeData;
 use DmitriiKoziuk\yii2Shop\data\SupplierProductSkuData;
-use DmitriiKoziuk\yii2Shop\forms\product\ProductInputForm;
+use DmitriiKoziuk\yii2Shop\forms\product\ProductUpdateForm;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductCreateForm;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuUpdateForm;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuCreateForm;
@@ -137,14 +137,14 @@ class ProductService extends DBActionService
 
     /**
      * @param int $productId
-     * @param ProductInputForm $productInputForm
+     * @param ProductUpdateForm $productInputForm
      * @param ProductSkuUpdateForm[] $productSkuInputForms
      * @return Product
      * @throws \Throwable
      */
     public function update(
         int $productId,
-        ProductInputForm $productInputForm,
+        ProductUpdateForm $productInputForm,
         array $productSkuInputForms
     ): Product {
         try {
@@ -284,13 +284,13 @@ class ProductService extends DBActionService
 
     /**
      * @param Product          $product
-     * @param ProductInputForm $productInputForm
+     * @param ProductUpdateForm $productInputForm
      * @return array product changed attributes
      * @throws \Throwable
      */
     private function _updateProduct(
         Product $product,
-        ProductInputForm $productInputForm
+        ProductUpdateForm $productInputForm
     ): array {
         $product->setAttributes($productInputForm->getAttributes());
         if ($product->isAttributeChanged('name')) {

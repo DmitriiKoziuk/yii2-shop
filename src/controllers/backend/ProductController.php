@@ -17,7 +17,7 @@ use DmitriiKoziuk\yii2Shop\entities\ProductType;
 use DmitriiKoziuk\yii2Shop\entities\Currency;
 use DmitriiKoziuk\yii2Shop\entities\Category;
 use DmitriiKoziuk\yii2Shop\entities\search\ProductSkuSearch;
-use DmitriiKoziuk\yii2Shop\forms\product\ProductInputForm;
+use DmitriiKoziuk\yii2Shop\forms\product\ProductUpdateForm;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductCreateForm;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuUpdateForm;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuCreateForm;
@@ -166,13 +166,13 @@ final class ProductController extends Controller
         $categories = Category::find()->all();
         $productTypes = ProductType::find()->all();
         $currencyList = Currency::find()->all();
-        $productInputForm = new ProductInputForm(['scenario' => ProductInputForm::SCENARIO_UPDATE]);
+        $productUpdateForm = new ProductUpdateForm();
         /** @var $productSkuUpdateForms ProductSkuUpdateForm[] */
         $productSkuUpdateForms = [];
         if (
             Yii::$app->request->isPost &&
-            $productInputForm->load(Yii::$app->request->post()) &&
-            $productInputForm->validate()
+            $productUpdateForm->load(Yii::$app->request->post()) &&
+            $productUpdateForm->validate()
         ) {
             $skusPostData = Yii::$app->request->post(
                 (new ProductSkuUpdateForm())->formName()
@@ -196,10 +196,10 @@ final class ProductController extends Controller
             }
             $product = $this->_productService->update(
                 (int) $product->id,
-                $productInputForm,
+                $productUpdateForm,
                 $productSkuUpdateForms
             );
-            $productInputForm->setAttributes($product->getAttributes());
+            $productUpdateForm->setAttributes($product->getAttributes());
             foreach ($product->skus as $key => $sku) {
                 $productSkuUpdateForms[ $key ] = new ProductSkuUpdateForm();
                 $productSkuUpdateForms[ $key ]->setAttributes($sku->getAttributes());
@@ -210,7 +210,7 @@ final class ProductController extends Controller
                 );
             }
         } else {
-            $productInputForm->setAttributes($product->getAttributes());
+            $productUpdateForm->setAttributes($product->getAttributes());
             /** @var ProductSkuUpdateForm[] $productSkuUpdateForms */
             foreach ($product->skus as $key => $sku) {
                 $productSkuUpdateForms[ $key ] = new ProductSkuUpdateForm();
@@ -236,7 +236,7 @@ final class ProductController extends Controller
             'categories' => $categories,
             'productTypes' => $productTypes,
             'currencyList' => $currencyList,
-            'productInputForm' => $productInputForm,
+            'productInputForm' => $productUpdateForm,
             'productSkuUpdateForms' => $productSkuUpdateForms,
             'productSkusSuppliers' => $productSkusSuppliers,
             'brands' => $brands,
@@ -254,8 +254,8 @@ final class ProductController extends Controller
     public function actionCreateSku($product_id)
     {
         $product = $this->findProductEntity($product_id);
-        $productInputForm = new ProductInputForm(['scenario' => ProductInputForm::SCENARIO_UPDATE]);
-        $productInputForm->setAttributes($product->getAttributes());
+        $productUpdateForm = new ProductUpdateForm();
+        $productUpdateForm->setAttributes($product->getAttributes());
         $productSkuCreateForm = new ProductSkuCreateForm();
 
         if (
@@ -272,7 +272,7 @@ final class ProductController extends Controller
         }
 
         return $this->render('create-sku', [
-            'productInputForm' => $productInputForm,
+            'productInputForm' => $productUpdateForm,
             'productSkuInputForm' => $productSkuCreateForm,
         ]);
     }

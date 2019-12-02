@@ -6,7 +6,7 @@ use DmitriiKoziuk\yii2Shop\ShopModule;
 
 /**
  * @var $this                \yii\web\View
- * @var $productInputForm    \DmitriiKoziuk\yii2Shop\forms\product\ProductInputForm
+ * @var $productInputForm    \DmitriiKoziuk\yii2Shop\forms\product\ProductUpdateForm
  * @var $productSkuInputForm \DmitriiKoziuk\yii2Shop\forms\product\ProductSkuUpdateForm
  */
 
