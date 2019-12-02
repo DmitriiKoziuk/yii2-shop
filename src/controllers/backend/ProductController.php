@@ -18,6 +18,7 @@ use DmitriiKoziuk\yii2Shop\entities\Currency;
 use DmitriiKoziuk\yii2Shop\entities\Category;
 use DmitriiKoziuk\yii2Shop\entities\search\ProductSkuSearch;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductInputForm;
+use DmitriiKoziuk\yii2Shop\forms\product\ProductCreateForm;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuUpdateForm;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuCreateForm;
 use DmitriiKoziuk\yii2Shop\services\product\ProductService;
@@ -125,19 +126,19 @@ final class ProductController extends Controller
 
     public function actionCreate()
     {
-        $productInputForm = new ProductInputForm(['scenario' => ProductInputForm::SCENARIO_CREATE]);
+        $productCreateForm = new ProductCreateForm();
         $productSkuCreateForm = new ProductSkuCreateForm();
 
         if (Yii::$app->request->isPost) {
             try {
                 if (
-                    $productInputForm->load(Yii::$app->request->post())    &&
+                    $productCreateForm->load(Yii::$app->request->post())    &&
                     $productSkuCreateForm->load(Yii::$app->request->post()) &&
-                    $productInputForm->validate()                          &&
+                    $productCreateForm->validate()                          &&
                     $productSkuCreateForm->validate()
                 ) {
                     $product = $this->_productService
-                        ->create($productInputForm, $productSkuCreateForm);
+                        ->create($productCreateForm, $productSkuCreateForm);
                     return $this->redirect(['update', 'id' => $product->id]);
                 } else {
                     throw new \Exception('Form not valid.');
@@ -148,7 +149,7 @@ final class ProductController extends Controller
         }
 
         return $this->render('create', [
-            'productInputForm' => $productInputForm,
+            'productInputForm' => $productCreateForm,
             'productSkuInputForm' => $productSkuCreateForm,
         ]);
     }
