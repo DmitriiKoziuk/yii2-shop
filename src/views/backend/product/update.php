@@ -14,7 +14,7 @@ use DmitriiKoziuk\yii2Shop\ShopModule;
  * @var $categories \DmitriiKoziuk\yii2Shop\entities\Category[]
  * @var $productTypes[] ProductType
  * @var $currencyList \DmitriiKoziuk\yii2Shop\entities\Currency[]
- * @var $productInputForm \DmitriiKoziuk\yii2Shop\forms\product\ProductInputForm
+ * @var $productInputForm \DmitriiKoziuk\yii2Shop\forms\product\ProductUpdateForm
  * @var $productSkuUpdateForms \DmitriiKoziuk\yii2Shop\forms\product\ProductSkuUpdateForm[]
  * @var $productSkusSuppliers \DmitriiKoziuk\yii2Shop\data\SupplierProductSkuData[][]
  * @var $brands \DmitriiKoziuk\yii2Shop\data\BrandData[]

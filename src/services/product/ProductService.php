@@ -22,7 +22,8 @@ use DmitriiKoziuk\yii2Shop\data\ProductSkuData;
 use DmitriiKoziuk\yii2Shop\data\ProductTypeMarginData;
 use DmitriiKoziuk\yii2Shop\data\ProductTypeData;
 use DmitriiKoziuk\yii2Shop\data\SupplierProductSkuData;
-use DmitriiKoziuk\yii2Shop\forms\product\ProductInputForm;
+use DmitriiKoziuk\yii2Shop\forms\product\ProductUpdateForm;
+use DmitriiKoziuk\yii2Shop\forms\product\ProductCreateForm;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuUpdateForm;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuCreateForm;
 use DmitriiKoziuk\yii2Shop\repositories\ProductRepository;
@@ -112,18 +113,18 @@ class ProductService extends DBActionService
     }
 
     /**
-     * @param ProductInputForm $productInputForm
+     * @param ProductCreateForm $productCreateForm
      * @param ProductSkuCreateForm $productSkuCreateForm
      * @return Product
      * @throws \Throwable
      */
     public function create(
-        ProductInputForm $productInputForm,
+        ProductCreateForm $productCreateForm,
         ProductSkuCreateForm $productSkuCreateForm
     ): Product {
         $this->beginTransaction();
         try {
-            $product = $this->_createProduct($productInputForm);
+            $product = $this->_createProduct($productCreateForm);
             $productSku = $this->_createProductSku($product, $productSkuCreateForm);
             $this->_setMainSkuId($product, $productSku);
             $this->commitTransaction();
@@ -136,14 +137,14 @@ class ProductService extends DBActionService
 
     /**
      * @param int $productId
-     * @param ProductInputForm $productInputForm
+     * @param ProductUpdateForm $productInputForm
      * @param ProductSkuUpdateForm[] $productSkuInputForms
      * @return Product
      * @throws \Throwable
      */
     public function update(
         int $productId,
-        ProductInputForm $productInputForm,
+        ProductUpdateForm $productInputForm,
         array $productSkuInputForms
     ): Product {
         try {
@@ -263,17 +264,17 @@ class ProductService extends DBActionService
     }
 
     /**
-     * @param ProductInputForm $productInputForm
+     * @param ProductCreateForm $productCreateForm
      * @return Product
      * @throws EntityNotFoundException
      * @throws \DmitriiKoziuk\yii2Base\exceptions\DataNotValidException
      * @throws \DmitriiKoziuk\yii2Base\exceptions\EntityNotValidException
      * @throws \DmitriiKoziuk\yii2Base\exceptions\EntitySaveException
      */
-    private function _createProduct(ProductInputForm $productInputForm): Product
+    private function _createProduct(ProductCreateForm $productCreateForm): Product
     {
         $product = new Product();
-        $product->setAttributes($productInputForm->getAttributes());
+        $product->setAttributes($productCreateForm->getAttributes());
         $product->slug = $this->_defineSlug($product->name);
         $product->url = $this->_defineProductUrl($product);
         $this->_productRepository->save($product);
@@ -283,13 +284,13 @@ class ProductService extends DBActionService
 
     /**
      * @param Product          $product
-     * @param ProductInputForm $productInputForm
+     * @param ProductUpdateForm $productInputForm
      * @return array product changed attributes
      * @throws \Throwable
      */
     private function _updateProduct(
         Product $product,
-        ProductInputForm $productInputForm
+        ProductUpdateForm $productInputForm
     ): array {
         $product->setAttributes($productInputForm->getAttributes());
         if ($product->isAttributeChanged('name')) {
@@ -356,7 +357,6 @@ class ProductService extends DBActionService
                 $productSku->slug = $this->_defineSlug($productSku->name);
             }
         }
-        $productSku->url = $this->_defineProductSkuUrl($product, $productSku);
         $productSku->sort = ProductSku::getNextSortNumber($product->id);
         $this->_productSkuRepository->save($productSku);
         if ($product->isMainSkuSet()) {
@@ -365,7 +365,8 @@ class ProductService extends DBActionService
         if ($product->isCategorySet()) {
             $this->_categoryProductSkuService->updateRelation($productSku->id, $product->category_id);
         }
-        $this->_addProductSkuUrlToIndex($productSku);
+        $url = $this->_defineProductSkuUrl($product, $productSku);
+        $this->_addProductSkuUrlToIndex($productSku, $url);
         return $productSku;
     }
 
@@ -639,10 +640,10 @@ class ProductService extends DBActionService
         ]));
     }
 
-    private function _addProductSkuUrlToIndex(ProductSku $productSku)
+    private function _addProductSkuUrlToIndex(ProductSku $productSku, string $url)
     {
         $this->_urlIndexService->addUrl(new UrlCreateForm([
-            'url' => $productSku->url,
+            'url' => $url,
             'module_name' => ShopModule::ID,
             'controller_name' => ShopModule::PRODUCT_SKU_FRONTEND_CONTROLLER_NAME,
             'action_name' => ShopModule::PRODUCT_SKU_FRONTEND_ACTION_NAME,
