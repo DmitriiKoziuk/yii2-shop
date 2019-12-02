@@ -202,6 +202,7 @@ final class ProductController extends Controller
             foreach ($product->skus as $key => $sku) {
                 $productSkuUpdateForms[ $key ] = new ProductSkuUpdateForm();
                 $productSkuUpdateForms[ $key ]->setAttributes($sku->getAttributes());
+                $productSkuUpdateForms[ $key ]->url = $sku->getUrl();
                 $productSkuUpdateForms[ $key ]->files = $this->_fileRepository->getEntityImages(
                     $sku::FILE_ENTITY_NAME,
                     $sku->id
@@ -213,6 +214,7 @@ final class ProductController extends Controller
             foreach ($product->skus as $key => $sku) {
                 $productSkuUpdateForms[ $key ] = new ProductSkuUpdateForm();
                 $productSkuUpdateForms[ $key ]->setAttributes($sku->getAttributes());
+                $productSkuUpdateForms[ $key ]->url = $sku->getUrl();
                 $productSkuUpdateForms[ $key ]->files = $this->_fileRepository->getEntityImages(
                     $sku::FILE_ENTITY_NAME,
                     $sku->id

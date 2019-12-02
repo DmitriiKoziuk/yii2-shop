@@ -395,10 +395,8 @@ class ProductService extends DBActionService
         }
         // Url depends form slug, but do not update url if user change it itself.
         if ($productSku->isAttributeChanged('slug')) {
-            if (! $productSku->isAttributeChanged('url')) {
-                $productSku->url = $this->_defineProductSkuUrl($product, $productSku);
-                $this->_updateProductSkuUrlInIndex($productSku);
-            }
+            $url = $this->_defineProductSkuUrl($product, $productSku);
+            $this->_updateProductSkuUrlInIndex($productSku, $url);
         }
         // user can change sell price only if strategy is static.
         if (ProductSku::SELL_PRICE_STRATEGY_STATIC == $productSku->sell_price_strategy) {
@@ -670,13 +668,14 @@ class ProductService extends DBActionService
 
     /**
      * @param ProductSku $productSku
+     * @param string $url
      * @throws \DmitriiKoziuk\yii2UrlIndex\exceptions\EntityUrlNotFoundException
      * @throws \DmitriiKoziuk\yii2UrlIndex\exceptions\UrlAlreadyHasBeenTakenException
      */
-    private function _updateProductSkuUrlInIndex(ProductSku $productSku): void
+    private function _updateProductSkuUrlInIndex(ProductSku $productSku, string $url): void
     {
         $this->_urlIndexService->updateEntityUrl(new UpdateEntityUrlForm([
-            'url' => $productSku->url,
+            'url' => $url,
             'module_name' => ShopModule::ID,
             'controller_name' => ShopModule::PRODUCT_SKU_FRONTEND_CONTROLLER_NAME,
             'action_name' => ShopModule::PRODUCT_SKU_FRONTEND_ACTION_NAME,

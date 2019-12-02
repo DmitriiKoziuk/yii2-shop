@@ -210,7 +210,7 @@ $this->registerAssetBundle(ProductAsset::class);
                             </div>
                             <div class="col-md-8">
                                 <?= $form->field($productSkuUpdateForm, "[{$key}]url")
-                                    ->textInput(['maxlength' => true])
+                                    ->textInput(['maxlength' => true, 'disabled' => true,])
                                     ->label('Url');
                                 ?>
                             </div>
