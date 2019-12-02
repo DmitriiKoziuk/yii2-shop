@@ -10,6 +10,8 @@ use DmitriiKoziuk\yii2Shop\ShopModule;
 use DmitriiKoziuk\yii2FileManager\entities\FileEntity;
 use DmitriiKoziuk\yii2FileManager\repositories\FileRepository;
 use DmitriiKoziuk\yii2Shop\interfaces\productEav\ProductEavValueInterface;
+use DmitriiKoziuk\yii2UrlIndex\entities\UrlEntity;
+use DmitriiKoziuk\yii2UrlIndex\repositories\UrlRepository;
 
 /**
  * This is the model class for table "{{%dk_shop_product_skus}}".
@@ -18,7 +20,6 @@ use DmitriiKoziuk\yii2Shop\interfaces\productEav\ProductEavValueInterface;
  * @property int    $product_id
  * @property string $name
  * @property string $slug
- * @property string $url
  * @property int    $stock_status
  * @property string $sell_price
  * @property string $old_price
@@ -70,6 +71,16 @@ class ProductSku extends ActiveRecord
     private $previewAttributes;
 
     /**
+     * @var UrlRepository
+     */
+    private $urlRepository;
+
+    /**
+     * @var UrlEntity
+     */
+    private $urlEntity;
+
+    /**
      * {@inheritdoc}
      */
     public static function tableName()
@@ -90,10 +101,7 @@ class ProductSku extends ActiveRecord
     public function rules()
     {
         return [
-            [
-                ['product_id', 'slug', 'url', 'sort'],
-                'required'
-            ],
+            [['product_id', 'slug', 'sort'], 'required'],
             [
                 [
                     'product_id',
@@ -109,8 +117,6 @@ class ProductSku extends ActiveRecord
             [['name'], 'string', 'max' => 45],
             ['name', 'unique', 'targetAttribute' => ['product_id', 'name']],
             [['slug'], 'string', 'max' => 180],
-            [['url'], 'string', 'max' => 255],
-            [['url'], 'unique'],
             ['sort', 'unique', 'targetAttribute' => ['product_id', 'sort']],
             [['sell_price', 'old_price', 'customer_price'], 'integer'],
             [['sell_price', 'old_price', 'customer_price'], 'default', 'value' => NULL],
@@ -119,7 +125,7 @@ class ProductSku extends ActiveRecord
             [['meta_title'], 'string', 'max' => 255],
             [['meta_description'], 'string', 'max' => 500],
             [['short_description', 'description'], 'string'],
-            [['name', 'slug', 'url', 'sell_price', 'old_price', 'meta_title', 'meta_description'], 'trim'],
+            [['name', 'slug', 'sell_price', 'old_price', 'meta_title', 'meta_description'], 'trim'],
             [['meta_title', 'meta_description', 'short_description', 'description'], 'default', 'value' => null],
             [
                 ['currency_id'],
@@ -148,7 +154,6 @@ class ProductSku extends ActiveRecord
             'product_id'          => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Product ID'),
             'name'                => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Name'),
             'slug'                => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Slug'),
-            'url'                 => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Url'),
             'stock_status'        => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Stock Status'),
             'sell_price'          => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Sell Price'),
             'old_price'           => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Old Price'),
@@ -174,6 +179,8 @@ class ProductSku extends ActiveRecord
         parent::init();
         /** @var FileRepository fileRepository */
         $this->fileRepository = Yii::$container->get(FileRepository::class);
+        /** @var UrlRepository urlIndexService */
+        $this->urlRepository = Yii::$container->get(UrlRepository::class);
     }
 
     public function isCustomerPriceSet(): bool
@@ -396,6 +403,19 @@ class ProductSku extends ActiveRecord
             $this->sortPreviewValues($values, $this->previewAttributes);
         }
         return $values;
+    }
+
+    public function getUrl(): string
+    {
+        if (empty($this->urlEntity)) {
+            $this->urlEntity = $this->urlRepository->getEntityUrl(
+                ShopModule::getId(),
+                ShopModule::PRODUCT_SKU_FRONTEND_CONTROLLER_NAME,
+                ShopModule::PRODUCT_SKU_FRONTEND_ACTION_NAME,
+                (string) $this->id
+            );
+        }
+        return $this->urlEntity->url;
     }
 
     /**

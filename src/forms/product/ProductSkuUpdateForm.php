@@ -31,7 +31,7 @@ class ProductSkuUpdateForm extends Model
     public function rules()
     {
         return [
-            [['id', 'slug', 'url'], 'required'],
+            [['id', 'slug'], 'required'],
             [['stock_status', 'currency_id'], 'integer'],
             [['sell_price', 'old_price', 'customer_price'], 'number'],
             [['name'], 'string', 'max' => 45],
@@ -54,7 +54,6 @@ class ProductSkuUpdateForm extends Model
         return $this->getAttributes([
             'name',
             'slug',
-            'url',
             'stock_status',
             'sell_price',
             'old_price',

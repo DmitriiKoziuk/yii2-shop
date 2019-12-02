@@ -25,10 +25,7 @@ class m190101_155340_create_dk_shop_product_skus_table extends Migration
             'id' => $this->primaryKey(),
             'product_id' => $this->integer(),
             'name' => $this->string(45)->notNull(),
-            'slug' => $this->string(65)->notNull()
-                ->comment('Depends from name.'),
-            'url' => $this->string(355)->notNull()
-                ->comment('Depends from slug and parent product url.'),
+            'slug' => $this->string(65)->notNull()->comment('Depends from name.'),
             'stock_status' => $this->integer()->unsigned()->notNull(),
             'sell_price_strategy' => $this->integer()->unsigned()->notNull(),
             'sell_price' => $this->integer()->unsigned()->null()->defaultValue(NULL),
@@ -65,12 +62,6 @@ class m190101_155340_create_dk_shop_product_skus_table extends Migration
                 'product_id',
                 'slug',
             ],
-            true
-        );
-        $this->createIndex(
-            'idx_product_skus_url',
-            $this->_productSkusTable,
-            'url',
             true
         );
         //Prevent duplicate product sku sort.
