@@ -626,7 +626,7 @@ class ProductService extends DBActionService
     {
         if ($productSku->isCurrencySet()) {
             $currencyData = $this->_currencyService->getCurrencyById((int) $productSku->currency_id);
-            $productSku->customer_price = ($productSku->sell_price * $currencyData->getRate());
+            $productSku->customer_price = (int) ($productSku->sell_price * $currencyData->getRate());
         }
     }
 

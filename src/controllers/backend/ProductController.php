@@ -158,7 +158,8 @@ final class ProductController extends Controller
         $productTypes = ProductType::find()->all();
         $currencyList = Currency::find()->all();
         $productInputForm = new ProductInputForm(['scenario' => ProductInputForm::SCENARIO_UPDATE]);
-        $productSkuInputForms = [];
+        /** @var $productSkuUpdateForms ProductSkuUpdateForm[] */
+        $productSkuUpdateForms = [];
         if (
             Yii::$app->request->isPost &&
             $productInputForm->load(Yii::$app->request->post()) &&
@@ -169,10 +170,15 @@ final class ProductController extends Controller
             );
             $skuValidationError = false;
             foreach ($skusPostData as $key => $sku) {
-                /** @var $productSkuInputForms ProductSkuUpdateForm[] */
-                $productSkuInputForms[ $key ] = new ProductSkuUpdateForm();
-                $productSkuInputForms[ $key ]->setAttributes($sku);
-                if (! $productSkuInputForms[ $key ]->validate()) {
+                $productSkuUpdateForms[ $key ] = new ProductSkuUpdateForm();
+                $productSkuUpdateForms[ $key ]->setAttributes($sku);
+                if (! empty($productSkuUpdateForms[ $key ]->sell_price)) {
+                    $productSkuUpdateForms[ $key ]->sell_price *= 100;
+                }
+                if (! empty($productSkuUpdateForms[ $key ]->old_price)) {
+                    $productSkuUpdateForms[ $key ]->old_price *= 100;
+                }
+                if (! $productSkuUpdateForms[ $key ]->validate()) {
                     $skuValidationError = true;
                 }
             }
@@ -182,30 +188,30 @@ final class ProductController extends Controller
             $product = $this->_productService->update(
                 (int) $product->id,
                 $productInputForm,
-                $productSkuInputForms
+                $productSkuUpdateForms
             );
             $productInputForm->setAttributes($product->getAttributes());
             foreach ($product->skus as $key => $sku) {
-                $productSkuInputForms[ $key ] = new ProductSkuUpdateForm();
-                $productSkuInputForms[ $key ]->setAttributes($sku->getAttributes());
-                $productSkuInputForms[ $key ]->files = $this->_fileRepository->getEntityImages(
+                $productSkuUpdateForms[ $key ] = new ProductSkuUpdateForm();
+                $productSkuUpdateForms[ $key ]->setAttributes($sku->getAttributes());
+                $productSkuUpdateForms[ $key ]->files = $this->_fileRepository->getEntityImages(
                     $sku::FILE_ENTITY_NAME,
                     $sku->id
                 );
             }
         } else {
             $productInputForm->setAttributes($product->getAttributes());
-            /** @var ProductSkuUpdateForm[] $productSkuInputForms */
+            /** @var ProductSkuUpdateForm[] $productSkuUpdateForms */
             foreach ($product->skus as $key => $sku) {
-                $productSkuInputForms[ $key ] = new ProductSkuUpdateForm();
-                $productSkuInputForms[ $key ]->setAttributes($sku->getAttributes());
-                $productSkuInputForms[ $key ]->files = $this->_fileRepository->getEntityImages(
+                $productSkuUpdateForms[ $key ] = new ProductSkuUpdateForm();
+                $productSkuUpdateForms[ $key ]->setAttributes($sku->getAttributes());
+                $productSkuUpdateForms[ $key ]->files = $this->_fileRepository->getEntityImages(
                     $sku::FILE_ENTITY_NAME,
                     $sku->id
                 );
             }
         }
-        $productSkuIds = ArrayHelper::map($productSkuInputForms, 'id', 'id');
+        $productSkuIds = ArrayHelper::map($productSkuUpdateForms, 'id', 'id');
         $productSkusSuppliers = $this->_supplierService->getProductSkusSuppliers($productSkuIds);
         $brands = $this->_brandService->getAllBrands();
         if (Yii::$app->request->isPost && ! empty(Yii::$app->request->post('productSku'))) {
@@ -220,7 +226,7 @@ final class ProductController extends Controller
             'productTypes' => $productTypes,
             'currencyList' => $currencyList,
             'productInputForm' => $productInputForm,
-            'productSkuInputForms' => $productSkuInputForms,
+            'productSkuUpdateForms' => $productSkuUpdateForms,
             'productSkusSuppliers' => $productSkusSuppliers,
             'brands' => $brands,
             'fileWebHelper' => $this->_fileWebHelper,

@@ -33,7 +33,7 @@ class ProductSkuUpdateForm extends Model
         return [
             [['id', 'slug', 'url'], 'required'],
             [['stock_status', 'currency_id'], 'integer'],
-            [['sell_price', 'old_price', 'customer_price'], 'integer'],
+            [['sell_price', 'old_price', 'customer_price'], 'number'],
             [['name'], 'string', 'max' => 45],
             [['name'], 'trim'],
             [['slug'], 'string', 'max' => 65],
@@ -47,6 +47,11 @@ class ProductSkuUpdateForm extends Model
             [['meta_description'], 'string', 'max' => 500],
             [['short_description', 'description'], 'string'],
         ];
+    }
+
+    public function getOldPriceHumanReadable(): string
+    {
+        return is_null($this->old_price) ? '0.00' : (string) number_format($this->old_price / 100, 2, '.', '');
     }
 
     public function getUpdatedAttributes()
