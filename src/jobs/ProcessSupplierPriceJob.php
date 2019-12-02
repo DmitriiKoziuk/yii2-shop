@@ -14,7 +14,7 @@ use DmitriiKoziuk\yii2Shop\data\SupplierData;
 use DmitriiKoziuk\yii2Shop\data\SupplierPriceData;
 use DmitriiKoziuk\yii2Shop\data\ProductSkuData;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductInputForm;
-use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuInputForm;
+use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuCreateForm;
 use DmitriiKoziuk\yii2Shop\forms\supplier\SupplierProductSkuUpdateForm;
 use DmitriiKoziuk\yii2Shop\services\currency\CurrencyService;
 use DmitriiKoziuk\yii2Shop\services\supplier\SupplierService;
@@ -261,8 +261,8 @@ class ProcessSupplierPriceJob extends BaseObject implements JobInterface
 
     private function _createProduct(array $columnTemplates, array $rowData): ProductSkuData
     {
-        $productInputForm = new ProductInputForm(['scenario' => ProductSkuInputForm::SCENARIO_CREATE]);
-        $productSkuInputForm = new ProductSkuInputForm(['scenario' => ProductSkuInputForm::SCENARIO_CREATE]);
+        $productInputForm = new ProductInputForm(['scenario' => ProductInputForm::SCENARIO_CREATE]);
+        $productSkuInputForm = new ProductSkuCreateForm();
         foreach ($rowData as $key => $data) {
             switch ($columnTemplates[ $key ]) {
                 case '{productName}':
