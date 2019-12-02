@@ -29,7 +29,7 @@ class ProductData
 
     public function isPriceSet(): bool
     {
-        return $this->product->getMainSku()->isSitePriceSet();
+        return $this->product->getMainSku()->isCustomerPriceSet();
     }
 
     public function isCurrencySet(): bool
@@ -70,9 +70,9 @@ class ProductData
         return '';
     }
 
-    public function getPrice(): string
+    public function getPrice(): int
     {
-        return $this->product->getMainSku()->price_on_site;
+        return is_null($this->product->getMainSku()->customer_price) ? 0 : $this->product->getMainSku()->customer_price;
     }
 
     public function getCurrencySymbol(): string

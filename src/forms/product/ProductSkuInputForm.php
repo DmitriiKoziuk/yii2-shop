@@ -3,7 +3,7 @@ namespace DmitriiKoziuk\yii2Shop\forms\product;
 
 use yii\base\Model;
 use DmitriiKoziuk\yii2Shop\entities\ProductSku;
-use DmitriiKoziuk\yii2FileManager\entities\File;
+use DmitriiKoziuk\yii2FileManager\entities\FileEntity;
 
 class ProductSkuInputForm extends Model
 {
@@ -17,7 +17,7 @@ class ProductSkuInputForm extends Model
     public $stock_status;
     public $sell_price;
     public $old_price;
-    public $price_on_site;
+    public $customer_price;
     public $sell_price_strategy;
     public $meta_title;
     public $meta_description;
@@ -26,7 +26,7 @@ class ProductSkuInputForm extends Model
     public $currency_id;
 
     /**
-     * @var File[]
+     * @var FileEntity[]
      */
     public $files;
 
@@ -42,7 +42,7 @@ class ProductSkuInputForm extends Model
                 'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]
             ],
             [
-                ['sell_price', 'old_price', 'price_on_site'], 'number',
+                ['sell_price', 'old_price', 'customer_price'], 'integer',
                 'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]
             ],
             [
@@ -78,8 +78,8 @@ class ProductSkuInputForm extends Model
                 'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]
             ],
             [
-                ['sell_price', 'old_price', 'price_on_site'],
-                'default', 'value' => '0.00',
+                ['sell_price', 'old_price', 'customer_price'],
+                'default', 'value' => NULL,
                 'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]
             ],
             [

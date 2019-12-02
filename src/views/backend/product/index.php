@@ -171,7 +171,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'sell_price',
             'old_price',
-            'price_on_site',
+            'customer_price',
 
             [
                 'class'    => 'yii\grid\ActionColumn',
