@@ -49,11 +49,6 @@ class ProductSkuUpdateForm extends Model
         ];
     }
 
-    public function getOldPriceHumanReadable(): string
-    {
-        return is_null($this->old_price) ? '0.00' : (string) number_format($this->old_price / 100, 2, '.', '');
-    }
-
     public function getUpdatedAttributes()
     {
         return $this->getAttributes([

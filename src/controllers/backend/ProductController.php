@@ -24,6 +24,7 @@ use DmitriiKoziuk\yii2Shop\services\product\ProductService;
 use DmitriiKoziuk\yii2Shop\services\supplier\SupplierService;
 use DmitriiKoziuk\yii2Shop\services\brand\BrandService;
 use DmitriiKoziuk\yii2Shop\services\eav\ProductSkuEavAttributesService;
+use DmitriiKoziuk\yii2Shop\helpers\ProductSkuViewHelper;
 
 /**
  * ProductController implements the CRUD actions for Product model.
@@ -57,6 +58,11 @@ final class ProductController extends Controller
 
     private $productSkuEavAttributesService;
 
+    /**
+     * @var ProductSkuViewHelper
+     */
+    private $productSkuViewHelper;
+
     public function __construct(
         string $id,
         Module $module,
@@ -66,6 +72,7 @@ final class ProductController extends Controller
         FileRepository $fileRepository,
         FileWebHelper $fileWebHelper,
         ProductSkuEavAttributesService $updateProductSkuAttributesService,
+        ProductSkuViewHelper $productSkuViewHelper,
         array $config = []
     ) {
         parent::__construct($id, $module, $config);
@@ -75,6 +82,7 @@ final class ProductController extends Controller
         $this->_fileRepository = $fileRepository;
         $this->_fileWebHelper = $fileWebHelper;
         $this->productSkuEavAttributesService = $updateProductSkuAttributesService;
+        $this->productSkuViewHelper = $productSkuViewHelper;
     }
 
     /**
@@ -230,6 +238,7 @@ final class ProductController extends Controller
             'productSkusSuppliers' => $productSkusSuppliers,
             'brands' => $brands,
             'fileWebHelper' => $this->_fileWebHelper,
+            'productSkuViewHelper' => $this->productSkuViewHelper,
         ]);
     }
 
