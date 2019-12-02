@@ -23,7 +23,7 @@ use DmitriiKoziuk\yii2Shop\data\ProductTypeMarginData;
 use DmitriiKoziuk\yii2Shop\data\ProductTypeData;
 use DmitriiKoziuk\yii2Shop\data\SupplierProductSkuData;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductInputForm;
-use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuInputForm;
+use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuUpdateForm;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuCreateForm;
 use DmitriiKoziuk\yii2Shop\repositories\ProductRepository;
 use DmitriiKoziuk\yii2Shop\repositories\ProductSkuRepository;
@@ -137,7 +137,7 @@ class ProductService extends DBActionService
     /**
      * @param int $productId
      * @param ProductInputForm $productInputForm
-     * @param ProductSkuInputForm[] $productSkuInputForms
+     * @param ProductSkuUpdateForm[] $productSkuInputForms
      * @return Product
      * @throws \Throwable
      */
@@ -372,7 +372,7 @@ class ProductService extends DBActionService
     /**
      * @param Product $product
      * @param ProductSku $productSku
-     * @param ProductSkuInputForm $productSkuInputForm
+     * @param ProductSkuUpdateForm $productSkuInputForm
      * @param array $productChangedAttributes
      * @return array product sku changed attributes
      * @throws \DmitriiKoziuk\yii2Base\exceptions\EntityNotValidException
@@ -383,7 +383,7 @@ class ProductService extends DBActionService
     private function _updateProductSku(
         Product $product,
         ProductSku $productSku,
-        ProductSkuInputForm $productSkuInputForm,
+        ProductSkuUpdateForm $productSkuInputForm,
         array $productChangedAttributes
     ): array {
         $productSku->setAttributes($productSkuInputForm->getUpdatedAttributes());

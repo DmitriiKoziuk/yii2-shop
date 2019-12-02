@@ -18,7 +18,7 @@ use DmitriiKoziuk\yii2Shop\entities\Currency;
 use DmitriiKoziuk\yii2Shop\entities\Category;
 use DmitriiKoziuk\yii2Shop\entities\search\ProductSkuSearch;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductInputForm;
-use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuInputForm;
+use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuUpdateForm;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuCreateForm;
 use DmitriiKoziuk\yii2Shop\services\product\ProductService;
 use DmitriiKoziuk\yii2Shop\services\supplier\SupplierService;
@@ -165,14 +165,12 @@ final class ProductController extends Controller
             $productInputForm->validate()
         ) {
             $skusPostData = Yii::$app->request->post(
-                (new ProductSkuInputForm())->formName()
+                (new ProductSkuUpdateForm())->formName()
             );
             $skuValidationError = false;
             foreach ($skusPostData as $key => $sku) {
-                /** @var $productSkuInputForms ProductSkuInputForm[] */
-                $productSkuInputForms[ $key ] = new ProductSkuInputForm([
-                    'scenario' => ProductSkuInputForm::SCENARIO_UPDATE
-                ]);
+                /** @var $productSkuInputForms ProductSkuUpdateForm[] */
+                $productSkuInputForms[ $key ] = new ProductSkuUpdateForm();
                 $productSkuInputForms[ $key ]->setAttributes($sku);
                 if (! $productSkuInputForms[ $key ]->validate()) {
                     $skuValidationError = true;
@@ -188,7 +186,7 @@ final class ProductController extends Controller
             );
             $productInputForm->setAttributes($product->getAttributes());
             foreach ($product->skus as $key => $sku) {
-                $productSkuInputForms[ $key ] = new ProductSkuInputForm(['scenario' => ProductSkuInputForm::SCENARIO_UPDATE]);
+                $productSkuInputForms[ $key ] = new ProductSkuUpdateForm();
                 $productSkuInputForms[ $key ]->setAttributes($sku->getAttributes());
                 $productSkuInputForms[ $key ]->files = $this->_fileRepository->getEntityImages(
                     $sku::FILE_ENTITY_NAME,
@@ -197,9 +195,9 @@ final class ProductController extends Controller
             }
         } else {
             $productInputForm->setAttributes($product->getAttributes());
-            /** @var ProductSkuInputForm[] $productSkuInputForms */
+            /** @var ProductSkuUpdateForm[] $productSkuInputForms */
             foreach ($product->skus as $key => $sku) {
-                $productSkuInputForms[ $key ] = new ProductSkuInputForm(['scenario' => ProductSkuInputForm::SCENARIO_UPDATE]);
+                $productSkuInputForms[ $key ] = new ProductSkuUpdateForm();
                 $productSkuInputForms[ $key ]->setAttributes($sku->getAttributes());
                 $productSkuInputForms[ $key ]->files = $this->_fileRepository->getEntityImages(
                     $sku::FILE_ENTITY_NAME,

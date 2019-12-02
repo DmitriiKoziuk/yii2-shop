@@ -16,7 +16,7 @@ use DmitriiKoziuk\yii2Shop\widgets\backend\ProductSkuUpdateAttributesWidget;
  * @var $form \yii\widgets\ActiveForm
  * @var $currencyList Currency[]
  * @var $product Product
- * @var $productSkuInputForms \DmitriiKoziuk\yii2Shop\forms\product\ProductSkuInputForm[]
+ * @var $productSkuInputForms \DmitriiKoziuk\yii2Shop\forms\product\ProductSkuUpdateForm[]
  * @var $productSkusSuppliers \DmitriiKoziuk\yii2Shop\data\SupplierProductSkuData[][]
  * @var $fileWebHelper FileWebHelper
  */
