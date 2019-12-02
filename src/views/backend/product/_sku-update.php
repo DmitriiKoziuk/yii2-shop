@@ -114,7 +114,7 @@ $this->registerAssetBundle(ProductAsset::class);
                                             ?>
                                         </div>
                                         <div class="col-md-2">
-                                            <?= $form->field($productSkuInputForm, "[{$key}]price_on_site")
+                                            <?= $form->field($productSkuInputForm, "[{$key}]customer_price")
                                                 ->textInput(['maxlength' => true, 'disabled' => true])
                                                 ->label(false);
                                             ?>

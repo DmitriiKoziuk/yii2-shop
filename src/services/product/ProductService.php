@@ -235,7 +235,7 @@ class ProductService extends DBActionService
         $productSkuRecord = $this->_productSkuRepository->getById($productSkuId);
         if (! empty($productSkuRecord)) {
             $this->_defineProductSkuSellPrice($productSkuRecord);
-            $this->_defineProductSkuPriceOnSite($productSkuRecord);
+            $this->_defineProductSkuCustomerPrice($productSkuRecord);
             $this->_productSkuRepository->save($productSkuRecord);
         }
     }
@@ -244,7 +244,7 @@ class ProductService extends DBActionService
     {
         $productSkuRecord = $this->_productSkuRepository->getById($productSkuId);
         if (! empty($productSkuRecord)) {
-            $this->_defineProductSkuPriceOnSite($productSkuRecord);
+            $this->_defineProductSkuCustomerPrice($productSkuRecord);
             $this->_productSkuRepository->save($productSkuRecord);
         }
     }
@@ -374,9 +374,10 @@ class ProductService extends DBActionService
      * @param ProductSkuInputForm $productSkuInputForm
      * @param array $productChangedAttributes
      * @return array product sku changed attributes
-     * @throws \DmitriiKoziuk\yii2Base\exceptions\DataNotValidException
      * @throws \DmitriiKoziuk\yii2Base\exceptions\EntityNotValidException
      * @throws \DmitriiKoziuk\yii2Base\exceptions\EntitySaveException
+     * @throws \DmitriiKoziuk\yii2UrlIndex\exceptions\EntityUrlNotFoundException
+     * @throws \DmitriiKoziuk\yii2UrlIndex\exceptions\UrlAlreadyHasBeenTakenException
      */
     private function _updateProductSku(
         Product $product,
@@ -415,7 +416,7 @@ class ProductService extends DBActionService
                 $productSku->isAttributeChanged('sell_price') ||
                 $productSku->isAttributeChanged('currency_id', false)
             ) {
-                $this->_defineProductSkuPriceOnSite($productSku);
+                $this->_defineProductSkuCustomerPrice($productSku);
             }
         } elseif ($productSku->isAttributeChanged('sell_price')) {
             $productSku->sell_price = $productSku->getOldAttribute('sell_price');
@@ -426,7 +427,7 @@ class ProductService extends DBActionService
             ProductSku::SELL_PRICE_STRATEGY_MARGIN == $productSku->sell_price_strategy
         ) {
             $this->_defineProductSkuSellPrice($productSku);
-            $this->_defineProductSkuPriceOnSite($productSku);
+            $this->_defineProductSkuCustomerPrice($productSku);
         }
         // change sell price if product type is changed
         if (
@@ -435,7 +436,7 @@ class ProductService extends DBActionService
             ! empty($productChangedAttributes['type_id'])
         ) {
             $this->_defineProductSkuSellPrice($productSku);
-            $this->_defineProductSkuPriceOnSite($productSku);
+            $this->_defineProductSkuCustomerPrice($productSku);
         }
         $changedAttributes = $productSku->getDirtyAttributes();
         $this->_productSkuRepository->save($productSku);
@@ -620,13 +621,11 @@ class ProductService extends DBActionService
     /**
      * @param ProductSku $productSku
      */
-    private function _defineProductSkuPriceOnSite(ProductSku $productSku): void
+    private function _defineProductSkuCustomerPrice(ProductSku $productSku): void
     {
-        if (empty($productSku->currency_id)) {
-            $productSku->price_on_site = $productSku->sell_price;
-        } else {
-            $currencyData = $this->_currencyService->getCurrencyById($productSku->currency_id);
-            $productSku->price_on_site = $productSku->sell_price * $currencyData->getRate();
+        if ($productSku->isCurrencySet()) {
+            $currencyData = $this->_currencyService->getCurrencyById((int) $productSku->currency_id);
+            $productSku->customer_price = ($productSku->sell_price * $currencyData->getRate());
         }
     }
 

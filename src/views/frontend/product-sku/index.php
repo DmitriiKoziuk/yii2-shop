@@ -48,7 +48,7 @@ $productFullName = $productData->getName() . ' ' . $productSkuData->getName();
           <?php endif; ?>
         </div>
         <div class="col-md-6">
-          <?php if($productSkuData->isPriceOnSiteSet()): ?>
+          <?php if($productSkuData->isCustomerPriceSet()): ?>
           <div class="price">
             <?= number_format(
                 $productSkuData->getPriceOnSite(),

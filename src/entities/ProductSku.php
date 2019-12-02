@@ -22,7 +22,7 @@ use DmitriiKoziuk\yii2Shop\interfaces\productEav\ProductEavValueInterface;
  * @property int    $stock_status
  * @property string $sell_price
  * @property string $old_price
- * @property string $price_on_site
+ * @property int    $customer_price
  * @property int    $sell_price_strategy
  * @property string $meta_title
  * @property string $meta_description
@@ -112,8 +112,8 @@ class ProductSku extends ActiveRecord
             [['url'], 'string', 'max' => 255],
             [['url'], 'unique'],
             ['sort', 'unique', 'targetAttribute' => ['product_id', 'sort']],
-            [['sell_price', 'old_price', 'price_on_site'], 'number'],
-            [['sell_price', 'old_price', 'price_on_site'], 'default', 'value' => '0.00'],
+            [['sell_price', 'old_price', 'customer_price'], 'integer'],
+            [['sell_price', 'old_price', 'customer_price'], 'default', 'value' => NULL],
             [['stock_status'], 'default', 'value' => ProductSku::STOCK_STATUS_NOT_SET],
             [['sell_price_strategy'], 'default', 'value' => ProductSku::SELL_PRICE_STRATEGY_STATIC],
             [['meta_title'], 'string', 'max' => 255],
@@ -152,7 +152,7 @@ class ProductSku extends ActiveRecord
             'stock_status'        => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Stock Status'),
             'sell_price'          => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Sell Price'),
             'old_price'           => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Old Price'),
-            'price_on_site'       => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Price on site'),
+            'customer_price'      => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Customer price'),
             'sell_price_strategy' => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Sell price strategy'),
             'meta_title'          => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Meta title'),
             'meta_description'    => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Meta description'),
@@ -165,15 +165,20 @@ class ProductSku extends ActiveRecord
         ];
     }
 
+    /**
+     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\di\NotInstantiableException
+     */
     public function init()
     {
         parent::init();
+        /** @var FileRepository fileRepository */
         $this->fileRepository = Yii::$container->get(FileRepository::class);
     }
 
-    public function isSitePriceSet(): bool
+    public function isCustomerPriceSet(): bool
     {
-        return empty($this->price_on_site) ? false : true;
+        return empty($this->customer_price) ? false : true;
     }
 
     public function isCurrencySet(): bool

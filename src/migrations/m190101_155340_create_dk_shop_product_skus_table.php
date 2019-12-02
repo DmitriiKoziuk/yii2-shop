@@ -31,12 +31,9 @@ class m190101_155340_create_dk_shop_product_skus_table extends Migration
                 ->comment('Depends from slug and parent product url.'),
             'stock_status' => $this->integer()->unsigned()->notNull(),
             'sell_price_strategy' => $this->integer()->unsigned()->notNull(),
-            'sell_price' => $this->money(10,2)
-                ->unsigned()->notNull()->defaultValue(0.00),
-            'old_price' => $this->money(10,2)
-                ->unsigned()->notNull()->defaultValue(0.00),
-            'price_on_site' => $this->money(10,2)
-                ->unsigned()->notNull()->defaultValue(0.00),
+            'sell_price' => $this->integer()->unsigned()->null()->defaultValue(NULL),
+            'old_price' => $this->integer()->unsigned()->null()->defaultValue(NULL),
+            'customer_price' => $this->integer()->unsigned()->null()->defaultValue(NULL),
             'meta_title' => $this->string(255)->defaultValue(NULL),
             'meta_description' => $this->string(500)->defaultValue(NULL),
             'short_description' => $this->text()->defaultValue(NULL),
