@@ -19,6 +19,7 @@ use DmitriiKoziuk\yii2Shop\ShopModule;
  * @var $productSkusSuppliers \DmitriiKoziuk\yii2Shop\data\SupplierProductSkuData[][]
  * @var $brands \DmitriiKoziuk\yii2Shop\data\BrandData[]
  * @var $fileWebHelper \DmitriiKoziuk\yii2FileManager\helpers\FileWebHelper
+ * @var $productSkuViewHelper \DmitriiKoziuk\yii2Shop\helpers\ProductSkuViewHelper
  */
 
 $this->title = Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Update Product:') . ' ' . $product->name;
@@ -114,6 +115,7 @@ $this->params['breadcrumbs'][] = $product->name;
           'productSkuUpdateForms' => $productSkuUpdateForms,
           'productSkusSuppliers' => $productSkusSuppliers,
           'fileWebHelper' => $fileWebHelper,
+          'productSkuViewHelper' => $productSkuViewHelper,
       ]) ?>
 
     </div>

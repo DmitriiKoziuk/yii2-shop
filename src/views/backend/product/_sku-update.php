@@ -20,6 +20,7 @@ use DmitriiKoziuk\yii2Shop\widgets\backend\ProductSkuUpdateAttributesWidget;
  * @var $productSkuUpdateForms ProductSkuUpdateForm[]
  * @var $productSkusSuppliers \DmitriiKoziuk\yii2Shop\data\SupplierProductSkuData[][]
  * @var $fileWebHelper FileWebHelper
+ * @var $productSkuViewHelper \DmitriiKoziuk\yii2Shop\helpers\ProductSkuViewHelper
  */
 
 $this->registerAssetBundle(ProductAsset::class);
@@ -106,7 +107,7 @@ $this->registerAssetBundle(ProductAsset::class);
                                             <?= $form->field($productSkuUpdateForm, "[{$key}]sell_price")
                                                 ->textInput([
                                                     'maxlength' => true,
-                                                    'value' => number_format($productSkuUpdateForm->sell_price / 100, 2, '.', '')
+                                                    'value' => $productSkuViewHelper->priceFormat($productSkuUpdateForm->sell_price),
                                                 ])->label(false);
                                             ?>
                                         </div>
@@ -114,7 +115,7 @@ $this->registerAssetBundle(ProductAsset::class);
                                             <?= $form->field($productSkuUpdateForm, "[{$key}]old_price")
                                                 ->textInput([
                                                     'maxlength' => true,
-                                                    'value' => $productSkuUpdateForm->getOldPriceHumanReadable(),
+                                                    'value' => $productSkuViewHelper->priceFormat($productSkuUpdateForm->old_price),
                                                 ])
                                                 ->label(false);
                                             ?>
@@ -124,7 +125,7 @@ $this->registerAssetBundle(ProductAsset::class);
                                                 ->textInput([
                                                     'maxlength' => true,
                                                     'disabled' => true,
-                                                    'value' => number_format($productSkuUpdateForm->customer_price / 100, 2, '.', '')
+                                                    'value' => $productSkuViewHelper->priceFormat($productSkuUpdateForm->customer_price),
                                                 ])
                                                 ->label(false);
                                             ?>

@@ -56,6 +56,7 @@ use DmitriiKoziuk\yii2Shop\services\supplier\SupplierPriceService;
 use DmitriiKoziuk\yii2Shop\services\brand\BrandService;
 use DmitriiKoziuk\yii2Shop\services\eav\ProductSkuEavAttributesService;
 use DmitriiKoziuk\yii2Shop\services\eav\EavService;
+use DmitriiKoziuk\yii2Shop\helpers\ProductSkuViewHelper;
 
 final class ShopModule extends \yii\base\Module implements ModuleInterface
 {
@@ -574,6 +575,9 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
         );
         $this->diContainer->setSingleton(EavService::class, function () use ($eavRepository) {
             return new EavService($eavRepository);
+        });
+        $this->diContainer->setSingleton(ProductSkuViewHelper::class, function () {
+            return new ProductSkuViewHelper();
         });
     }
 }
