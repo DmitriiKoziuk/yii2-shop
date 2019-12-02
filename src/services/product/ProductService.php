@@ -24,6 +24,7 @@ use DmitriiKoziuk\yii2Shop\data\ProductTypeData;
 use DmitriiKoziuk\yii2Shop\data\SupplierProductSkuData;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductInputForm;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuInputForm;
+use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuCreateForm;
 use DmitriiKoziuk\yii2Shop\repositories\ProductRepository;
 use DmitriiKoziuk\yii2Shop\repositories\ProductSkuRepository;
 use DmitriiKoziuk\yii2Shop\services\eav\ProductSkuEavAttributesService;
@@ -112,18 +113,18 @@ class ProductService extends DBActionService
 
     /**
      * @param ProductInputForm $productInputForm
-     * @param ProductSkuInputForm $productSkuInputForm
+     * @param ProductSkuCreateForm $productSkuCreateForm
      * @return Product
      * @throws \Throwable
      */
     public function create(
         ProductInputForm $productInputForm,
-        ProductSkuInputForm $productSkuInputForm
+        ProductSkuCreateForm $productSkuCreateForm
     ): Product {
         $this->beginTransaction();
         try {
             $product = $this->_createProduct($productInputForm);
-            $productSku = $this->_createProductSku($product, $productSkuInputForm);
+            $productSku = $this->_createProductSku($product, $productSkuCreateForm);
             $this->_setMainSkuId($product, $productSku);
             $this->commitTransaction();
             return $product; //TODO return ProductInputForm and ProductSkuInputForm[].
@@ -174,17 +175,17 @@ class ProductService extends DBActionService
 
     /**
      * @param Product $product
-     * @param ProductSkuInputForm $productSkuInputForm
+     * @param ProductSkuCreateForm $productSkuCreateForm
      * @return ProductSku
      * @throws \Throwable
      */
-    public function addSkuToProduct(
+    public function addNewSkuToProduct(
         Product $product,
-        ProductSkuInputForm $productSkuInputForm
+        ProductSkuCreateForm $productSkuCreateForm
     ): ProductSku { //TODO change Product $product to ProductInputForm $productInputForm.
         try {
             $this->beginTransaction();
-            $productSku = $this->_createProductSku($product, $productSkuInputForm);
+            $productSku = $this->_createProductSku($product, $productSkuCreateForm);
             $this->commitTransaction();
             return $productSku; //TODO return ProductSkuInputForm with new product sku date.
         } catch (\Throwable $e) {
@@ -339,15 +340,15 @@ class ProductService extends DBActionService
 
     /**
      * @param Product $product
-     * @param ProductSkuInputForm $productSkuInputForm
+     * @param ProductSkuCreateForm $productSkuCreateForm
      * @return ProductSku
      * @throws \Throwable
      */
-    private function _createProductSku(Product $product, ProductSkuInputForm $productSkuInputForm): ProductSku
+    private function _createProductSku(Product $product, ProductSkuCreateForm $productSkuCreateForm): ProductSku
     {
         $productSku = new ProductSku();
         $productSku->product_id = $product->id;
-        $productSku->setAttributes($productSkuInputForm->getAttributes());
+        $productSku->setAttributes($productSkuCreateForm->getAttributes());
         if (empty($productSku->slug)) {
             if (empty($productSku->name)) {
                 $productSku->slug = (string) ProductSku::getNextSortNumber($product->id);
