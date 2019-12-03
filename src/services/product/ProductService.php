@@ -292,6 +292,7 @@ class ProductService extends DBActionService
         Product $product,
         ProductUpdateForm $productInputForm
     ): array {
+        $changedAttributes = [];
         $product->setAttributes($productInputForm->getAttributes(null, ['url']));
         if ($product->isAttributeChanged('name')) {
             if (! $product->isAttributeChanged('slug')) {
@@ -300,11 +301,15 @@ class ProductService extends DBActionService
                 $product->slug = $this->defineProductSlug($product->slug);
             }
         }
-        if ($product->isAttributeChanged('slug')) {
+        if (
+            $product->isAttributeChanged('slug') ||
+            $product->isAttributeChanged('type_id')
+        ) {
             $url = $this->_defineProductUrl($product);
             $this->_updateProductUrlInIndex($product, $url);
+            $changedAttributes['url'] = $url;
         }
-        $changedAttributes = $product->getDirtyAttributes();
+        $changedAttributes = array_merge($changedAttributes, $product->getDirtyAttributes());
         $this->_productRepository->save($product);
         return $changedAttributes;
     }
@@ -384,6 +389,7 @@ class ProductService extends DBActionService
      * @throws \DmitriiKoziuk\yii2Base\exceptions\EntitySaveException
      * @throws \DmitriiKoziuk\yii2UrlIndex\exceptions\EntityUrlNotFoundException
      * @throws \DmitriiKoziuk\yii2UrlIndex\exceptions\UrlAlreadyHasBeenTakenException
+     * @throws EntityNotFoundException
      */
     private function _updateProductSku(
         Product $product,
@@ -391,6 +397,7 @@ class ProductService extends DBActionService
         ProductSkuUpdateForm $productSkuInputForm,
         array $productChangedAttributes
     ): array {
+        $changedAttributes = [];
         $productSku->setAttributes($productSkuInputForm->getUpdatedAttributes());
         // Slug depends form name, but do not update slug if user change it itself.
         if ($productSku->isAttributeChanged('name')) {
@@ -401,10 +408,12 @@ class ProductService extends DBActionService
         // Url depends form slug, but do not update url if user change it itself.
         if (
             $productSku->isAttributeChanged('slug') ||
-            array_key_exists('slug', $productChangedAttributes)
+            array_key_exists('slug', $productChangedAttributes) ||
+            array_key_exists('url', $productChangedAttributes)
         ) {
             $url = $this->_defineProductSkuUrl($product, $productSku);
             $this->_updateProductSkuUrlInIndex($productSku, $url);
+            $changedAttributes['url'] = $url;
         }
         // user can change sell price only if strategy is static.
         if (ProductSku::SELL_PRICE_STRATEGY_STATIC == $productSku->sell_price_strategy) {
@@ -445,7 +454,7 @@ class ProductService extends DBActionService
             $this->_defineProductSkuSellPrice($productSku);
             $this->_defineProductSkuCustomerPrice($productSku);
         }
-        $changedAttributes = $productSku->getDirtyAttributes();
+        $changedAttributes = array_merge($changedAttributes, $productSku->getDirtyAttributes());
         $this->_productSkuRepository->save($productSku);
         return $changedAttributes;
     }
@@ -478,20 +487,22 @@ class ProductService extends DBActionService
                 throw new EntityNotFoundException("Product type with id '{$product->type_id}' not found.");
             }
             if (! empty($productType->product_url_prefix)) {
-                $url = $productType->product_url_prefix . '-';
+                $url = $productType->product_url_prefix;
             }
         }
         $url .= $product->slug;
         return UrlHelper::slugFromString('/' . $url);
     }
 
+    /**
+     * @param Product $product
+     * @param ProductSku $productSku
+     * @return string
+     * @throws EntityNotFoundException
+     */
     private function _defineProductSkuUrl(Product $product, ProductSku $productSku): string
     {
-        if (! empty($product->type) && ! empty($product->type->product_url_prefix)) {
-            $url = $product->type->product_url_prefix . '-' . $product->name . '/' . $productSku->slug;
-        } else {
-            $url = $product->name . '/' . $productSku->slug;
-        }
+        $url = $this->_defineProductUrl($product) . '/' . $productSku->slug;
         return UrlHelper::slugFromString('/' . $url);
     }
 
