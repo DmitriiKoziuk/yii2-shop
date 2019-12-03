@@ -275,7 +275,7 @@ class ProductService extends DBActionService
     {
         $product = new Product();
         $product->setAttributes($productCreateForm->getAttributes());
-        $product->slug = $this->_defineSlug($product->name);
+        $product->slug = $this->defineProductSlug($product->name);
         $this->_productRepository->save($product);
         $url = $this->_defineProductUrl($product);
         $this->_addProductUrlToIndex($product, $url);
@@ -295,9 +295,9 @@ class ProductService extends DBActionService
         $product->setAttributes($productInputForm->getAttributes(null, ['url']));
         if ($product->isAttributeChanged('name')) {
             if (! $product->isAttributeChanged('slug')) {
-                $product->slug = $this->_defineSlug($product->name);
+                $product->slug = $this->defineProductSlug($product->name);
             } else {
-                $product->slug = $this->_defineSlug($product->slug);
+                $product->slug = $this->defineProductSlug($product->slug);
             }
         }
         if ($product->isAttributeChanged('slug')) {
@@ -352,12 +352,16 @@ class ProductService extends DBActionService
         $productSku->setAttributes($productSkuCreateForm->getAttributes());
         if (empty($productSku->slug)) {
             if (empty($productSku->name)) {
-                $productSku->slug = (string) ProductSku::getNextSortNumber($product->id);
+                $productSku->slug = 'new';
             } else {
-                $productSku->slug = $this->_defineSlug($productSku->name);
+                $productSku->slug = $this->defineProductSkuSlug($productSku);
             }
         }
         $productSku->sort = ProductSku::getNextSortNumber($product->id);
+        $this->_productSkuRepository->save($productSku);
+        if ($productSku->slug == 'new') {
+            $productSku->slug = $this->defineProductSkuSlug($productSku);
+        }
         $this->_productSkuRepository->save($productSku);
         if ($product->isMainSkuSet()) {
             $this->duplicateEavAttributes($product->getMainSku(), $productSku);
@@ -391,11 +395,14 @@ class ProductService extends DBActionService
         // Slug depends form name, but do not update slug if user change it itself.
         if ($productSku->isAttributeChanged('name')) {
             if (! $productSku->isAttributeChanged('slug')) {
-                $productSku->slug = $this->_defineSlug($productSku->name);
+                $productSku->slug = $this->defineProductSkuSlug($productSku);
             }
         }
         // Url depends form slug, but do not update url if user change it itself.
-        if ($productSku->isAttributeChanged('slug')) {
+        if (
+            $productSku->isAttributeChanged('slug') ||
+            array_key_exists('slug', $productChangedAttributes)
+        ) {
             $url = $this->_defineProductSkuUrl($product, $productSku);
             $this->_updateProductSkuUrlInIndex($productSku, $url);
         }
@@ -443,9 +450,17 @@ class ProductService extends DBActionService
         return $changedAttributes;
     }
 
-    private function _defineSlug($string)
+    private function defineProductSlug($string): string
     {
         return UrlHelper::slugFromString($string);
+    }
+
+    private function defineProductSkuSlug(ProductSku $productSku): string
+    {
+        if (empty($productSku->name)) {
+            return (string) $productSku->id;
+        }
+        return UrlHelper::slugFromString($productSku->name);
     }
 
     /**
