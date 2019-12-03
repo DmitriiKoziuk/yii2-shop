@@ -1,8 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace DmitriiKoziuk\yii2Shop\entities;
 
 use Yii;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 use yii\helpers\ArrayHelper;
@@ -199,17 +200,17 @@ class ProductSku extends ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getCurrency()
+    public function getCurrency(): ActiveQuery
     {
         return $this->hasOne(Currency::class, ['id' => 'currency_id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getProduct()
+    public function getProduct(): ActiveQuery
     {
         return $this->hasOne(Product::class, ['id' => 'product_id']);
     }
@@ -410,8 +411,8 @@ class ProductSku extends ActiveRecord
         if (empty($this->urlEntity)) {
             $this->urlEntity = $this->urlRepository->getEntityUrl(
                 ShopModule::getId(),
-                ShopModule::PRODUCT_SKU_FRONTEND_CONTROLLER_NAME,
-                ShopModule::PRODUCT_SKU_FRONTEND_ACTION_NAME,
+                self::FRONTEND_CONTROLLER_NAME,
+                self::FRONTEND_ACTION_NAME,
                 (string) $this->id
             );
         }

@@ -2,7 +2,6 @@
 
 namespace DmitriiKoziuk\yii2Shop;
 
-use DmitriiKoziuk\yii2Shop\services\product\ProductSkuSearchService;
 use yii\di\Container;
 use yii\db\Connection;
 use yii\web\Application as WebApp;
@@ -41,6 +40,7 @@ use DmitriiKoziuk\yii2Shop\services\product\ProductService;
 use DmitriiKoziuk\yii2Shop\services\product\ProductTypeService;
 use DmitriiKoziuk\yii2Shop\services\product\ProductMarginService;
 use DmitriiKoziuk\yii2Shop\services\product\ProductSearchService;
+use DmitriiKoziuk\yii2Shop\services\product\ProductSkuSearchService;
 use DmitriiKoziuk\yii2Shop\services\category\CategoryProductService;
 use DmitriiKoziuk\yii2Shop\services\category\CategoryProductSkuService;
 use DmitriiKoziuk\yii2Shop\services\category\CategoryClosureService;
@@ -73,11 +73,6 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
     const TRANSLATION_ORDER = 'dk-shop-order';
     const TRANSLATION_SUPPLIER = 'dk-shop-supplier';
     const TRANSLATION_BRAND = 'dk-shop-brand';
-
-    const PRODUCT_FRONTEND_CONTROLLER_NAME = 'product';
-    const PRODUCT_FRONTEND_ACTION_NAME = 'index';
-    const PRODUCT_SKU_FRONTEND_CONTROLLER_NAME = 'product-sku';
-    const PRODUCT_SKU_FRONTEND_ACTION_NAME = 'index';
 
     /**
      * @var Container

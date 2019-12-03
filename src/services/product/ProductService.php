@@ -634,8 +634,8 @@ class ProductService extends DBActionService
         $this->_urlIndexService->addUrl(new UrlCreateForm([
             'url' => $url,
             'module_name' => ShopModule::ID,
-            'controller_name' => ShopModule::PRODUCT_FRONTEND_CONTROLLER_NAME,
-            'action_name' => ShopModule::PRODUCT_FRONTEND_ACTION_NAME,
+            'controller_name' => Product::FRONTEND_CONTROLLER_NAME,
+            'action_name' => Product::FRONTEND_ACTION_NAME,
             'entity_id' => (string) $product->id,
         ]));
     }
@@ -645,8 +645,8 @@ class ProductService extends DBActionService
         $this->_urlIndexService->addUrl(new UrlCreateForm([
             'url' => $url,
             'module_name' => ShopModule::ID,
-            'controller_name' => ShopModule::PRODUCT_SKU_FRONTEND_CONTROLLER_NAME,
-            'action_name' => ShopModule::PRODUCT_SKU_FRONTEND_ACTION_NAME,
+            'controller_name' => ProductSku::FRONTEND_CONTROLLER_NAME,
+            'action_name' => ProductSku::FRONTEND_ACTION_NAME,
             'entity_id' => (string) $productSku->id,
         ]));
     }
@@ -662,8 +662,8 @@ class ProductService extends DBActionService
         $this->_urlIndexService->updateEntityUrl(new UpdateEntityUrlForm([
             'url' => $url,
             'module_name' => ShopModule::ID,
-            'controller_name' => ShopModule::PRODUCT_FRONTEND_CONTROLLER_NAME,
-            'action_name' => ShopModule::PRODUCT_FRONTEND_ACTION_NAME,
+            'controller_name' => Product::FRONTEND_CONTROLLER_NAME,
+            'action_name' => Product::FRONTEND_ACTION_NAME,
             'entity_id' => (string) $product->id,
         ]));
     }
@@ -679,8 +679,8 @@ class ProductService extends DBActionService
         $this->_urlIndexService->updateEntityUrl(new UpdateEntityUrlForm([
             'url' => $url,
             'module_name' => ShopModule::ID,
-            'controller_name' => ShopModule::PRODUCT_SKU_FRONTEND_CONTROLLER_NAME,
-            'action_name' => ShopModule::PRODUCT_SKU_FRONTEND_ACTION_NAME,
+            'controller_name' => ProductSku::FRONTEND_CONTROLLER_NAME,
+            'action_name' => ProductSku::FRONTEND_ACTION_NAME,
             'entity_id' => (string) $productSku->id,
         ]));
     }
