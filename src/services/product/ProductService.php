@@ -352,12 +352,16 @@ class ProductService extends DBActionService
         $productSku->setAttributes($productSkuCreateForm->getAttributes());
         if (empty($productSku->slug)) {
             if (empty($productSku->name)) {
-                $productSku->slug = (string) ProductSku::getNextSortNumber($product->id);
+                $productSku->slug = 'new';
             } else {
                 $productSku->slug = $this->defineProductSkuSlug($productSku);
             }
         }
         $productSku->sort = ProductSku::getNextSortNumber($product->id);
+        $this->_productSkuRepository->save($productSku);
+        if ($productSku->slug == 'new') {
+            $productSku->slug = $this->defineProductSkuSlug($productSku);
+        }
         $this->_productSkuRepository->save($productSku);
         if ($product->isMainSkuSet()) {
             $this->duplicateEavAttributes($product->getMainSku(), $productSku);
@@ -395,7 +399,10 @@ class ProductService extends DBActionService
             }
         }
         // Url depends form slug, but do not update url if user change it itself.
-        if ($productSku->isAttributeChanged('slug')) {
+        if (
+            $productSku->isAttributeChanged('slug') ||
+            array_key_exists('slug', $productChangedAttributes)
+        ) {
             $url = $this->_defineProductSkuUrl($product, $productSku);
             $this->_updateProductSkuUrlInIndex($productSku, $url);
         }
