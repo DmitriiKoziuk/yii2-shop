@@ -22,7 +22,6 @@ class ProductUpdateForm extends Model
             [['slug'], 'required'],
             [['slug'], 'string', 'max' => 130],
             [['slug'], 'trim'],
-            [['url'], 'required'],
             [['url'], 'string', 'max' => 255],
             [['url'], 'trim'],
             [['category_id', 'type_id'], 'integer'],

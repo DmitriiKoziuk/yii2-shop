@@ -1,10 +1,14 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace DmitriiKoziuk\yii2Shop\entities;
 
 use Yii;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 use DmitriiKoziuk\yii2Shop\ShopModule;
+use DmitriiKoziuk\yii2UrlIndex\entities\UrlEntity;
+use DmitriiKoziuk\yii2UrlIndex\repositories\UrlRepository;
 
 /**
  * This is the model class for table "{{%dk_shop_products}}".
@@ -12,7 +16,6 @@ use DmitriiKoziuk\yii2Shop\ShopModule;
  * @property int    $id
  * @property string $name
  * @property string $slug
- * @property string $url
  * @property string $created_at
  * @property string $updated_at
  * @property int    $category_id
@@ -27,6 +30,16 @@ use DmitriiKoziuk\yii2Shop\ShopModule;
  */
 class Product extends ActiveRecord
 {
+    /**
+     * @var UrlRepository
+     */
+    private $urlRepository;
+
+    /**
+     * @var UrlEntity
+     */
+    private $urlEntity;
+
     /**
      * @inheritdoc
      */
@@ -53,10 +66,7 @@ class Product extends ActiveRecord
             ['name', 'unique'],
             [['slug'], 'required'],
             [['slug'], 'string', 'max' => 130],
-            [['url'], 'required'],
-            [['url'], 'string', 'max' => 255],
-            ['url', 'unique'],
-            [['name', 'slug', 'url'], 'trim'],
+            [['name', 'slug'], 'trim'],
             [['category_id', 'type_id', 'main_sku_id', 'brand_id'], 'integer'],
             [['category_id', 'type_id', 'main_sku_id', 'brand_id'], 'filter', 'filter' => function ($value) {
                 return empty($value) ? null : intval($value);
@@ -88,7 +98,6 @@ class Product extends ActiveRecord
             'id'          => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'ID'),
             'name'        => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Name'),
             'slug'        => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Slug'),
-            'url'         => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Url'),
             'created_at'  => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Created At'),
             'updated_at'  => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Updated At'),
             'category_id' => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Category'),
@@ -98,8 +107,15 @@ class Product extends ActiveRecord
         ];
     }
 
+    public function init()
+    {
+        parent::init();
+        /** @var UrlRepository urlIndexService */
+        $this->urlRepository = Yii::$container->get(UrlRepository::class);
+    }
+
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getSkus()
     {
@@ -109,7 +125,7 @@ class Product extends ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getCategory()
     {
@@ -117,11 +133,29 @@ class Product extends ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getType()
     {
         return $this->hasOne(ProductType::class, ['id' => 'type_id']);
+    }
+
+    public function getUrlEntity(): UrlEntity
+    {
+        if (empty($this->urlEntity)) {
+            $this->urlEntity = $this->urlRepository->getEntityUrl(
+                ShopModule::getId(),
+                ShopModule::PRODUCT_FRONTEND_CONTROLLER_NAME,
+                ShopModule::PRODUCT_FRONTEND_ACTION_NAME,
+                (string) $this->id
+            );
+        }
+        return $this->urlEntity;
+    }
+
+    public function getUrl(): string
+    {
+        return $this->getUrlEntity()->url;
     }
 
     public function getTypeName()

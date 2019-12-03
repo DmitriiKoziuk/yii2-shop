@@ -200,6 +200,7 @@ final class ProductController extends Controller
                 $productSkuUpdateForms
             );
             $productUpdateForm->setAttributes($product->getAttributes());
+            $productUpdateForm->url = $product->getUrl();
             foreach ($product->skus as $key => $sku) {
                 $productSkuUpdateForms[ $key ] = new ProductSkuUpdateForm();
                 $productSkuUpdateForms[ $key ]->setAttributes($sku->getAttributes());
@@ -211,7 +212,7 @@ final class ProductController extends Controller
             }
         } else {
             $productUpdateForm->setAttributes($product->getAttributes());
-            /** @var ProductSkuUpdateForm[] $productSkuUpdateForms */
+            $productUpdateForm->url = $product->getUrl();
             foreach ($product->skus as $key => $sku) {
                 $productSkuUpdateForms[ $key ] = new ProductSkuUpdateForm();
                 $productSkuUpdateForms[ $key ]->setAttributes($sku->getAttributes());

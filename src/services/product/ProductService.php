@@ -276,9 +276,9 @@ class ProductService extends DBActionService
         $product = new Product();
         $product->setAttributes($productCreateForm->getAttributes());
         $product->slug = $this->_defineSlug($product->name);
-        $product->url = $this->_defineProductUrl($product);
         $this->_productRepository->save($product);
-        $this->_addProductUrlToIndex($product);
+        $url = $this->_defineProductUrl($product);
+        $this->_addProductUrlToIndex($product, $url);
         return $product;
     }
 
@@ -292,7 +292,7 @@ class ProductService extends DBActionService
         Product $product,
         ProductUpdateForm $productInputForm
     ): array {
-        $product->setAttributes($productInputForm->getAttributes());
+        $product->setAttributes($productInputForm->getAttributes(null, ['url']));
         if ($product->isAttributeChanged('name')) {
             if (! $product->isAttributeChanged('slug')) {
                 $product->slug = $this->_defineSlug($product->name);
@@ -301,8 +301,8 @@ class ProductService extends DBActionService
             }
         }
         if ($product->isAttributeChanged('slug')) {
-            $product->url = $this->_defineProductUrl($product);
-            $this->_updateProductUrlInIndex($product);
+            $url = $this->_defineProductUrl($product);
+            $this->_updateProductUrlInIndex($product, $url);
         }
         $changedAttributes = $product->getDirtyAttributes();
         $this->_productRepository->save($product);
@@ -629,10 +629,10 @@ class ProductService extends DBActionService
         }
     }
 
-    private function _addProductUrlToIndex(Product $product): void
+    private function _addProductUrlToIndex(Product $product, string $url): void
     {
         $this->_urlIndexService->addUrl(new UrlCreateForm([
-            'url' => $product->url,
+            'url' => $url,
             'module_name' => ShopModule::ID,
             'controller_name' => ShopModule::PRODUCT_FRONTEND_CONTROLLER_NAME,
             'action_name' => ShopModule::PRODUCT_FRONTEND_ACTION_NAME,
@@ -653,13 +653,14 @@ class ProductService extends DBActionService
 
     /**
      * @param Product $product
+     * @param string $url
      * @throws \DmitriiKoziuk\yii2UrlIndex\exceptions\EntityUrlNotFoundException
      * @throws \DmitriiKoziuk\yii2UrlIndex\exceptions\UrlAlreadyHasBeenTakenException
      */
-    private function _updateProductUrlInIndex(Product $product): void
+    private function _updateProductUrlInIndex(Product $product, string $url): void
     {
         $this->_urlIndexService->updateEntityUrl(new UpdateEntityUrlForm([
-            'url' => $product->url,
+            'url' => $url,
             'module_name' => ShopModule::ID,
             'controller_name' => ShopModule::PRODUCT_FRONTEND_CONTROLLER_NAME,
             'action_name' => ShopModule::PRODUCT_FRONTEND_ACTION_NAME,
