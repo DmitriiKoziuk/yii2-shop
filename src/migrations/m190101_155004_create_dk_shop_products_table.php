@@ -24,10 +24,7 @@ class m190101_155004_create_dk_shop_products_table extends Migration
         $this->createTable($this->_productsTable, [
             'id' => $this->primaryKey(),
             'name' => $this->string(110)->notNull(),
-            'slug' => $this->string(130)->notNull()
-                ->comment('Depends from name.'),
-            'url'         => $this->string(255)->notNull()
-                ->comment('Depends form slug and shop_product_types.product_url_prefix.'),
+            'slug' => $this->string(130)->notNull()->comment('Depends from name.'),
             'created_at' => $this->integer()->notNull(),
             'updated_at' => $this->integer()->notNull(),
             'category_id' => $this->integer()->defaultValue(NULL),
@@ -38,12 +35,6 @@ class m190101_155004_create_dk_shop_products_table extends Migration
             'idx_products_name',
             $this->_productsTable,
             'name',
-            true
-        );
-        $this->createIndex(
-            'idx_products_url',
-            $this->_productsTable,
-            'url',
             true
         );
         $this->createIndex(

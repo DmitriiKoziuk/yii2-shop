@@ -96,7 +96,7 @@ $this->params['breadcrumbs'][] = $product->name;
         </div>
         <div class="col-md-6">
             <?= $form->field($productInputForm, 'url')
-                ->textInput(['maxlength' => true])
+                ->textInput(['maxlength' => true, 'disabled' => true])
                 ->label('Product url');
             ?>
         </div>
