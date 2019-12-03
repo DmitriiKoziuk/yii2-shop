@@ -132,6 +132,7 @@ class ProductSkuEavAttributesService extends DBActionService
                     break;
                 case EavAttributeEntity::STORAGE_TYPE_TEXT:
                     $this->updateTextValue(
+                        $productSkuId,
                         $value['value'],
                         $attribute,
                         $oldValue
@@ -476,6 +477,7 @@ class ProductSkuEavAttributesService extends DBActionService
             $this->deleteRelation($attributeEntity, $oldValueEntity->id, $productSkuId);
         }
         if (empty($oldValueEntity) || $oldValueEntity->value != $newValue) {
+            /** @var EavValueVarcharEntity $existValue */
             $existValue = EavValueVarcharEntity::find()
                 ->where([
                     'attribute_id' => $attributeEntity->id,
@@ -491,18 +493,21 @@ class ProductSkuEavAttributesService extends DBActionService
     }
 
     /**
+     * @param int $productSkuId
      * @param string $newValue
      * @param EavAttributeEntity $attributeEntity
      * @param EavValueTextEntity $oldValueEntity
      * @throws Exception
      */
     private function updateTextValue(
+        int $productSkuId,
         string $newValue,
         EavAttributeEntity $attributeEntity,
         EavValueTextEntity $oldValueEntity = null
     ) {
         if (empty($oldValueEntity)) {
-            $this->createTextValue($attributeEntity->id, $newValue);
+            $entity = $this->createTextValue($attributeEntity->id, $newValue);
+            $this->createRelation($attributeEntity->storage_type, $productSkuId, $entity->id);
         } else {
             $oldValueEntity->value = $newValue;
             if (!$oldValueEntity->save()) {

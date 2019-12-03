@@ -440,6 +440,9 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
                 return new ProductSkuEavAttributesService($app->db);
             }
         );
+        $this->diContainer->setSingleton(EavService::class, function () use ($eavRepository) {
+            return new EavService($eavRepository);
+        });
         /** @var SupplierService $supplierService */
         $supplierService = $this->diContainer->get(SupplierService::class);
         /** @var CategoryProductService $categoryProductService */
@@ -448,6 +451,8 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
         $categoryProductSkuService = $this->diContainer->get(CategoryProductSkuService::class);
         /** @var ProductSkuEavAttributesService $productSkuEavAttributesService */
         $productSkuEavAttributesService = $this->diContainer->get(ProductSkuEavAttributesService::class);
+        /** @var EavService $eavService */
+        $eavService = $this->diContainer->get(EavService::class);
         $this->diContainer->setSingleton(
             ProductService::class,
             function () use (
@@ -461,7 +466,8 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
                 $urlService,
                 $categoryProductService,
                 $categoryProductSkuService,
-                $currencyService
+                $currencyService,
+                $eavService
             ) {
                 return new ProductService(
                     $productRepository,
@@ -474,6 +480,7 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
                     $categoryProductService,
                     $categoryProductSkuService,
                     $currencyService,
+                    $eavService,
                     $this->dbConnection
                 );
             }
@@ -568,9 +575,6 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
                 );
             }
         );
-        $this->diContainer->setSingleton(EavService::class, function () use ($eavRepository) {
-            return new EavService($eavRepository);
-        });
         $this->diContainer->setSingleton(ProductSkuViewHelper::class, function () {
             return new ProductSkuViewHelper();
         });

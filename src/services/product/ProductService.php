@@ -28,6 +28,7 @@ use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuUpdateForm;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuCreateForm;
 use DmitriiKoziuk\yii2Shop\repositories\ProductRepository;
 use DmitriiKoziuk\yii2Shop\repositories\ProductSkuRepository;
+use DmitriiKoziuk\yii2Shop\services\eav\EavService;
 use DmitriiKoziuk\yii2Shop\services\eav\ProductSkuEavAttributesService;
 use DmitriiKoziuk\yii2Shop\services\category\CategoryProductService;
 use DmitriiKoziuk\yii2Shop\services\category\CategoryProductSkuService;
@@ -86,6 +87,11 @@ class ProductService extends DBActionService
      */
     private $_currencyService;
 
+    /**
+     * @var EavService
+     */
+    private $eavService;
+
     public function __construct(
         ProductRepository $productRepository,
         ProductSkuRepository $_productSkuRepository,
@@ -97,6 +103,7 @@ class ProductService extends DBActionService
         CategoryProductService $categoryProductService,
         CategoryProductSkuService $categoryProductSkuService,
         CurrencyService $currencyService,
+        EavService $eavService,
         Connection $db = null
     ) {
         parent::__construct($db);
@@ -110,6 +117,7 @@ class ProductService extends DBActionService
         $this->_categoryProductService = $categoryProductService;
         $this->_categoryProductSkuService = $categoryProductSkuService;
         $this->_currencyService = $currencyService;
+        $this->eavService = $eavService;
     }
 
     /**
@@ -283,7 +291,7 @@ class ProductService extends DBActionService
     }
 
     /**
-     * @param Product          $product
+     * @param Product $product
      * @param ProductUpdateForm $productInputForm
      * @return array product changed attributes
      * @throws \Throwable
@@ -300,6 +308,12 @@ class ProductService extends DBActionService
             } else {
                 $product->slug = $this->defineProductSlug($product->slug);
             }
+        }
+        if (
+            $product->isAttributeChanged('type_id') &&
+            ! empty($product->getOldAttribute('type_id'))
+        ) {
+            $this->eavService->removeAttributesFromProduct($product);
         }
         if (
             $product->isAttributeChanged('slug') ||

@@ -46,6 +46,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 ),
             ],
             'value:ntext',
+            [
+                'label' => 'Product sku number',
+                'content' => function ($model) {
+                    /** @var EavValueTextEntity $model */
+                    return $model->getRelatedProductSkuNumber();
+                }
+            ],
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

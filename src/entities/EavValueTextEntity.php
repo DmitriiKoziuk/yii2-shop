@@ -54,6 +54,13 @@ class EavValueTextEntity extends ActiveRecord implements ProductEavValueInterfac
         return $this->hasOne(EavAttributeEntity::class, ['id' => 'attribute_id']);
     }
 
+    public function getRelatedProductSkuNumber()
+    {
+        return EavValueTextProductSkuEntity::find()
+            ->where(['value_id' => $this->id])
+            ->count();
+    }
+
     public function getEavAttributeId(): int
     {
         return $this->eavAttribute->id;
