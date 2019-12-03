@@ -74,9 +74,6 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
     const TRANSLATION_SUPPLIER = 'dk-shop-supplier';
     const TRANSLATION_BRAND = 'dk-shop-brand';
 
-    const PRODUCT_SKU_FRONTEND_CONTROLLER_NAME = 'product-sku';
-    const PRODUCT_SKU_FRONTEND_ACTION_NAME = 'index';
-
     /**
      * @var Container
      */
