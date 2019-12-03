@@ -30,8 +30,8 @@ use DmitriiKoziuk\yii2UrlIndex\repositories\UrlRepository;
  */
 class Product extends ActiveRecord
 {
-    const PRODUCT_FRONTEND_CONTROLLER_NAME = 'product';
-    const PRODUCT_FRONTEND_ACTION_NAME = 'index';
+    const FRONTEND_CONTROLLER_NAME = 'product';
+    const FRONTEND_ACTION_NAME = 'index';
 
     /**
      * @var UrlRepository
@@ -148,8 +148,8 @@ class Product extends ActiveRecord
         if (empty($this->urlEntity)) {
             $this->urlEntity = $this->urlRepository->getEntityUrl(
                 ShopModule::getId(),
-                self::PRODUCT_FRONTEND_CONTROLLER_NAME,
-                self::PRODUCT_FRONTEND_ACTION_NAME,
+                self::FRONTEND_CONTROLLER_NAME,
+                self::FRONTEND_ACTION_NAME,
                 (string) $this->id
             );
         }
