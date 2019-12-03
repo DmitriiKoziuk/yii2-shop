@@ -2,6 +2,8 @@
 
 namespace DmitriiKoziuk\yii2Shop\repositories;
 
+use DmitriiKoziuk\yii2Shop\entities\EavValueTextProductSkuEntity;
+use Yii;
 use Exception;
 use yii\db\Expression;
 use yii\db\ActiveQuery;
@@ -10,6 +12,7 @@ use DmitriiKoziuk\yii2Shop\entities\categoryFaceted\EavAttributeEntity;
 use DmitriiKoziuk\yii2Shop\entities\categoryFaceted\EavValueDoubleEntity;
 use DmitriiKoziuk\yii2Shop\entities\categoryFaceted\EavValueVarcharEntity;
 use DmitriiKoziuk\yii2Shop\entities\CategoryProductSku;
+use DmitriiKoziuk\yii2Shop\entities\EavValueTextEntity;
 use DmitriiKoziuk\yii2Shop\entities\EavValueDoubleProductSkuEntity;
 use DmitriiKoziuk\yii2Shop\entities\EavValueVarcharProductSkuEntity;
 use DmitriiKoziuk\yii2Shop\entities\ProductSku;
@@ -170,6 +173,17 @@ class EavRepository
         return EavValueDoubleEntity::find()
             ->where(['in', 'code', $codes])
             ->all();
+    }
+
+    public function removeProductSkuAndValuesRelations(int $productSkuId)
+    {
+        EavValueVarcharProductSkuEntity::deleteAll(['product_sku_id' => $productSkuId]);
+        EavValueDoubleProductSkuEntity::deleteAll(['product_sku_id' => $productSkuId]);
+        $textIds = EavValueTextProductSkuEntity::find()
+            ->where(['product_sku_id' => $productSkuId])
+            ->all();
+        $textIds = array_values(ArrayHelper::map($textIds, 'value_id', 'value_id'));
+        EavValueTextEntity::deleteAll(['id' => $textIds]);
     }
 
     /**

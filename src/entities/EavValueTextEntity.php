@@ -2,7 +2,8 @@
 
 namespace DmitriiKoziuk\yii2Shop\entities;
 
-use Yii;
+use yii\db\ActiveRecord;
+use DmitriiKoziuk\yii2Shop\interfaces\productEav\ProductEavValueInterface;
 
 /**
  * This is the model class for table "{{%dk_shop_eav_value_text}}".
@@ -13,7 +14,7 @@ use Yii;
  *
  * @property EavAttributeEntity $eavAttribute
  */
-class EavValueTextEntity extends \yii\db\ActiveRecord
+class EavValueTextEntity extends ActiveRecord implements ProductEavValueInterface
 {
     /**
      * {@inheritdoc}
@@ -51,5 +52,17 @@ class EavValueTextEntity extends \yii\db\ActiveRecord
     public function getEavAttribute()
     {
         return $this->hasOne(EavAttributeEntity::class, ['id' => 'attribute_id']);
+    }
+
+    public function getRelatedProductSkuNumber()
+    {
+        return EavValueTextProductSkuEntity::find()
+            ->where(['value_id' => $this->id])
+            ->count();
+    }
+
+    public function getEavAttributeId(): int
+    {
+        return $this->eavAttribute->id;
     }
 }

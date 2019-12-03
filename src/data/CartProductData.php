@@ -31,7 +31,7 @@ class CartProductData
 
     public function getFinalPrice(): float
     {
-        if (empty($this->_cartProduct->productSku->price_on_site)) {
+        if (empty($this->_cartProduct->productSku->customer_price)) {
             return 0.00;
         } else {
             $price = $this->getQuantity() * $this->_productSkuData->getPriceOnSite();

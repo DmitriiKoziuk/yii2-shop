@@ -28,7 +28,7 @@ class ProductSkuData extends ProductData
 
     public function isPriceSet(): bool
     {
-        return $this->productSku->isSitePriceSet();
+        return $this->productSku->isCustomerPriceSet();
     }
 
     public function isCurrencySet(): bool
@@ -69,9 +69,9 @@ class ProductSkuData extends ProductData
         return '';
     }
 
-    public function getPrice(): string
+    public function getPrice(): int
     {
-        return $this->productSku->price_on_site;
+        return is_null($this->productSku->customer_price) ? 0 : $this->productSku->customer_price;
     }
 
     public function getCurrencySymbol(): string

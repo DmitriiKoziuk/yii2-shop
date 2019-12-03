@@ -1,13 +1,17 @@
 <?php
 
+use yii\web\View;
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\data\ActiveDataProvider;
 use DmitriiKoziuk\yii2Shop\ShopModule;
+use DmitriiKoziuk\yii2Shop\entities\ProductType;
+use DmitriiKoziuk\yii2Shop\entities\search\ProductTypeSearch;
 
 /**
- * @var $this         yii\web\View
- * @var $searchModel  \DmitriiKoziuk\yii2Shop\entities\search\ProductTypeSearch
- * @var $dataProvider yii\data\ActiveDataProvider
+ * @var $this         View
+ * @var $searchModel  ProductTypeSearch
+ * @var $dataProvider ActiveDataProvider
  */
 
 $this->title = Yii::t(ShopModule::TRANSLATION_PRODUCT_TYPE, 'Product types');
@@ -30,13 +34,24 @@ $this->params['breadcrumbs'][] = Yii::t(ShopModule::TRANSLATION_PRODUCT_TYPE, 'P
 
             'id',
             'name',
+            [
+                'label' => 'Related EAV Attributes',
+                'content' => function ($model) {
+                    /** @var $model ProductType */
+                    $r = '';
+                    foreach ($model->eavAttributeEntities as $attribute) {
+                        $r .= Html::tag('div', $attribute->name);
+                    }
+                    return $r;
+                },
+            ],
             'name_on_site',
             'margin_strategy',
 
             [
                 'attribute' => Yii::t(ShopModule::TRANSLATION_PRODUCT_TYPE, 'Product number'),
                 'content'   => function ($model) {
-                    /** @var $model \DmitriiKoziuk\yii2Shop\entities\ProductType */
+                    /** @var $model ProductType */
                     return $model->getProductNumber();
                 },
             ],

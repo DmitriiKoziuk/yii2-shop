@@ -57,11 +57,15 @@ use DmitriiKoziuk\yii2Shop\entities\EavValueVarcharEntity;
             </div>
           <?php endif; ?>
           <?php if (! $attribute->selectable && EavAttributeEntity::STORAGE_TYPE_TEXT === $attribute->storage_type): ?>
+            <?php
+              /** @var EavValueDoubleEntity|EavValueVarcharEntity $value */
+              $value = empty($attributeValues[ $attribute->id ]) ? null : array_shift($attributeValues[ $attribute->id ])
+            ?>
               <div class="row">
                 <div class="col-md-8">
                     <?= Html::textarea(
                         "productSku[$productSkuId][{$attribute->id}][1][value]",
-                        null,
+                        empty($value->value) ? null : $value->value,
                         [
                             'class' => 'form-control',
                             'id' => "attribute-{$attribute->id}",

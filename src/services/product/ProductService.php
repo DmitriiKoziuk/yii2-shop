@@ -22,10 +22,13 @@ use DmitriiKoziuk\yii2Shop\data\ProductSkuData;
 use DmitriiKoziuk\yii2Shop\data\ProductTypeMarginData;
 use DmitriiKoziuk\yii2Shop\data\ProductTypeData;
 use DmitriiKoziuk\yii2Shop\data\SupplierProductSkuData;
-use DmitriiKoziuk\yii2Shop\forms\product\ProductInputForm;
-use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuInputForm;
+use DmitriiKoziuk\yii2Shop\forms\product\ProductUpdateForm;
+use DmitriiKoziuk\yii2Shop\forms\product\ProductCreateForm;
+use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuUpdateForm;
+use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuCreateForm;
 use DmitriiKoziuk\yii2Shop\repositories\ProductRepository;
 use DmitriiKoziuk\yii2Shop\repositories\ProductSkuRepository;
+use DmitriiKoziuk\yii2Shop\services\eav\EavService;
 use DmitriiKoziuk\yii2Shop\services\eav\ProductSkuEavAttributesService;
 use DmitriiKoziuk\yii2Shop\services\category\CategoryProductService;
 use DmitriiKoziuk\yii2Shop\services\category\CategoryProductSkuService;
@@ -84,6 +87,11 @@ class ProductService extends DBActionService
      */
     private $_currencyService;
 
+    /**
+     * @var EavService
+     */
+    private $eavService;
+
     public function __construct(
         ProductRepository $productRepository,
         ProductSkuRepository $_productSkuRepository,
@@ -95,6 +103,7 @@ class ProductService extends DBActionService
         CategoryProductService $categoryProductService,
         CategoryProductSkuService $categoryProductSkuService,
         CurrencyService $currencyService,
+        EavService $eavService,
         Connection $db = null
     ) {
         parent::__construct($db);
@@ -108,22 +117,23 @@ class ProductService extends DBActionService
         $this->_categoryProductService = $categoryProductService;
         $this->_categoryProductSkuService = $categoryProductSkuService;
         $this->_currencyService = $currencyService;
+        $this->eavService = $eavService;
     }
 
     /**
-     * @param ProductInputForm $productInputForm
-     * @param ProductSkuInputForm $productSkuInputForm
+     * @param ProductCreateForm $productCreateForm
+     * @param ProductSkuCreateForm $productSkuCreateForm
      * @return Product
      * @throws \Throwable
      */
     public function create(
-        ProductInputForm $productInputForm,
-        ProductSkuInputForm $productSkuInputForm
+        ProductCreateForm $productCreateForm,
+        ProductSkuCreateForm $productSkuCreateForm
     ): Product {
         $this->beginTransaction();
         try {
-            $product = $this->_createProduct($productInputForm);
-            $productSku = $this->_createProductSku($product, $productSkuInputForm);
+            $product = $this->_createProduct($productCreateForm);
+            $productSku = $this->_createProductSku($product, $productSkuCreateForm);
             $this->_setMainSkuId($product, $productSku);
             $this->commitTransaction();
             return $product; //TODO return ProductInputForm and ProductSkuInputForm[].
@@ -135,14 +145,14 @@ class ProductService extends DBActionService
 
     /**
      * @param int $productId
-     * @param ProductInputForm $productInputForm
-     * @param ProductSkuInputForm[] $productSkuInputForms
+     * @param ProductUpdateForm $productInputForm
+     * @param ProductSkuUpdateForm[] $productSkuInputForms
      * @return Product
      * @throws \Throwable
      */
     public function update(
         int $productId,
-        ProductInputForm $productInputForm,
+        ProductUpdateForm $productInputForm,
         array $productSkuInputForms
     ): Product {
         try {
@@ -174,17 +184,17 @@ class ProductService extends DBActionService
 
     /**
      * @param Product $product
-     * @param ProductSkuInputForm $productSkuInputForm
+     * @param ProductSkuCreateForm $productSkuCreateForm
      * @return ProductSku
      * @throws \Throwable
      */
-    public function addSkuToProduct(
+    public function addNewSkuToProduct(
         Product $product,
-        ProductSkuInputForm $productSkuInputForm
+        ProductSkuCreateForm $productSkuCreateForm
     ): ProductSku { //TODO change Product $product to ProductInputForm $productInputForm.
         try {
             $this->beginTransaction();
-            $productSku = $this->_createProductSku($product, $productSkuInputForm);
+            $productSku = $this->_createProductSku($product, $productSkuCreateForm);
             $this->commitTransaction();
             return $productSku; //TODO return ProductSkuInputForm with new product sku date.
         } catch (\Throwable $e) {
@@ -235,7 +245,7 @@ class ProductService extends DBActionService
         $productSkuRecord = $this->_productSkuRepository->getById($productSkuId);
         if (! empty($productSkuRecord)) {
             $this->_defineProductSkuSellPrice($productSkuRecord);
-            $this->_defineProductSkuPriceOnSite($productSkuRecord);
+            $this->_defineProductSkuCustomerPrice($productSkuRecord);
             $this->_productSkuRepository->save($productSkuRecord);
         }
     }
@@ -244,7 +254,7 @@ class ProductService extends DBActionService
     {
         $productSkuRecord = $this->_productSkuRepository->getById($productSkuId);
         if (! empty($productSkuRecord)) {
-            $this->_defineProductSkuPriceOnSite($productSkuRecord);
+            $this->_defineProductSkuCustomerPrice($productSkuRecord);
             $this->_productSkuRepository->save($productSkuRecord);
         }
     }
@@ -262,47 +272,58 @@ class ProductService extends DBActionService
     }
 
     /**
-     * @param ProductInputForm $productInputForm
+     * @param ProductCreateForm $productCreateForm
      * @return Product
      * @throws EntityNotFoundException
      * @throws \DmitriiKoziuk\yii2Base\exceptions\DataNotValidException
      * @throws \DmitriiKoziuk\yii2Base\exceptions\EntityNotValidException
      * @throws \DmitriiKoziuk\yii2Base\exceptions\EntitySaveException
      */
-    private function _createProduct(ProductInputForm $productInputForm): Product
+    private function _createProduct(ProductCreateForm $productCreateForm): Product
     {
         $product = new Product();
-        $product->setAttributes($productInputForm->getAttributes());
-        $product->slug = $this->_defineSlug($product->name);
-        $product->url = $this->_defineProductUrl($product);
+        $product->setAttributes($productCreateForm->getAttributes());
+        $product->slug = $this->defineProductSlug($product->name);
         $this->_productRepository->save($product);
-        $this->_addProductUrlToIndex($product);
+        $url = $this->_defineProductUrl($product);
+        $this->_addProductUrlToIndex($product, $url);
         return $product;
     }
 
     /**
-     * @param Product          $product
-     * @param ProductInputForm $productInputForm
+     * @param Product $product
+     * @param ProductUpdateForm $productInputForm
      * @return array product changed attributes
      * @throws \Throwable
      */
     private function _updateProduct(
         Product $product,
-        ProductInputForm $productInputForm
+        ProductUpdateForm $productInputForm
     ): array {
-        $product->setAttributes($productInputForm->getAttributes());
+        $changedAttributes = [];
+        $product->setAttributes($productInputForm->getAttributes(null, ['url']));
         if ($product->isAttributeChanged('name')) {
             if (! $product->isAttributeChanged('slug')) {
-                $product->slug = $this->_defineSlug($product->name);
+                $product->slug = $this->defineProductSlug($product->name);
             } else {
-                $product->slug = $this->_defineSlug($product->slug);
+                $product->slug = $this->defineProductSlug($product->slug);
             }
         }
-        if ($product->isAttributeChanged('slug')) {
-            $product->url = $this->_defineProductUrl($product);
-            $this->_updateProductUrlInIndex($product);
+        if (
+            $product->isAttributeChanged('type_id') &&
+            ! empty($product->getOldAttribute('type_id'))
+        ) {
+            $this->eavService->removeAttributesFromProduct($product);
         }
-        $changedAttributes = $product->getDirtyAttributes();
+        if (
+            $product->isAttributeChanged('slug') ||
+            $product->isAttributeChanged('type_id')
+        ) {
+            $url = $this->_defineProductUrl($product);
+            $this->_updateProductUrlInIndex($product, $url);
+            $changedAttributes['url'] = $url;
+        }
+        $changedAttributes = array_merge($changedAttributes, $product->getDirtyAttributes());
         $this->_productRepository->save($product);
         return $changedAttributes;
     }
@@ -339,24 +360,27 @@ class ProductService extends DBActionService
 
     /**
      * @param Product $product
-     * @param ProductSkuInputForm $productSkuInputForm
+     * @param ProductSkuCreateForm $productSkuCreateForm
      * @return ProductSku
      * @throws \Throwable
      */
-    private function _createProductSku(Product $product, ProductSkuInputForm $productSkuInputForm): ProductSku
+    private function _createProductSku(Product $product, ProductSkuCreateForm $productSkuCreateForm): ProductSku
     {
         $productSku = new ProductSku();
         $productSku->product_id = $product->id;
-        $productSku->setAttributes($productSkuInputForm->getAttributes());
+        $productSku->setAttributes($productSkuCreateForm->getAttributes());
         if (empty($productSku->slug)) {
             if (empty($productSku->name)) {
-                $productSku->slug = (string) ProductSku::getNextSortNumber($product->id);
+                $productSku->slug = 'new';
             } else {
-                $productSku->slug = $this->_defineSlug($productSku->name);
+                $productSku->slug = $this->defineProductSkuSlug($productSku);
             }
         }
-        $productSku->url = $this->_defineProductSkuUrl($product, $productSku);
-        $productSku->sort = ProductSku::getNextSortNumber($product->id);
+        $productSku->sort = $this->_productSkuRepository->getNextSortNumber($product->id);
+        $this->_productSkuRepository->save($productSku);
+        if ($productSku->slug == 'new') {
+            $productSku->slug = $this->defineProductSkuSlug($productSku);
+        }
         $this->_productSkuRepository->save($productSku);
         if ($product->isMainSkuSet()) {
             $this->duplicateEavAttributes($product->getMainSku(), $productSku);
@@ -364,39 +388,46 @@ class ProductService extends DBActionService
         if ($product->isCategorySet()) {
             $this->_categoryProductSkuService->updateRelation($productSku->id, $product->category_id);
         }
-        $this->_addProductSkuUrlToIndex($productSku);
+        $url = $this->_defineProductSkuUrl($product, $productSku);
+        $this->_addProductSkuUrlToIndex($productSku, $url);
         return $productSku;
     }
 
     /**
      * @param Product $product
      * @param ProductSku $productSku
-     * @param ProductSkuInputForm $productSkuInputForm
+     * @param ProductSkuUpdateForm $productSkuInputForm
      * @param array $productChangedAttributes
      * @return array product sku changed attributes
-     * @throws \DmitriiKoziuk\yii2Base\exceptions\DataNotValidException
      * @throws \DmitriiKoziuk\yii2Base\exceptions\EntityNotValidException
      * @throws \DmitriiKoziuk\yii2Base\exceptions\EntitySaveException
+     * @throws \DmitriiKoziuk\yii2UrlIndex\exceptions\EntityUrlNotFoundException
+     * @throws \DmitriiKoziuk\yii2UrlIndex\exceptions\UrlAlreadyHasBeenTakenException
+     * @throws EntityNotFoundException
      */
     private function _updateProductSku(
         Product $product,
         ProductSku $productSku,
-        ProductSkuInputForm $productSkuInputForm,
+        ProductSkuUpdateForm $productSkuInputForm,
         array $productChangedAttributes
     ): array {
+        $changedAttributes = [];
         $productSku->setAttributes($productSkuInputForm->getUpdatedAttributes());
         // Slug depends form name, but do not update slug if user change it itself.
         if ($productSku->isAttributeChanged('name')) {
             if (! $productSku->isAttributeChanged('slug')) {
-                $productSku->slug = $this->_defineSlug($productSku->name);
+                $productSku->slug = $this->defineProductSkuSlug($productSku);
             }
         }
         // Url depends form slug, but do not update url if user change it itself.
-        if ($productSku->isAttributeChanged('slug')) {
-            if (! $productSku->isAttributeChanged('url')) {
-                $productSku->url = $this->_defineProductSkuUrl($product, $productSku);
-                $this->_updateProductSkuUrlInIndex($productSku);
-            }
+        if (
+            $productSku->isAttributeChanged('slug') ||
+            array_key_exists('slug', $productChangedAttributes) ||
+            array_key_exists('url', $productChangedAttributes)
+        ) {
+            $url = $this->_defineProductSkuUrl($product, $productSku);
+            $this->_updateProductSkuUrlInIndex($productSku, $url);
+            $changedAttributes['url'] = $url;
         }
         // user can change sell price only if strategy is static.
         if (ProductSku::SELL_PRICE_STRATEGY_STATIC == $productSku->sell_price_strategy) {
@@ -415,7 +446,7 @@ class ProductService extends DBActionService
                 $productSku->isAttributeChanged('sell_price') ||
                 $productSku->isAttributeChanged('currency_id', false)
             ) {
-                $this->_defineProductSkuPriceOnSite($productSku);
+                $this->_defineProductSkuCustomerPrice($productSku);
             }
         } elseif ($productSku->isAttributeChanged('sell_price')) {
             $productSku->sell_price = $productSku->getOldAttribute('sell_price');
@@ -426,7 +457,7 @@ class ProductService extends DBActionService
             ProductSku::SELL_PRICE_STRATEGY_MARGIN == $productSku->sell_price_strategy
         ) {
             $this->_defineProductSkuSellPrice($productSku);
-            $this->_defineProductSkuPriceOnSite($productSku);
+            $this->_defineProductSkuCustomerPrice($productSku);
         }
         // change sell price if product type is changed
         if (
@@ -435,16 +466,24 @@ class ProductService extends DBActionService
             ! empty($productChangedAttributes['type_id'])
         ) {
             $this->_defineProductSkuSellPrice($productSku);
-            $this->_defineProductSkuPriceOnSite($productSku);
+            $this->_defineProductSkuCustomerPrice($productSku);
         }
-        $changedAttributes = $productSku->getDirtyAttributes();
+        $changedAttributes = array_merge($changedAttributes, $productSku->getDirtyAttributes());
         $this->_productSkuRepository->save($productSku);
         return $changedAttributes;
     }
 
-    private function _defineSlug($string)
+    private function defineProductSlug($string): string
     {
         return UrlHelper::slugFromString($string);
+    }
+
+    private function defineProductSkuSlug(ProductSku $productSku): string
+    {
+        if (empty($productSku->name)) {
+            return (string) $productSku->id;
+        }
+        return UrlHelper::slugFromString($productSku->name);
     }
 
     /**
@@ -462,20 +501,22 @@ class ProductService extends DBActionService
                 throw new EntityNotFoundException("Product type with id '{$product->type_id}' not found.");
             }
             if (! empty($productType->product_url_prefix)) {
-                $url = $productType->product_url_prefix . '-';
+                $url = $productType->product_url_prefix;
             }
         }
         $url .= $product->slug;
         return UrlHelper::slugFromString('/' . $url);
     }
 
+    /**
+     * @param Product $product
+     * @param ProductSku $productSku
+     * @return string
+     * @throws EntityNotFoundException
+     */
     private function _defineProductSkuUrl(Product $product, ProductSku $productSku): string
     {
-        if (! empty($product->type) && ! empty($product->type->product_url_prefix)) {
-            $url = $product->type->product_url_prefix . '-' . $product->name . '/' . $productSku->slug;
-        } else {
-            $url = $product->name . '/' . $productSku->slug;
-        }
+        $url = $this->_defineProductUrl($product) . '/' . $productSku->slug;
         return UrlHelper::slugFromString('/' . $url);
     }
 
@@ -620,66 +661,66 @@ class ProductService extends DBActionService
     /**
      * @param ProductSku $productSku
      */
-    private function _defineProductSkuPriceOnSite(ProductSku $productSku): void
+    private function _defineProductSkuCustomerPrice(ProductSku $productSku): void
     {
-        if (empty($productSku->currency_id)) {
-            $productSku->price_on_site = $productSku->sell_price;
-        } else {
-            $currencyData = $this->_currencyService->getCurrencyById($productSku->currency_id);
-            $productSku->price_on_site = $productSku->sell_price * $currencyData->getRate();
+        if ($productSku->isCurrencySet()) {
+            $currencyData = $this->_currencyService->getCurrencyById((int) $productSku->currency_id);
+            $productSku->customer_price = (int) ($productSku->sell_price * $currencyData->getRate());
         }
     }
 
-    private function _addProductUrlToIndex(Product $product): void
+    private function _addProductUrlToIndex(Product $product, string $url): void
     {
         $this->_urlIndexService->addUrl(new UrlCreateForm([
-            'url' => $product->url,
+            'url' => $url,
             'module_name' => ShopModule::ID,
-            'controller_name' => ShopModule::PRODUCT_FRONTEND_CONTROLLER_NAME,
-            'action_name' => ShopModule::PRODUCT_FRONTEND_ACTION_NAME,
+            'controller_name' => Product::FRONTEND_CONTROLLER_NAME,
+            'action_name' => Product::FRONTEND_ACTION_NAME,
             'entity_id' => (string) $product->id,
         ]));
     }
 
-    private function _addProductSkuUrlToIndex(ProductSku $productSku)
+    private function _addProductSkuUrlToIndex(ProductSku $productSku, string $url)
     {
         $this->_urlIndexService->addUrl(new UrlCreateForm([
-            'url' => $productSku->url,
+            'url' => $url,
             'module_name' => ShopModule::ID,
-            'controller_name' => ShopModule::PRODUCT_SKU_FRONTEND_CONTROLLER_NAME,
-            'action_name' => ShopModule::PRODUCT_SKU_FRONTEND_ACTION_NAME,
+            'controller_name' => ProductSku::FRONTEND_CONTROLLER_NAME,
+            'action_name' => ProductSku::FRONTEND_ACTION_NAME,
             'entity_id' => (string) $productSku->id,
         ]));
     }
 
     /**
      * @param Product $product
+     * @param string $url
      * @throws \DmitriiKoziuk\yii2UrlIndex\exceptions\EntityUrlNotFoundException
      * @throws \DmitriiKoziuk\yii2UrlIndex\exceptions\UrlAlreadyHasBeenTakenException
      */
-    private function _updateProductUrlInIndex(Product $product): void
+    private function _updateProductUrlInIndex(Product $product, string $url): void
     {
         $this->_urlIndexService->updateEntityUrl(new UpdateEntityUrlForm([
-            'url' => $product->url,
+            'url' => $url,
             'module_name' => ShopModule::ID,
-            'controller_name' => ShopModule::PRODUCT_FRONTEND_CONTROLLER_NAME,
-            'action_name' => ShopModule::PRODUCT_FRONTEND_ACTION_NAME,
+            'controller_name' => Product::FRONTEND_CONTROLLER_NAME,
+            'action_name' => Product::FRONTEND_ACTION_NAME,
             'entity_id' => (string) $product->id,
         ]));
     }
 
     /**
      * @param ProductSku $productSku
+     * @param string $url
      * @throws \DmitriiKoziuk\yii2UrlIndex\exceptions\EntityUrlNotFoundException
      * @throws \DmitriiKoziuk\yii2UrlIndex\exceptions\UrlAlreadyHasBeenTakenException
      */
-    private function _updateProductSkuUrlInIndex(ProductSku $productSku): void
+    private function _updateProductSkuUrlInIndex(ProductSku $productSku, string $url): void
     {
         $this->_urlIndexService->updateEntityUrl(new UpdateEntityUrlForm([
-            'url' => $productSku->url,
+            'url' => $url,
             'module_name' => ShopModule::ID,
-            'controller_name' => ShopModule::PRODUCT_SKU_FRONTEND_CONTROLLER_NAME,
-            'action_name' => ShopModule::PRODUCT_SKU_FRONTEND_ACTION_NAME,
+            'controller_name' => ProductSku::FRONTEND_CONTROLLER_NAME,
+            'action_name' => ProductSku::FRONTEND_ACTION_NAME,
             'entity_id' => (string) $productSku->id,
         ]));
     }

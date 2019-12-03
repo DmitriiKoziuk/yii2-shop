@@ -6,7 +6,6 @@ use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use yii\helpers\Inflector;
 use DmitriiKoziuk\yii2Shop\entities\EavAttributeEntity;
 use DmitriiKoziuk\yii2Shop\entities\EavValueDoubleEntity;
 use DmitriiKoziuk\yii2Shop\entities\search\EavValueDoubleEntitySearch;
@@ -69,7 +68,14 @@ class EavValueDoubleController extends Controller
         $model = new EavValueDoubleEntity();
 
         if ($model->load(Yii::$app->request->post())) {
-            $model->code = Inflector::slug($model->value);
+            $a = (float) $model->value;
+            $b = (int) $model->value;
+            $p = 0.0001;
+            if (($a - $b) < $p) {
+                $model->code = (int) $model->value;
+            } else {
+                $model->code = $model->value;
+            }
             /** @var EavAttributeEntity $attributeEntity */
             $attributeEntity = EavAttributeEntity::find()->where(['id' => $model->attribute_id])->one();
             if (! is_null($attributeEntity->defaultValueTypeUnit)) {

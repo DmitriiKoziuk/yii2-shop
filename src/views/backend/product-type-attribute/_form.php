@@ -5,6 +5,7 @@ use yii\helpers\ArrayHelper;
 use yii\widgets\ActiveForm;
 use DmitriiKoziuk\yii2Shop\entities\ProductType;
 use DmitriiKoziuk\yii2Shop\entities\EavAttributeEntity;
+use DmitriiKoziuk\yii2Shop\entities\ProductTypeAttributeEntity;
 
 /* @var $this yii\web\View */
 /* @var $model DmitriiKoziuk\yii2Shop\entities\ProductTypeAttributeEntity */
@@ -28,9 +29,15 @@ use DmitriiKoziuk\yii2Shop\entities\EavAttributeEntity;
     ))->label('Attribute') ?>
 
     <?= $form->field($model, 'view_attribute_at_product_preview')->dropDownList([
-        0 => 'No',
-        1 => 'Yes',
+        ProductTypeAttributeEntity::PREVIEW_NO => 'No',
+        ProductTypeAttributeEntity::PREVIEW_YES => 'Yes',
     ])->label('Attribute') ?>
+
+    <?php if (! $model->isNewRecord): ?>
+
+    <?= $form->field($model, 'sort')->textInput(['maxlength' => true]) ?>
+
+    <?php endif; ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

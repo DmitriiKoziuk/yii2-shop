@@ -6,8 +6,8 @@ use DmitriiKoziuk\yii2Shop\ShopModule;
 
 /**
  * @var $this                \yii\web\View
- * @var $productInputForm    \DmitriiKoziuk\yii2Shop\forms\product\ProductInputForm
- * @var $productSkuInputForm \DmitriiKoziuk\yii2Shop\forms\product\ProductSkuInputForm
+ * @var $productInputForm    \DmitriiKoziuk\yii2Shop\forms\product\ProductUpdateForm
+ * @var $productSkuInputForm \DmitriiKoziuk\yii2Shop\forms\product\ProductSkuUpdateForm
  */
 
 $this->title = Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Create Product');

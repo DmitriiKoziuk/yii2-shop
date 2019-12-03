@@ -13,8 +13,8 @@ use DmitriiKoziuk\yii2Shop\entities\SupplierPrice;
 use DmitriiKoziuk\yii2Shop\data\SupplierData;
 use DmitriiKoziuk\yii2Shop\data\SupplierPriceData;
 use DmitriiKoziuk\yii2Shop\data\ProductSkuData;
-use DmitriiKoziuk\yii2Shop\forms\product\ProductInputForm;
-use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuInputForm;
+use DmitriiKoziuk\yii2Shop\forms\product\ProductCreateForm;
+use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuCreateForm;
 use DmitriiKoziuk\yii2Shop\forms\supplier\SupplierProductSkuUpdateForm;
 use DmitriiKoziuk\yii2Shop\services\currency\CurrencyService;
 use DmitriiKoziuk\yii2Shop\services\supplier\SupplierService;
@@ -261,18 +261,18 @@ class ProcessSupplierPriceJob extends BaseObject implements JobInterface
 
     private function _createProduct(array $columnTemplates, array $rowData): ProductSkuData
     {
-        $productInputForm = new ProductInputForm(['scenario' => ProductSkuInputForm::SCENARIO_CREATE]);
-        $productSkuInputForm = new ProductSkuInputForm(['scenario' => ProductSkuInputForm::SCENARIO_CREATE]);
+        $productCreateForm = new ProductCreateForm();
+        $productSkuInputForm = new ProductSkuCreateForm();
         foreach ($rowData as $key => $data) {
             switch ($columnTemplates[ $key ]) {
                 case '{productName}':
-                    $productInputForm->name = $data;
+                    $productCreateForm->name = $data;
                     break;
                 default :
                     break;
             }
         }
-        $productEntity = $this->_productService->create($productInputForm, $productSkuInputForm);
+        $productEntity = $this->_productService->create($productCreateForm, $productSkuInputForm);
         $productSkuData = $this->_productService
             ->getProductSkuById($productEntity->main_sku_id);
         $this->_addProductToSupplier($productSkuData, $columnTemplates, $rowData);

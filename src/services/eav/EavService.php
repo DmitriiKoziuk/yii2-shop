@@ -3,6 +3,7 @@
 namespace DmitriiKoziuk\yii2Shop\services\eav;
 
 use Exception;
+use DmitriiKoziuk\yii2Shop\entities\Product;
 use DmitriiKoziuk\yii2Shop\helpers\EavAttributeHelper;
 use DmitriiKoziuk\yii2Shop\repositories\EavRepository;
 use DmitriiKoziuk\yii2Shop\entities\categoryFaceted\EavValueDoubleEntity;
@@ -53,6 +54,14 @@ class EavService
             }
         }
         return $filteredAttributes;
+    }
+
+    public function removeAttributesFromProduct(Product $product)
+    {
+        $skus = $product->skus;
+        foreach ($skus as $sku) {
+            $this->eavRepository->removeProductSkuAndValuesRelations($sku->id);
+        }
     }
 
     private function mapFilteredAttributeCodes(array $filterParams = null)

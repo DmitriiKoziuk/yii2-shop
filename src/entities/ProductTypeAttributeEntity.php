@@ -1,8 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace DmitriiKoziuk\yii2Shop\entities;
 
-use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "dk_shop_product_type_attribute".
@@ -10,11 +10,12 @@ use Yii;
  * @property int $product_type_id
  * @property int $attribute_id
  * @property int $view_attribute_at_product_preview
+ * @property int $sort
  *
  * @property ProductType $productType
  * @property EavAttributeEntity $attributeData
  */
-class ProductTypeAttributeEntity extends \yii\db\ActiveRecord
+class ProductTypeAttributeEntity extends ActiveRecord
 {
     const PREVIEW_NO = 0;
     const PREVIEW_YES = 1;
@@ -34,11 +35,24 @@ class ProductTypeAttributeEntity extends \yii\db\ActiveRecord
     {
         return [
             [['product_type_id', 'attribute_id'], 'required'],
-            [['product_type_id', 'attribute_id', 'view_attribute_at_product_preview'], 'integer'],
+            [['product_type_id', 'attribute_id', 'view_attribute_at_product_preview', 'sort'], 'integer'],
             [['view_attribute_at_product_preview'], 'default', 'value' => 0],
+            [['sort'], 'default', 'value' => 1],
             [['product_type_id', 'attribute_id'], 'unique', 'targetAttribute' => ['product_type_id', 'attribute_id']],
-            [['attribute_id'], 'exist', 'skipOnError' => true, 'targetClass' => EavAttributeEntity::class, 'targetAttribute' => ['attribute_id' => 'id']],
-            [['product_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => ProductType::class, 'targetAttribute' => ['product_type_id' => 'id']],
+            [
+                ['attribute_id'],
+                'exist',
+                'skipOnError' => true,
+                'targetClass' => EavAttributeEntity::class,
+                'targetAttribute' => ['attribute_id' => 'id']
+            ],
+            [
+                ['product_type_id'],
+                'exist',
+                'skipOnError' => true,
+                'targetClass' => ProductType::class,
+                'targetAttribute' => ['product_type_id' => 'id']
+            ],
         ];
     }
 
@@ -51,6 +65,7 @@ class ProductTypeAttributeEntity extends \yii\db\ActiveRecord
             'product_type_id' => 'Product Type ID',
             'attribute_id' => 'Attribute ID',
             'view_attribute_at_product_preview' => 'View attribute at product preview',
+            'sort' => 'Sort',
         ];
     }
 

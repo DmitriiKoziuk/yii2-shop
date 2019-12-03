@@ -1,13 +1,18 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace DmitriiKoziuk\yii2Shop\entities;
 
 use Yii;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 use yii\helpers\ArrayHelper;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 use DmitriiKoziuk\yii2FileManager\entities\FileEntity;
 use DmitriiKoziuk\yii2FileManager\repositories\FileRepository;
+use DmitriiKoziuk\yii2Shop\interfaces\productEav\ProductEavValueInterface;
+use DmitriiKoziuk\yii2UrlIndex\entities\UrlEntity;
+use DmitriiKoziuk\yii2UrlIndex\repositories\UrlRepository;
 
 /**
  * This is the model class for table "{{%dk_shop_product_skus}}".
@@ -16,11 +21,10 @@ use DmitriiKoziuk\yii2FileManager\repositories\FileRepository;
  * @property int    $product_id
  * @property string $name
  * @property string $slug
- * @property string $url
  * @property int    $stock_status
  * @property string $sell_price
  * @property string $old_price
- * @property string $price_on_site
+ * @property int    $customer_price
  * @property int    $sell_price_strategy
  * @property string $meta_title
  * @property string $meta_description
@@ -63,9 +67,19 @@ class ProductSku extends ActiveRecord
     private $images;
 
     /**
-     * @var array|null
+     * @var null|ProductTypeAttributeEntity[]
      */
     private $previewAttributes;
+
+    /**
+     * @var UrlRepository
+     */
+    private $urlRepository;
+
+    /**
+     * @var UrlEntity
+     */
+    private $urlEntity;
 
     /**
      * {@inheritdoc}
@@ -88,10 +102,7 @@ class ProductSku extends ActiveRecord
     public function rules()
     {
         return [
-            [
-                ['product_id', 'slug', 'url', 'sort'],
-                'required'
-            ],
+            [['product_id', 'slug', 'sort'], 'required'],
             [
                 [
                     'product_id',
@@ -107,17 +118,15 @@ class ProductSku extends ActiveRecord
             [['name'], 'string', 'max' => 45],
             ['name', 'unique', 'targetAttribute' => ['product_id', 'name']],
             [['slug'], 'string', 'max' => 180],
-            [['url'], 'string', 'max' => 255],
-            [['url'], 'unique'],
             ['sort', 'unique', 'targetAttribute' => ['product_id', 'sort']],
-            [['sell_price', 'old_price', 'price_on_site'], 'number'],
-            [['sell_price', 'old_price', 'price_on_site'], 'default', 'value' => '0.00'],
+            [['sell_price', 'old_price', 'customer_price'], 'integer'],
+            [['sell_price', 'old_price', 'customer_price'], 'default', 'value' => NULL],
             [['stock_status'], 'default', 'value' => ProductSku::STOCK_STATUS_NOT_SET],
             [['sell_price_strategy'], 'default', 'value' => ProductSku::SELL_PRICE_STRATEGY_STATIC],
             [['meta_title'], 'string', 'max' => 255],
             [['meta_description'], 'string', 'max' => 500],
             [['short_description', 'description'], 'string'],
-            [['name', 'slug', 'url', 'sell_price', 'old_price', 'meta_title', 'meta_description'], 'trim'],
+            [['name', 'slug', 'sell_price', 'old_price', 'meta_title', 'meta_description'], 'trim'],
             [['meta_title', 'meta_description', 'short_description', 'description'], 'default', 'value' => null],
             [
                 ['currency_id'],
@@ -146,11 +155,10 @@ class ProductSku extends ActiveRecord
             'product_id'          => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Product ID'),
             'name'                => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Name'),
             'slug'                => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Slug'),
-            'url'                 => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Url'),
             'stock_status'        => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Stock Status'),
             'sell_price'          => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Sell Price'),
             'old_price'           => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Old Price'),
-            'price_on_site'       => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Price on site'),
+            'customer_price'      => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Customer price'),
             'sell_price_strategy' => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Sell price strategy'),
             'meta_title'          => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Meta title'),
             'meta_description'    => Yii::t(ShopModule::TRANSLATION_PRODUCT_SKU, 'Meta description'),
@@ -163,15 +171,22 @@ class ProductSku extends ActiveRecord
         ];
     }
 
+    /**
+     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\di\NotInstantiableException
+     */
     public function init()
     {
         parent::init();
+        /** @var FileRepository fileRepository */
         $this->fileRepository = Yii::$container->get(FileRepository::class);
+        /** @var UrlRepository urlIndexService */
+        $this->urlRepository = Yii::$container->get(UrlRepository::class);
     }
 
-    public function isSitePriceSet(): bool
+    public function isCustomerPriceSet(): bool
     {
-        return empty($this->price_on_site) ? false : true;
+        return empty($this->customer_price) ? false : true;
     }
 
     public function isCurrencySet(): bool
@@ -185,17 +200,17 @@ class ProductSku extends ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getCurrency()
+    public function getCurrency(): ActiveQuery
     {
         return $this->hasOne(Currency::class, ['id' => 'currency_id']);
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
-    public function getProduct()
+    public function getProduct(): ActiveQuery
     {
         return $this->hasOne(Product::class, ['id' => 'product_id']);
     }
@@ -325,12 +340,6 @@ class ProductSku extends ActiveRecord
         return $variation;
     }
 
-    public static function getNextSortNumber(int $productID)
-    {
-        $count = (int) ProductSku::find()->where(['product_id' => $productID])->count();
-        return ++$count;
-    }
-
     public function getEavAttributes()
     {
         return ArrayHelper::merge(
@@ -361,12 +370,15 @@ class ProductSku extends ActiveRecord
             ->indexBy('id');
     }
 
+    /**
+     * @return ProductEavValueInterface[]
+     */
     public function getPreviewValues(): array
     {
         $values = [];
         if ($this->product->isTypeSet()) {
             if (is_null($this->previewAttributes)) {
-                $this->previewAttributes = $this->getPreviewAttributeIds();
+                $this->previewAttributes = $this->getPreviewAttributes();
             }
             foreach ($this->eavVarcharValues as $value) {
                 if (array_key_exists($value->attribute_id, $this->previewAttributes)) {
@@ -383,11 +395,28 @@ class ProductSku extends ActiveRecord
                     $values[] = $value;
                 }
             }
+            $this->sortPreviewValues($values, $this->previewAttributes);
         }
         return $values;
     }
 
-    private function getPreviewAttributeIds()
+    public function getUrl(): string
+    {
+        if (empty($this->urlEntity)) {
+            $this->urlEntity = $this->urlRepository->getEntityUrl(
+                ShopModule::getId(),
+                self::FRONTEND_CONTROLLER_NAME,
+                self::FRONTEND_ACTION_NAME,
+                (string) $this->id
+            );
+        }
+        return $this->urlEntity->url;
+    }
+
+    /**
+     * @return ProductTypeAttributeEntity[]
+     */
+    private function getPreviewAttributes(): array
     {
         return ProductTypeAttributeEntity::find()
             ->where([
@@ -396,5 +425,25 @@ class ProductSku extends ActiveRecord
             ])
             ->indexBy('attribute_id')
             ->all();
+    }
+
+    /**
+     * @param array $values
+     * @param ProductTypeAttributeEntity[] $previewAttributes
+     * @return void
+     */
+    private function sortPreviewValues(array &$values, array &$previewAttributes): void
+    {
+        usort(
+            $values,
+            function (
+                ProductEavValueInterface $previousValue,
+                ProductEavValueInterface $currentValue
+            ) use ($previewAttributes) {
+                $previousValueSort = $previewAttributes[ $previousValue->getEavAttributeId() ]->sort;
+                $currentValueSort = $previewAttributes[ $currentValue->getEavAttributeId() ]->sort;
+                return $previousValueSort <=> $currentValueSort;
+            }
+        );
     }
 }

@@ -17,12 +17,15 @@ use DmitriiKoziuk\yii2Shop\entities\ProductType;
 use DmitriiKoziuk\yii2Shop\entities\Currency;
 use DmitriiKoziuk\yii2Shop\entities\Category;
 use DmitriiKoziuk\yii2Shop\entities\search\ProductSkuSearch;
-use DmitriiKoziuk\yii2Shop\forms\product\ProductInputForm;
-use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuInputForm;
+use DmitriiKoziuk\yii2Shop\forms\product\ProductUpdateForm;
+use DmitriiKoziuk\yii2Shop\forms\product\ProductCreateForm;
+use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuUpdateForm;
+use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuCreateForm;
 use DmitriiKoziuk\yii2Shop\services\product\ProductService;
 use DmitriiKoziuk\yii2Shop\services\supplier\SupplierService;
 use DmitriiKoziuk\yii2Shop\services\brand\BrandService;
 use DmitriiKoziuk\yii2Shop\services\eav\ProductSkuEavAttributesService;
+use DmitriiKoziuk\yii2Shop\helpers\ProductSkuViewHelper;
 
 /**
  * ProductController implements the CRUD actions for Product model.
@@ -56,6 +59,11 @@ final class ProductController extends Controller
 
     private $productSkuEavAttributesService;
 
+    /**
+     * @var ProductSkuViewHelper
+     */
+    private $productSkuViewHelper;
+
     public function __construct(
         string $id,
         Module $module,
@@ -65,6 +73,7 @@ final class ProductController extends Controller
         FileRepository $fileRepository,
         FileWebHelper $fileWebHelper,
         ProductSkuEavAttributesService $updateProductSkuAttributesService,
+        ProductSkuViewHelper $productSkuViewHelper,
         array $config = []
     ) {
         parent::__construct($id, $module, $config);
@@ -74,6 +83,7 @@ final class ProductController extends Controller
         $this->_fileRepository = $fileRepository;
         $this->_fileWebHelper = $fileWebHelper;
         $this->productSkuEavAttributesService = $updateProductSkuAttributesService;
+        $this->productSkuViewHelper = $productSkuViewHelper;
     }
 
     /**
@@ -116,19 +126,19 @@ final class ProductController extends Controller
 
     public function actionCreate()
     {
-        $productInputForm = new ProductInputForm(['scenario' => ProductInputForm::SCENARIO_CREATE]);
-        $productSkuInputForm = new ProductSkuInputForm(['scenario' => ProductSkuInputForm::SCENARIO_CREATE]);
+        $productCreateForm = new ProductCreateForm();
+        $productSkuCreateForm = new ProductSkuCreateForm();
 
         if (Yii::$app->request->isPost) {
             try {
                 if (
-                    $productInputForm->load(Yii::$app->request->post())    &&
-                    $productSkuInputForm->load(Yii::$app->request->post()) &&
-                    $productInputForm->validate()                          &&
-                    $productSkuInputForm->validate()
+                    $productCreateForm->load(Yii::$app->request->post())    &&
+                    $productSkuCreateForm->load(Yii::$app->request->post()) &&
+                    $productCreateForm->validate()                          &&
+                    $productSkuCreateForm->validate()
                 ) {
                     $product = $this->_productService
-                        ->create($productInputForm, $productSkuInputForm);
+                        ->create($productCreateForm, $productSkuCreateForm);
                     return $this->redirect(['update', 'id' => $product->id]);
                 } else {
                     throw new \Exception('Form not valid.');
@@ -139,8 +149,8 @@ final class ProductController extends Controller
         }
 
         return $this->render('create', [
-            'productInputForm' => $productInputForm,
-            'productSkuInputForm' => $productSkuInputForm,
+            'productInputForm' => $productCreateForm,
+            'productSkuInputForm' => $productSkuCreateForm,
         ]);
     }
 
@@ -156,24 +166,28 @@ final class ProductController extends Controller
         $categories = Category::find()->all();
         $productTypes = ProductType::find()->all();
         $currencyList = Currency::find()->all();
-        $productInputForm = new ProductInputForm(['scenario' => ProductInputForm::SCENARIO_UPDATE]);
-        $productSkuInputForms = [];
+        $productUpdateForm = new ProductUpdateForm();
+        /** @var $productSkuUpdateForms ProductSkuUpdateForm[] */
+        $productSkuUpdateForms = [];
         if (
             Yii::$app->request->isPost &&
-            $productInputForm->load(Yii::$app->request->post()) &&
-            $productInputForm->validate()
+            $productUpdateForm->load(Yii::$app->request->post()) &&
+            $productUpdateForm->validate()
         ) {
             $skusPostData = Yii::$app->request->post(
-                (new ProductSkuInputForm())->formName()
+                (new ProductSkuUpdateForm())->formName()
             );
             $skuValidationError = false;
             foreach ($skusPostData as $key => $sku) {
-                /** @var $productSkuInputForms ProductSkuInputForm[] */
-                $productSkuInputForms[ $key ] = new ProductSkuInputForm([
-                    'scenario' => ProductSkuInputForm::SCENARIO_UPDATE
-                ]);
-                $productSkuInputForms[ $key ]->setAttributes($sku);
-                if (! $productSkuInputForms[ $key ]->validate()) {
+                $productSkuUpdateForms[ $key ] = new ProductSkuUpdateForm();
+                $productSkuUpdateForms[ $key ]->setAttributes($sku);
+                if (! empty($productSkuUpdateForms[ $key ]->sell_price)) {
+                    $productSkuUpdateForms[ $key ]->sell_price *= 100;
+                }
+                if (! empty($productSkuUpdateForms[ $key ]->old_price)) {
+                    $productSkuUpdateForms[ $key ]->old_price *= 100;
+                }
+                if (! $productSkuUpdateForms[ $key ]->validate()) {
                     $skuValidationError = true;
                 }
             }
@@ -182,31 +196,34 @@ final class ProductController extends Controller
             }
             $product = $this->_productService->update(
                 (int) $product->id,
-                $productInputForm,
-                $productSkuInputForms
+                $productUpdateForm,
+                $productSkuUpdateForms
             );
-            $productInputForm->setAttributes($product->getAttributes());
+            $productUpdateForm->setAttributes($product->getAttributes());
+            $productUpdateForm->url = $product->getUrl();
             foreach ($product->skus as $key => $sku) {
-                $productSkuInputForms[ $key ] = new ProductSkuInputForm(['scenario' => ProductSkuInputForm::SCENARIO_UPDATE]);
-                $productSkuInputForms[ $key ]->setAttributes($sku->getAttributes());
-                $productSkuInputForms[ $key ]->files = $this->_fileRepository->getEntityImages(
+                $productSkuUpdateForms[ $key ] = new ProductSkuUpdateForm();
+                $productSkuUpdateForms[ $key ]->setAttributes($sku->getAttributes());
+                $productSkuUpdateForms[ $key ]->url = $sku->getUrl();
+                $productSkuUpdateForms[ $key ]->files = $this->_fileRepository->getEntityImages(
                     $sku::FILE_ENTITY_NAME,
                     $sku->id
                 );
             }
         } else {
-            $productInputForm->setAttributes($product->getAttributes());
-            /** @var ProductSkuInputForm[] $productSkuInputForms */
+            $productUpdateForm->setAttributes($product->getAttributes());
+            $productUpdateForm->url = $product->getUrl();
             foreach ($product->skus as $key => $sku) {
-                $productSkuInputForms[ $key ] = new ProductSkuInputForm(['scenario' => ProductSkuInputForm::SCENARIO_UPDATE]);
-                $productSkuInputForms[ $key ]->setAttributes($sku->getAttributes());
-                $productSkuInputForms[ $key ]->files = $this->_fileRepository->getEntityImages(
+                $productSkuUpdateForms[ $key ] = new ProductSkuUpdateForm();
+                $productSkuUpdateForms[ $key ]->setAttributes($sku->getAttributes());
+                $productSkuUpdateForms[ $key ]->url = $sku->getUrl();
+                $productSkuUpdateForms[ $key ]->files = $this->_fileRepository->getEntityImages(
                     $sku::FILE_ENTITY_NAME,
                     $sku->id
                 );
             }
         }
-        $productSkuIds = ArrayHelper::map($productSkuInputForms, 'id', 'id');
+        $productSkuIds = ArrayHelper::map($productSkuUpdateForms, 'id', 'id');
         $productSkusSuppliers = $this->_supplierService->getProductSkusSuppliers($productSkuIds);
         $brands = $this->_brandService->getAllBrands();
         if (Yii::$app->request->isPost && ! empty(Yii::$app->request->post('productSku'))) {
@@ -220,11 +237,12 @@ final class ProductController extends Controller
             'categories' => $categories,
             'productTypes' => $productTypes,
             'currencyList' => $currencyList,
-            'productInputForm' => $productInputForm,
-            'productSkuInputForms' => $productSkuInputForms,
+            'productInputForm' => $productUpdateForm,
+            'productSkuUpdateForms' => $productSkuUpdateForms,
             'productSkusSuppliers' => $productSkusSuppliers,
             'brands' => $brands,
             'fileWebHelper' => $this->_fileWebHelper,
+            'productSkuViewHelper' => $this->productSkuViewHelper,
         ]);
     }
 
@@ -237,17 +255,17 @@ final class ProductController extends Controller
     public function actionCreateSku($product_id)
     {
         $product = $this->findProductEntity($product_id);
-        $productInputForm = new ProductInputForm(['scenario' => ProductInputForm::SCENARIO_UPDATE]);
-        $productInputForm->setAttributes($product->getAttributes());
-        $productSkuInputForm = new ProductSkuInputForm(['scenario' => ProductSkuInputForm::SCENARIO_CREATE]);
+        $productUpdateForm = new ProductUpdateForm();
+        $productUpdateForm->setAttributes($product->getAttributes());
+        $productSkuCreateForm = new ProductSkuCreateForm();
 
         if (
             Yii::$app->request->isPost &&
-            $productSkuInputForm->load(Yii::$app->request->post()) &&
-            $productSkuInputForm->validate()
+            $productSkuCreateForm->load(Yii::$app->request->post()) &&
+            $productSkuCreateForm->validate()
         ) {
             try {
-                $this->_productService->addSkuToProduct($product, $productSkuInputForm);
+                $this->_productService->addNewSkuToProduct($product, $productSkuCreateForm);
                 return $this->redirect(['update', 'id' => $product->id]);
             } catch (\Throwable $e) {
                 Yii::$app->session->setFlash('error', $e->getMessage());
@@ -255,8 +273,8 @@ final class ProductController extends Controller
         }
 
         return $this->render('create-sku', [
-            'productInputForm' => $productInputForm,
-            'productSkuInputForm' => $productSkuInputForm,
+            'productInputForm' => $productUpdateForm,
+            'productSkuInputForm' => $productSkuCreateForm,
         ]);
     }
 
