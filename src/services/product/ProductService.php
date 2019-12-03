@@ -634,8 +634,8 @@ class ProductService extends DBActionService
         $this->_urlIndexService->addUrl(new UrlCreateForm([
             'url' => $url,
             'module_name' => ShopModule::ID,
-            'controller_name' => ShopModule::PRODUCT_FRONTEND_CONTROLLER_NAME,
-            'action_name' => ShopModule::PRODUCT_FRONTEND_ACTION_NAME,
+            'controller_name' => Product::PRODUCT_FRONTEND_CONTROLLER_NAME,
+            'action_name' => Product::PRODUCT_FRONTEND_ACTION_NAME,
             'entity_id' => (string) $product->id,
         ]));
     }
@@ -662,8 +662,8 @@ class ProductService extends DBActionService
         $this->_urlIndexService->updateEntityUrl(new UpdateEntityUrlForm([
             'url' => $url,
             'module_name' => ShopModule::ID,
-            'controller_name' => ShopModule::PRODUCT_FRONTEND_CONTROLLER_NAME,
-            'action_name' => ShopModule::PRODUCT_FRONTEND_ACTION_NAME,
+            'controller_name' => Product::PRODUCT_FRONTEND_CONTROLLER_NAME,
+            'action_name' => Product::PRODUCT_FRONTEND_ACTION_NAME,
             'entity_id' => (string) $product->id,
         ]));
     }
