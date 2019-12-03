@@ -1,8 +1,11 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace DmitriiKoziuk\yii2Shop\entities;
 
 use Yii;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\base\InvalidConfigException;
 use yii\behaviors\TimestampBehavior;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 
@@ -23,6 +26,7 @@ use DmitriiKoziuk\yii2Shop\ShopModule;
  * @property string  $product_sku_description_template
  *
  * @property Product[] $products
+ * @property EavAttributeEntity[] $eavAttributeEntities
  */
 class ProductType extends ActiveRecord
 {
@@ -109,11 +113,21 @@ class ProductType extends ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery|Product[]
      */
     public function getProducts()
     {
         return $this->hasMany(Product::class, ['type_id' => 'id']);
+    }
+
+    /**
+     * @return ActiveQuery|EavAttributeEntity[]
+     * @throws InvalidConfigException
+     */
+    public function getEavAttributeEntities(): ActiveQuery
+    {
+        return $this->hasMany(EavAttributeEntity::class, ['id' => 'attribute_id'])
+            ->viaTable(ProductTypeAttributeEntity::tableName(), ['product_type_id' => 'id']);
     }
 
     public function getProductNumber()

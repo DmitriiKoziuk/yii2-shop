@@ -41,4 +41,10 @@ class ProductSkuRepository extends AbstractActiveRecordRepository
         }
         return $query;
     }
+
+    public function getNextSortNumber(int $productID)
+    {
+        $count = (int) ProductSku::find()->where(['product_id' => $productID])->count();
+        return ++$count;
+    }
 }
