@@ -357,7 +357,7 @@ class ProductService extends DBActionService
                 $productSku->slug = $this->defineProductSkuSlug($productSku);
             }
         }
-        $productSku->sort = ProductSku::getNextSortNumber($product->id);
+        $productSku->sort = $this->_productSkuRepository->getNextSortNumber($product->id);
         $this->_productSkuRepository->save($productSku);
         if ($productSku->slug == 'new') {
             $productSku->slug = $this->defineProductSkuSlug($productSku);

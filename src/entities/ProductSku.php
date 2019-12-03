@@ -340,12 +340,6 @@ class ProductSku extends ActiveRecord
         return $variation;
     }
 
-    public static function getNextSortNumber(int $productID)
-    {
-        $count = (int) ProductSku::find()->where(['product_id' => $productID])->count();
-        return ++$count;
-    }
-
     public function getEavAttributes()
     {
         return ArrayHelper::merge(
