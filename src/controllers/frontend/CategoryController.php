@@ -8,6 +8,8 @@ use yii\web\NotFoundHttpException;
 use yii\base\Module;
 use DmitriiKoziuk\yii2Base\exceptions\EntityNotFoundException;
 use DmitriiKoziuk\yii2UrlIndex\forms\UrlUpdateForm;
+use DmitriiKoziuk\yii2ConfigManager\services\ConfigService;
+use DmitriiKoziuk\yii2Shop\ShopModule;
 use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 use DmitriiKoziuk\yii2Shop\services\category\CategoryService;
 use DmitriiKoziuk\yii2Shop\services\product\ProductSearchService;
@@ -37,6 +39,11 @@ final class CategoryController extends Controller
      */
     private $eavService;
 
+    /**
+     * @var ConfigService
+     */
+    private $configService;
+
     public function __construct(
         string $id,
         Module $module,
@@ -44,6 +51,7 @@ final class CategoryController extends Controller
         ProductSearchService $productSearchService,
         ProductSkuSearchService $productSkuSearchService,
         EavService $eavService,
+        ConfigService $configService,
         array $config = []
     ) {
         parent::__construct($id, $module, $config);
@@ -51,6 +59,7 @@ final class CategoryController extends Controller
         $this->productSearchService = $productSearchService;
         $this->productSkuSearchService = $productSkuSearchService;
         $this->eavService = $eavService;
+        $this->configService = $configService;
     }
 
     /**
@@ -68,6 +77,7 @@ final class CategoryController extends Controller
             $facetedAttributes = [];
             $productDataProvider = null;
             if ($categoryData->isProductsShow()) {
+                $productOnPage = (int) $this->configService->getValue(ShopModule::getId(), 'productsOnCategoryPage');
                 $filteredAttributes = $this->eavService->getFilteredAttributesWithValues($filterParams);
                 $facetedAttributes = $this->eavService->getFacetedAttributesWithValues(
                     $categoryData->getId(),
@@ -80,13 +90,13 @@ final class CategoryController extends Controller
                 if (empty($filteredAttributes)) {
                     $productDataProvider = $this->productSearchService->searchBy(
                         $productSearchParams,
-                        2,
+                        $productOnPage,
                         $filteredAttributes
                     );
                 } else {
                     $productDataProvider = $this->productSkuSearchService->searchBy(
                         $productSearchParams,
-                        2,
+                        $productOnPage,
                         $filteredAttributes
                     );
                 }
