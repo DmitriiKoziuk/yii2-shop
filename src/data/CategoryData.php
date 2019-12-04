@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace DmitriiKoziuk\yii2Shop\data;
 
 use DmitriiKoziuk\yii2Shop\entities\Category;
@@ -23,6 +24,11 @@ class CategoryData
     public function isProductsShow(): bool
     {
         return (boolean) $this->_categoryRecord->is_products_show;
+    }
+
+    public function isTemplateNameSet(): bool
+    {
+        return ! is_null($this->_categoryRecord->template_name);
     }
 
     public function getId(): int
@@ -85,5 +91,10 @@ class CategoryData
     public function getChildrenCategories(): array
     {
         return $this->_categoryRecord->children;
+    }
+
+    public function getTemplateName(): string
+    {
+        return $this->_categoryRecord->template_name;
     }
 }

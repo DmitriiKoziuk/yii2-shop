@@ -96,7 +96,7 @@ final class CategoryController extends Controller
                 Yii::t('app', 'Page not found.')
             );
         }
-        return $this->render('index', [
+        $viewParams = [
             'categoryData' => $categoryData,
             'indexPageUrl' => $url->url,
             'getParams' => $getParams,
@@ -104,6 +104,18 @@ final class CategoryController extends Controller
             'facetedAttributes' => $facetedAttributes,
             'filteredAttributes' => $filteredAttributes,
             'productDataProvider' => $productDataProvider,
-        ]);
+        ];
+        if (
+            $categoryData->isTemplateNameSet() &&
+            $this->isCategoryTemplateExist($categoryData->getTemplateName())
+        ) {
+            return $this->render($categoryData->getTemplateName(), $viewParams);
+        }
+        return $this->render('index', $viewParams);
+    }
+
+    private function isCategoryTemplateExist(string $templateName): bool
+    {
+        return file_exists($this->getViewPath() . '/' . $templateName . '.php');
     }
 }

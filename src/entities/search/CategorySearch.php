@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace DmitriiKoziuk\yii2Shop\entities\search;
 
 use yii\base\Model;
@@ -20,7 +21,7 @@ class CategorySearch extends Category
     {
         return [
             [['id'], 'integer'],
-            [['name', 'url'], 'safe'],
+            [['name', 'url', 'template_name'], 'safe'],
         ];
     }
 
@@ -64,6 +65,7 @@ class CategorySearch extends Category
         ]);
 
         $query->andFilterWhere(['like', 'name', $this->name]);
+        $query->andFilterWhere(['like', 'template_name', $this->template_name]);
 
         if (! empty($this->url)) {
             $query->joinWith(['page' => function ($q) {

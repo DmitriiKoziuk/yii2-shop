@@ -67,6 +67,8 @@ use DmitriiKoziuk\yii2Shop\forms\CategoryInputForm;
                 Category::IS_PRODUCT_SHOW_FALSE => 'No',
                 Category::IS_PRODUCT_SHOW_TRUE => 'Yes',
             ]) ?>
+
+            <?= $form->field($categoryInputForm, 'template_name')->textInput(['maxlength' => true]) ?>
         </div>
     </div>
     <?php endif; ?>

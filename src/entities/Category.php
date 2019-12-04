@@ -22,6 +22,7 @@ use DmitriiKoziuk\yii2Shop\ShopModule;
  * @property string $meta_description
  * @property string $description
  * @property int    $is_products_show
+ * @property string $template_name
  * @property int    $created_at
  * @property int    $updated_at
  *
@@ -72,12 +73,14 @@ class Category extends ActiveRecord
             [['description'], 'string'],
             [['meta_title'], 'string', 'max' => 255],
             [['meta_description'], 'string', 'max' => 500],
+            [['template_name'], 'string', 'max' => 100],
             [
                 [
                     'name_on_site',
                     'description',
                     'meta_title',
                     'meta_description',
+                    'template_name',
                 ],
                 'default', 'value' => null
             ],
@@ -110,6 +113,7 @@ class Category extends ActiveRecord
             'meta_description' => Yii::t(ShopModule::TRANSLATION_CATEGORY, 'Meta Description'),
             'description'      => Yii::t(ShopModule::TRANSLATION_CATEGORY, 'Description'),
             'is_products_show' => Yii::t(ShopModule::TRANSLATION_CATEGORY, 'Is products show'),
+            'template_name'    => Yii::t(ShopModule::TRANSLATION_CATEGORY, 'Template name'),
             'created_at'       => Yii::t('app', 'Created at'),
             'updated_at'       => Yii::t('app', 'Updated at'),
         ];
