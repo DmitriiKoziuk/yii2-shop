@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace DmitriiKoziuk\yii2Shop\forms;
 
 use yii\base\Model;
@@ -13,6 +14,7 @@ class CategoryInputForm extends Model
     public $meta_title;
     public $meta_description;
     public $description;
+    public $is_products_show;
 
     public function rules()
     {
@@ -31,7 +33,7 @@ class CategoryInputForm extends Model
             [['description'], 'string'],
             [['meta_title'], 'string', 'max' => 255],
             [['meta_description'], 'string', 'max' => 500],
-            [['parent_id'], 'integer'],
+            [['parent_id', 'is_products_show'], 'integer'],
             [['name', 'name_on_site', 'slug', 'url', 'meta_title', 'meta_description'], 'trim'],
         ];
     }
@@ -46,6 +48,7 @@ class CategoryInputForm extends Model
             'meta_title',
             'meta_description',
             'description',
+            'is_products_show',
         ]);
     }
 }

@@ -39,6 +39,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'name',
             'url',
+            'is_products_show:boolean',
 
             [
                 'class'    => 'yii\grid\ActionColumn',

@@ -1,10 +1,12 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace DmitriiKoziuk\yii2Shop\entities;
 
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
+use yii\base\InvalidConfigException;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 
 /**
@@ -19,6 +21,7 @@ use DmitriiKoziuk\yii2Shop\ShopModule;
  * @property string $meta_title
  * @property string $meta_description
  * @property string $description
+ * @property int    $is_products_show
  * @property int    $created_at
  * @property int    $updated_at
  *
@@ -35,6 +38,9 @@ class Category extends ActiveRecord
 {
     const FRONTEND_CONTROLLER_NAME = 'category';
     const FRONTEND_ACTION_NAME     = 'index';
+
+    const IS_PRODUCT_SHOW_FALSE = 0;
+    const IS_PRODUCT_SHOW_TRUE = 1;
 
     public $depth;
 
@@ -75,8 +81,9 @@ class Category extends ActiveRecord
                 ],
                 'default', 'value' => null
             ],
-            [['parent_id', 'created_at', 'updated_at'], 'integer'],
+            [['parent_id', 'is_products_show', 'created_at', 'updated_at'], 'integer'],
             [['parent_id'], 'default', 'value' => null],
+            [['is_products_show'], 'default', 'value' => 1],
             [
                 ['parent_id'],
                 'exist',
@@ -102,13 +109,14 @@ class Category extends ActiveRecord
             'meta_title'       => Yii::t(ShopModule::TRANSLATION_CATEGORY, 'Meta Title'),
             'meta_description' => Yii::t(ShopModule::TRANSLATION_CATEGORY, 'Meta Description'),
             'description'      => Yii::t(ShopModule::TRANSLATION_CATEGORY, 'Description'),
+            'is_products_show' => Yii::t(ShopModule::TRANSLATION_CATEGORY, 'Is products show'),
             'created_at'       => Yii::t('app', 'Created at'),
             'updated_at'       => Yii::t('app', 'Updated at'),
         ];
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getParent()
     {
@@ -116,20 +124,8 @@ class Category extends ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function _getParents()
-    {
-        return $this->hasMany(Category::class, ['id' => 'ancestor'])
-            ->viaTable(CategoryClosure::tableName(), ['descendant' => 'id'])
-            ->select('{{%category}}.*, {{%category_closure}}.depth as depth')
-            ->leftJoin(CategoryClosure::tableName(), '{{%category_closure}}.ancestor = {{%category}}.id AND {{%category_closure}}.descendant = ' . $this->id)
-            ->orderBy('depth')
-            ->indexBy('depth');
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery|self[]
+     * @throws InvalidConfigException
      */
     public function getParentList()
     {
@@ -139,7 +135,7 @@ class Category extends ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery|CategoryClosure[]
      */
     public function getCategoryClosure()
     {
@@ -147,7 +143,10 @@ class Category extends ActiveRecord
             ->indexBy('depth');
     }
 
-    public function getParents()
+    /**
+     * @return self[]
+     */
+    public function getParents(): array
     {
         $parents = [];
         if (! empty($this->parent_id)) {
@@ -160,7 +159,8 @@ class Category extends ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery|self[]
+     * @throws InvalidConfigException
      */
     public function getChildren()
     {
@@ -172,13 +172,16 @@ class Category extends ActiveRecord
             ->indexBy('id');
     }
 
-    public function setChildren(array $children)
+    /**
+     * @param self[] $children
+     */
+    public function setChildren(array $children): void
     {
         $this->children = $children;
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery|self[]
      */
     public function getDirectChildren()
     {
@@ -186,7 +189,7 @@ class Category extends ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery|self[]
      */
     public function getDirectDescendants()
     {
@@ -194,7 +197,8 @@ class Category extends ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery|Product[]
+     * @throws InvalidConfigException
      */
     public function getProducts()
     {
@@ -202,7 +206,7 @@ class Category extends ActiveRecord
             ->viaTable(CategoryProduct::tableName(), ['category_id' => 'id']);
     }
 
-    public function getParentsNames()
+    public function getParentsNames(): string
     {
         $r = '';
         foreach ($this->parents as $parent) {
@@ -211,7 +215,7 @@ class Category extends ActiveRecord
         return $r;
     }
 
-    public function getFrontendName()
+    public function getFrontendName(): string
     {
         return $this->name_on_site ?? $this->name;
     }

@@ -29,6 +29,7 @@ class m190101_153501_create_dk_shop_categories_table extends Migration
             'meta_title' => $this->string(255)->defaultValue(NULL),
             'meta_description' => $this->string(500)->defaultValue(NULL),
             'description' => $this->text()->defaultValue(NULL),
+            'is_products_show' => $this->tinyInteger()->notNull()->defaultValue(1),
             'created_at' => $this->integer()->notNull(),
             'updated_at' => $this->integer()->notNull(),
         ], $tableOptions);
