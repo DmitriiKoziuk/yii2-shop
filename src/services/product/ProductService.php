@@ -250,13 +250,10 @@ class ProductService extends DBActionService
         }
     }
 
-    public function updateProductPriceOnSite(int $productSkuId): void
+    public function updateProductSkuCustomerPrice(ProductSku $productSku): void
     {
-        $productSkuRecord = $this->_productSkuRepository->getById($productSkuId);
-        if (! empty($productSkuRecord)) {
-            $this->_defineProductSkuCustomerPrice($productSkuRecord);
-            $this->_productSkuRepository->save($productSkuRecord);
-        }
+        $this->_defineProductSkuCustomerPrice($productSku);
+        $this->_productSkuRepository->save($productSku);
     }
 
     /**

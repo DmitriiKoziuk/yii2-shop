@@ -11,6 +11,7 @@ class CurrencyRepository extends AbstractActiveRecordRepository
      */
     public function getAllCurrencies(): array
     {
+        /** @var Currency[] $currencies */
         $currencies = Currency::find()->all();
         return $currencies;
     }
