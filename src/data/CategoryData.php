@@ -20,6 +20,11 @@ class CategoryData
         return empty($this->_categoryRecord->children) ? false : true;
     }
 
+    public function isProductsShow(): bool
+    {
+        return (boolean) $this->_categoryRecord->is_products_show;
+    }
+
     public function getId(): int
     {
         return $this->_categoryRecord->id;

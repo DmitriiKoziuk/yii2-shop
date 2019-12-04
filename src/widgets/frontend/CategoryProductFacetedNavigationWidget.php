@@ -35,11 +35,14 @@ class CategoryProductFacetedNavigationWidget extends Widget
 
     public function run()
     {
-        return $this->render('category-product-faceted-navigation', [
-            'attributes' => $this->facetedAttributes,
-            'indexPageUrl' => $this->indexPageUrl,
-            'getParams' => $this->getParams,
-        ]);
+        if (! empty($this->facetedAttributes)) {
+            return $this->render('category-product-faceted-navigation', [
+                'attributes' => $this->facetedAttributes,
+                'indexPageUrl' => $this->indexPageUrl,
+                'getParams' => $this->getParams,
+            ]);
+        }
+        return '';
     }
 
     /**
