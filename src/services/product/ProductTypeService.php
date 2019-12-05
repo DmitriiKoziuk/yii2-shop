@@ -12,6 +12,7 @@ use DmitriiKoziuk\yii2Base\services\DBActionService;
 use DmitriiKoziuk\yii2Shop\repositories\ProductTypeRepository;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductTypeInputForm;
 use DmitriiKoziuk\yii2Shop\events\ProductTypeUpdateEvent;
+use DmitriiKoziuk\yii2Shop\events\ProductTypeBeforeDeleteEvent;
 
 class ProductTypeService extends DBActionService
 {
@@ -62,7 +63,7 @@ class ProductTypeService extends DBActionService
     public function update(
         ProductType $productType,
         ProductTypeInputForm $productTypeInputForm
-    ): ProductType {   //TODO create event when change product url prefix.
+    ): ProductType {
         try {
             if ($productType->isNewRecord) {
                 throw new \Exception('Save product type before update.');
@@ -87,14 +88,27 @@ class ProductTypeService extends DBActionService
         }
     }
 
-    public function delete(ProductType $productType)
+    public function deleteProductType(int $productTypeId): void
     {
-        //TODO make delete method.
+        $productTypeEntity = $this->_productTypeRepository->getProductTypeById($productTypeId);
+        $this->eventBeforeDelete($productTypeEntity->id);
+        $this->_productTypeRepository->delete($productTypeEntity);
     }
 
     public function getProductTypeById(int $productTypeId): ProductTypeData
     {
         $productTypeRecord = $this->_productTypeRepository->getProductTypeById($productTypeId);
         return new ProductTypeData($productTypeRecord);
+    }
+
+    private function eventBeforeDelete(int $productTypeId): void
+    {
+        Event::trigger(
+            ProductTypeBeforeDeleteEvent::class,
+            ProductTypeBeforeDeleteEvent::EVENT_BEFORE_DELETE,
+            new ProductTypeBeforeDeleteEvent([
+                'productTypeId' => $productTypeId,
+            ])
+        );
     }
 }

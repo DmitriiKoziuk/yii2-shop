@@ -58,6 +58,7 @@ use DmitriiKoziuk\yii2Shop\services\eav\ProductSkuEavAttributesService;
 use DmitriiKoziuk\yii2Shop\services\eav\EavService;
 use DmitriiKoziuk\yii2Shop\helpers\ProductSkuViewHelper;
 use DmitriiKoziuk\yii2Shop\eventListeners\ProductEventListener;
+use DmitriiKoziuk\yii2Shop\eventListeners\ProductEavEventListener;
 
 final class ShopModule extends \yii\base\Module implements ModuleInterface
 {
@@ -584,5 +585,6 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
     private function initEventListeners()
     {
         new ProductEventListener($this->queue);
+        new ProductEavEventListener;
     }
 }

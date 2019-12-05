@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace DmitriiKoziuk\yii2Shop\controllers\backend;
 
 use Yii;
@@ -50,7 +51,7 @@ final class ProductTypeController extends Controller
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
-                    'delete' => ['POST'],
+                    'delete' => ['POST', 'GET'],
                 ],
             ],
         ];
@@ -153,7 +154,7 @@ final class ProductTypeController extends Controller
 
     public function actionDelete($id)
     {
-        //TODO: product type delete action
+        $this->_productTypeService->deleteProductType((int) $id);
         return $this->redirect(['index']);
     }
 
