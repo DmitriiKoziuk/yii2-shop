@@ -36,7 +36,7 @@ use DmitriiKoziuk\yii2Shop\entities\ProductTypeAttributeEntity;
 
     <?php if (! $model->isNewRecord): ?>
 
-    <?= $form->field($model, 'sort')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'sort_at_product_sku_preview')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'sort_at_product_sku_page')->textInput(['maxlength' => true]) ?>
 

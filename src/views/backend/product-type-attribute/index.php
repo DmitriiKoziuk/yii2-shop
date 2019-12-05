@@ -49,7 +49,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'filter' => ArrayHelper::map(EavAttributeEntity::find()->all(), 'id', 'name'),
             ],
             'view_attribute_at_product_preview:boolean',
-            'sort',
+            'sort_at_product_sku_preview',
             'sort_at_product_sku_page',
 
             ['class' => 'yii\grid\ActionColumn'],

@@ -32,7 +32,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'product_type_id',
             'attribute_id',
             'view_attribute_at_product_preview:boolean',
-            'sort',
+            'sort_at_product_sku_preview',
+            'sort_at_product_sku_page',
         ],
     ]) ?>
 

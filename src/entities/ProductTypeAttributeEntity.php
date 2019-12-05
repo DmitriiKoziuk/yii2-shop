@@ -10,7 +10,7 @@ use yii\db\ActiveRecord;
  * @property int $product_type_id
  * @property int $attribute_id
  * @property int $view_attribute_at_product_preview
- * @property int $sort
+ * @property int $sort_at_product_sku_preview
  * @property int $sort_at_product_sku_page
  *
  * @property ProductType $productType
@@ -21,7 +21,7 @@ class ProductTypeAttributeEntity extends ActiveRecord
     const PREVIEW_NO = 0;
     const PREVIEW_YES = 1;
 
-    const SORT_AT_PRODUCT_SKU_PREVIEW_PROPERTY_NAME = 'sort';
+    const SORT_AT_PRODUCT_SKU_PREVIEW_PROPERTY_NAME = 'sort_at_product_sku_preview';
     const SORT_AT_PRODUCT_SKU_PAGE_PROPERTY_NAME = 'sort_at_product_sku_page';
 
     /**
@@ -44,13 +44,13 @@ class ProductTypeAttributeEntity extends ActiveRecord
                     'product_type_id',
                     'attribute_id',
                     'view_attribute_at_product_preview',
-                    'sort',
+                    'sort_at_product_sku_preview',
                     'sort_at_product_sku_page',
                 ],
                 'integer'
             ],
             [['view_attribute_at_product_preview'], 'default', 'value' => 0],
-            [['sort', 'sort_at_product_sku_page'], 'default', 'value' => 1],
+            [['sort_at_product_sku_preview', 'sort_at_product_sku_page'], 'default', 'value' => 1],
             [['product_type_id', 'attribute_id'], 'unique', 'targetAttribute' => ['product_type_id', 'attribute_id']],
             [
                 ['attribute_id'],
@@ -78,7 +78,7 @@ class ProductTypeAttributeEntity extends ActiveRecord
             'product_type_id' => 'Product Type ID',
             'attribute_id' => 'Attribute ID',
             'view_attribute_at_product_preview' => 'View attribute at product preview',
-            'sort' => 'Sort',
+            'sort_at_product_sku_preview' => 'Sort at product sku preview',
             'sort_at_product_sku_page' => 'Sort at product sku page',
         ];
     }
