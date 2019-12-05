@@ -89,6 +89,6 @@ class ProductEntityView
      */
     public function getProductPreviewValues(): array
     {
-        return $this->productEntity->getMainSku()->getPreviewValues();
+        return $this->productEntity->getMainSku()->getPreviewEavValues();
     }
 }

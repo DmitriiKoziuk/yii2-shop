@@ -196,7 +196,7 @@ class ProductSku extends ActiveRecord
 
     public function isPreviewAttributeSet(): bool
     {
-        return empty($this->getPreviewValues()) ? false : true;
+        return empty($this->getPreviewEavValues()) ? false : true;
     }
 
     /**
@@ -373,7 +373,7 @@ class ProductSku extends ActiveRecord
     /**
      * @return ProductEavValueInterface[]
      */
-    public function getPreviewValues(): array
+    public function getPreviewEavValues(): array
     {
         $values = [];
         if ($this->product->isTypeSet()) {

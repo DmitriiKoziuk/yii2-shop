@@ -98,7 +98,7 @@ class ProductSkuView extends ProductEntityView
      */
     public function getProductPreviewValues(): array
     {
-        return $this->productSkuEntity->getPreviewValues();
+        return $this->productSkuEntity->getPreviewEavValues();
     }
 
     /**
