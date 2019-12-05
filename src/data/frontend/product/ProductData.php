@@ -70,9 +70,13 @@ class ProductData
         return '';
     }
 
-    public function getPrice(): int
+    public function getPrice(): string
     {
-        return is_null($this->product->getMainSku()->customer_price) ? 0 : $this->product->getMainSku()->customer_price;
+        $price = '';
+        if (! is_null($this->product->getMainSku()->customer_price)) {
+            $price = $this->product->getMainSku()->customer_price / 100;
+        }
+        return (string) $price;
     }
 
     public function getCurrencySymbol(): string

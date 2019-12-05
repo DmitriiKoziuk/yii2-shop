@@ -69,9 +69,13 @@ class ProductSkuData extends ProductData
         return '';
     }
 
-    public function getPrice(): int
+    public function getPrice(): string
     {
-        return is_null($this->productSku->customer_price) ? 0 : $this->productSku->customer_price;
+        $price = '';
+        if (! is_null($this->productSku->customer_price)) {
+            $price = $this->productSku->customer_price / 100;
+        }
+        return (string) $price;
     }
 
     public function getCurrencySymbol(): string
