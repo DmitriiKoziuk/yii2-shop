@@ -1,70 +1,70 @@
 <?php declare(strict_types=1);
 
-namespace DmitriiKoziuk\yii2Shop\data\frontend\product;
+namespace DmitriiKoziuk\yii2Shop\entityViews;
 
 use DmitriiKoziuk\yii2FileManager\entities\FileEntity;
+use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 use DmitriiKoziuk\yii2Shop\entities\EavValueDoubleEntity;
 use DmitriiKoziuk\yii2Shop\entities\EavValueTextEntity;
 use DmitriiKoziuk\yii2Shop\entities\EavValueVarcharEntity;
-use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 
-class ProductSkuData extends ProductData
+class ProductSkuEntityView extends ProductEntityView
 {
     /**
      * @var ProductSku
      */
-    private $productSku;
+    private $productSkuEntity;
 
-    public function __construct(ProductSku $productSku)
+    public function __construct(ProductSku $productSkuEntity)
     {
-        parent::__construct($productSku->product);
-        $this->productSku = $productSku;
+        parent::__construct($productSkuEntity->product);
+        $this->productSkuEntity = $productSkuEntity;
     }
 
     public function isMainImageSet(): bool
     {
-        return empty($this->productSku->getMainImage()) ? false : true;
+        return empty($this->productSkuEntity->getMainImage()) ? false : true;
     }
 
     public function isPriceSet(): bool
     {
-        return $this->productSku->isCustomerPriceSet();
+        return $this->productSkuEntity->isCustomerPriceSet();
     }
 
     public function isCurrencySet(): bool
     {
-        return $this->productSku->isCurrencySet();
+        return $this->productSkuEntity->isCurrencySet();
     }
 
     public function isPreviewAttributesSet(): bool
     {
-        return $this->productSku->isPreviewAttributeSet();
+        return $this->productSkuEntity->isPreviewAttributeSet();
     }
 
     public function getId(): int
     {
-        return $this->productSku->id;
+        return $this->productSkuEntity->id;
     }
 
     public function getFullName(): string
     {
-        return $this->product->name . ' ' . $this->productSku->name;
+        return $this->productSkuEntity->product->name . ' ' . $this->productSkuEntity->name;
     }
 
     public function getUrl(): string
     {
-        return $this->productSku->url;
+        return $this->productSkuEntity->getUrl();
     }
 
     public function getMainImage(): ?FileEntity
     {
-        return $this->productSku->getMainImage();
+        return $this->productSkuEntity->getMainImage();
     }
 
     public function getTypeName(): string
     {
         if ($this->isTypeSet()) {
-            return $this->product->type->name;
+            return $this->productSkuEntity->getTypeName();
         }
         return '';
     }
@@ -72,15 +72,15 @@ class ProductSkuData extends ProductData
     public function getPrice(): string
     {
         $price = '';
-        if (! is_null($this->productSku->customer_price)) {
-            $price = $this->productSku->customer_price / 100;
+        if (! is_null($this->productSkuEntity->customer_price)) {
+            $price = $this->productSkuEntity->customer_price / 100;
         }
         return (string) $price;
     }
 
     public function getCurrencySymbol(): string
     {
-        return  $this->productSku->currency->symbol;
+        return  $this->productSkuEntity->currency->symbol;
     }
 
     /**
@@ -88,6 +88,6 @@ class ProductSkuData extends ProductData
      */
     public function getProductPreviewValues(): array
     {
-        return $this->product->getMainSku()->getPreviewValues();
+        return $this->productSkuEntity->getPreviewValues();
     }
 }

@@ -1,12 +1,12 @@
 <?php
 
 use yii\web\View;
-use DmitriiKoziuk\yii2Shop\data\frontend\product\ProductData;
-use DmitriiKoziuk\yii2Shop\data\frontend\product\ProductSkuData;
+use DmitriiKoziuk\yii2Shop\entityViews\ProductEntityView;
+use DmitriiKoziuk\yii2Shop\entityViews\ProductSkuEntityView;
 
 /**
  * @var $this View
- * @var $product ProductData|ProductSkuData
+ * @var $product ProductEntityView|ProductSkuEntityView
  */
 ?>
 

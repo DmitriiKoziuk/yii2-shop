@@ -3,13 +3,13 @@
 namespace DmitriiKoziuk\yii2Shop\widgets;
 
 use yii\base\Widget;
-use DmitriiKoziuk\yii2Shop\data\frontend\product\ProductData;
-use DmitriiKoziuk\yii2Shop\data\frontend\product\ProductSkuData;
+use DmitriiKoziuk\yii2Shop\entityViews\ProductEntityView;
+use DmitriiKoziuk\yii2Shop\entityViews\ProductSkuEntityView;
 
 class ProductPreviewAttributesWidget extends Widget
 {
     /**
-     * @var ProductData|ProductSkuData
+     * @var ProductEntityView|ProductSkuEntityView
      */
     public $product;
 

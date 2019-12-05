@@ -7,8 +7,8 @@ use yii\data\Pagination;
 use yii\data\ActiveDataProvider;
 use DmitriiKoziuk\yii2Shop\entities\Product;
 use DmitriiKoziuk\yii2Shop\entities\categoryFaceted\EavAttributeEntity;
-use DmitriiKoziuk\yii2Shop\data\frontend\product\ProductData;
-use DmitriiKoziuk\yii2Shop\data\frontend\product\ProductSkuData;
+use DmitriiKoziuk\yii2Shop\entityViews\ProductEntityView;
+use DmitriiKoziuk\yii2Shop\entityViews\ProductSkuEntityView;
 
 class ProductWidget extends Widget
 {
@@ -33,7 +33,7 @@ class ProductWidget extends Widget
     public $filterParams;
 
     /**
-     * @var ProductData[]
+     * @var ProductEntityView[]|ProductSkuEntityView[]
      */
     private $_products = [];
 
@@ -63,26 +63,26 @@ class ProductWidget extends Widget
 
     /**
      * @param Product[] $models
-     * @return ProductData[]
+     * @return ProductEntityView[]
      */
     private function productModelsToData(array $models): array
     {
         $list = [];
         foreach ($models as $model) {
-            $list[] = new ProductData($model);
+            $list[] = new ProductEntityView($model);
         }
         return $list;
     }
 
     /**
      * @param Product[] $models
-     * @return ProductData[]
+     * @return ProductSkuEntityView[]
      */
     private function productSkuModelsToData(array $models): array
     {
         $list = [];
         foreach ($models as $model) {
-            $list[] = new ProductSkuData($model);
+            $list[] = new ProductSkuEntityView($model);
         }
         return $list;
     }
