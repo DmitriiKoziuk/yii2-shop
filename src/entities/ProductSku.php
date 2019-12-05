@@ -194,7 +194,7 @@ class ProductSku extends ActiveRecord
         return empty($this->currency_id) ? false : true;
     }
 
-    public function isPreviewAttributeSet(): bool
+    public function isPreviewEavValuesSet(): bool
     {
         return empty($this->getPreviewEavValues()) ? false : true;
     }

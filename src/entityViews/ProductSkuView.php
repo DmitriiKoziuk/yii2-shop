@@ -36,9 +36,9 @@ class ProductSkuView extends ProductEntityView
         return $this->productSkuEntity->isCurrencySet();
     }
 
-    public function isPreviewAttributesSet(): bool
+    public function isPreviewEavValuesSet(): bool
     {
-        return $this->productSkuEntity->isPreviewAttributeSet();
+        return $this->productSkuEntity->isPreviewEavValuesSet();
     }
 
     public function isMetaTitleSet(): bool

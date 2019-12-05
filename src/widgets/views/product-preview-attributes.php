@@ -10,7 +10,7 @@ use DmitriiKoziuk\yii2Shop\entityViews\ProductSkuView;
  */
 ?>
 
-<?php if ($product->isPreviewAttributesSet()): ?>
+<?php if ($product->isPreviewEavValuesSet()): ?>
   <?php foreach ($product->getProductPreviewValues() as $value): ?>
   <div>
     <?= $value->eavAttribute->name ?>: <?= $value->value ?> <?= !empty($value->unit) ? $value->unit->abbreviation : ''; ?>

@@ -37,9 +37,9 @@ class ProductEntityView
         return $this->productEntity->getMainSku()->isCurrencySet();
     }
 
-    public function isPreviewAttributesSet(): bool
+    public function isPreviewEavValuesSet(): bool
     {
-        return $this->productEntity->getMainSku()->isPreviewAttributeSet();
+        return $this->productEntity->getMainSku()->isPreviewEavValuesSet();
     }
 
     public function getId(): int
