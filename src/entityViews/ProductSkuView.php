@@ -8,7 +8,7 @@ use DmitriiKoziuk\yii2Shop\entities\EavValueDoubleEntity;
 use DmitriiKoziuk\yii2Shop\entities\EavValueTextEntity;
 use DmitriiKoziuk\yii2Shop\entities\EavValueVarcharEntity;
 
-class ProductSkuEntityView extends ProductEntityView
+class ProductSkuView extends ProductEntityView
 {
     /**
      * @var ProductSku
@@ -39,6 +39,16 @@ class ProductSkuEntityView extends ProductEntityView
     public function isPreviewAttributesSet(): bool
     {
         return $this->productSkuEntity->isPreviewAttributeSet();
+    }
+
+    public function isMetaTitleSet(): bool
+    {
+        return ! empty($this->productSkuEntity->meta_title);
+    }
+
+    public function isCustomerPriceSet(): bool
+    {
+        return ! empty($this->productSkuEntity->customer_price);
     }
 
     public function getId(): int
@@ -89,5 +99,30 @@ class ProductSkuEntityView extends ProductEntityView
     public function getProductPreviewValues(): array
     {
         return $this->productSkuEntity->getPreviewValues();
+    }
+
+    public function getMetaTitle(): string
+    {
+        return $this->productSkuEntity->meta_title;
+    }
+
+    public function getProductName(): string
+    {
+        return $this->productSkuEntity->getProductName();
+    }
+
+    public function getName(): string
+    {
+        return $this->productSkuEntity->getName();
+    }
+
+    public function getCustomerPrice()
+    {
+        return $this->productSkuEntity->customer_price / 100;
+    }
+
+    public function getType()
+    {
+        return $this->productSkuEntity->product->type;
     }
 }

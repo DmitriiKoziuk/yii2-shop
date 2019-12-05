@@ -2,11 +2,11 @@
 
 use yii\web\View;
 use DmitriiKoziuk\yii2Shop\entityViews\ProductEntityView;
-use DmitriiKoziuk\yii2Shop\entityViews\ProductSkuEntityView;
+use DmitriiKoziuk\yii2Shop\entityViews\ProductSkuView;
 
 /**
  * @var $this View
- * @var $product ProductEntityView|ProductSkuEntityView
+ * @var $product ProductEntityView|ProductSkuView
  */
 ?>
 

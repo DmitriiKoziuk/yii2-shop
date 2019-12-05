@@ -4,13 +4,13 @@ use yii\web\View;
 use yii\data\Pagination;
 use DmitriiKoziuk\yii2Shop\assets\frontend\BaseAsset;
 use DmitriiKoziuk\yii2Shop\entityViews\ProductEntityView;
-use DmitriiKoziuk\yii2Shop\entityViews\ProductSkuEntityView;
+use DmitriiKoziuk\yii2Shop\entityViews\ProductSkuView;
 use DmitriiKoziuk\yii2Shop\widgets\ProductPreviewAttributesWidget;
 use DmitriiKoziuk\yii2Shop\widgets\frontend\LinkPagerWidget;
 
 /**
  * @var $this View
- * @var $products ProductEntityView[]|ProductSkuEntityView[]
+ * @var $products ProductEntityView[]|ProductSkuView[]
  * @var $pagination Pagination
  * @var $indexPageUrl string
  * @var $filterParams array

@@ -1,38 +1,33 @@
 <?php
 
+use yii\web\View;
+use DmitriiKoziuk\yii2Shop\entityViews\ProductSkuView;
 use DmitriiKoziuk\yii2Shop\assets\frontend\BaseAsset;
 use DmitriiKoziuk\yii2Shop\assets\frontend\ProductSkuAsset;
 use DmitriiKoziuk\yii2FileManager\helpers\FileWebHelper;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 use DmitriiKoziuk\yii2Shop\widgets\frontend\ProductSkuViewAttributesWidget;
+use DmitriiKoziuk\yii2Shop\services\product\ProductSeoService;
 
 /**
- * @var $this \yii\web\View
- * @var $productSkuData \DmitriiKoziuk\yii2Shop\data\ProductSkuData
- * @var $productData \DmitriiKoziuk\yii2Shop\data\ProductData
- * @var $productTypeData \DmitriiKoziuk\yii2Shop\data\ProductTypeData|null
- * @var $images \DmitriiKoziuk\yii2FileManager\entities\File[]
- * @var $mainImage \DmitriiKoziuk\yii2FileManager\entities\File|null
+ * @var $this View
+ * @var $productSkuView ProductSkuView
  * @var $fileWebHelper FileWebHelper
- * @var $productSeoService \DmitriiKoziuk\yii2Shop\services\product\ProductSeoService
+ * @var $productSeoService ProductSeoService
  */
 
 ProductSkuAsset::register($this);
 
-$this->title = $productSeoService->getProductSkuMetaTitle($productData, $productSkuData, $productTypeData);
+$this->title = $productSeoService->getProductSkuMetaTitle($productSkuView);
 $this->registerMetaTag([
     'name' => 'description',
-    'content' => $productSeoService->getProductSkuMetaDescription(
-        $productData,
-        $productSkuData,
-        $productTypeData
-    ),
+    'content' => $productSeoService->getProductSkuMetaDescription($productSkuView),
 ]);
-$this->registerLinkTag(['rel' => 'canonical', 'href' => $productSkuData->getUrl()]);
+$this->registerLinkTag(['rel' => 'canonical', 'href' => $productSkuView->getUrl()]);
 
 $defaultImageUrl = $this->assetManager
     ->getBundle(BaseAsset::class)->baseUrl . BaseAsset::$defaultImageWebPath;
-$productFullName = $productData->getName() . ' ' . $productSkuData->getName();
+$productFullName = $productSkuView->getProductName() . ' ' . $productSkuView->getName();
 ?>
 
 <div class="product-sku">
@@ -48,18 +43,18 @@ $productFullName = $productData->getName() . ' ' . $productSkuData->getName();
           <?php endif; ?>
         </div>
         <div class="col-md-6">
-          <?php if($productSkuData->isCustomerPriceSet()): ?>
+          <?php if($productSkuView->isCustomerPriceSet()): ?>
           <div class="price">
             <?= number_format(
-                $productSkuData->getPriceOnSite(),
+                $productSkuView->getCustomerPrice(),
                 0,
                 '.',
                 ' '
             ) ?>
-            <span class="currency">currency name</span>
+            <span class="currency">$</span>
           </div>
           <div class="buttons">
-            <a class="btn buy-button" href="/cart/add-product?product=<?= $productSkuData->getId() ?>">
+            <a class="btn buy-button" href="/cart/add-product?product=<?= $productSkuView->getId() ?>">
               <?= Yii::t(ShopModule::TRANSLATION, 'Buy') ?>
             </a>
           </div>
@@ -69,7 +64,7 @@ $productFullName = $productData->getName() . ' ' . $productSkuData->getName();
       <div class="row">
         <div class="col-md-12">
           <?= ProductSkuViewAttributesWidget::widget([
-              'productSkuId' => $productSkuData->getId(),
+              'productSkuId' => $productSkuView->getId(),
           ]) ?>
         </div>
       </div>

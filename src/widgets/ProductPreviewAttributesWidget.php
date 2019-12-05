@@ -4,12 +4,12 @@ namespace DmitriiKoziuk\yii2Shop\widgets;
 
 use yii\base\Widget;
 use DmitriiKoziuk\yii2Shop\entityViews\ProductEntityView;
-use DmitriiKoziuk\yii2Shop\entityViews\ProductSkuEntityView;
+use DmitriiKoziuk\yii2Shop\entityViews\ProductSkuView;
 
 class ProductPreviewAttributesWidget extends Widget
 {
     /**
-     * @var ProductEntityView|ProductSkuEntityView
+     * @var ProductEntityView|ProductSkuView
      */
     public $product;
 

@@ -8,7 +8,7 @@ use yii\data\ActiveDataProvider;
 use DmitriiKoziuk\yii2Shop\entities\Product;
 use DmitriiKoziuk\yii2Shop\entities\categoryFaceted\EavAttributeEntity;
 use DmitriiKoziuk\yii2Shop\entityViews\ProductEntityView;
-use DmitriiKoziuk\yii2Shop\entityViews\ProductSkuEntityView;
+use DmitriiKoziuk\yii2Shop\entityViews\ProductSkuView;
 
 class ProductWidget extends Widget
 {
@@ -33,7 +33,7 @@ class ProductWidget extends Widget
     public $filterParams;
 
     /**
-     * @var ProductEntityView[]|ProductSkuEntityView[]
+     * @var ProductEntityView[]|ProductSkuView[]
      */
     private $_products = [];
 
@@ -76,13 +76,13 @@ class ProductWidget extends Widget
 
     /**
      * @param Product[] $models
-     * @return ProductSkuEntityView[]
+     * @return ProductSkuView[]
      */
     private function productSkuModelsToData(array $models): array
     {
         $list = [];
         foreach ($models as $model) {
-            $list[] = new ProductSkuEntityView($model);
+            $list[] = new ProductSkuView($model);
         }
         return $list;
     }

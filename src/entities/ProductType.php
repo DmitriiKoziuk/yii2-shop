@@ -139,4 +139,14 @@ class ProductType extends ActiveRecord
     {
         return $this->product_url_prefix;
     }
+
+    public function getProductSkuTitleTemplate()
+    {
+        return $this->product_sku_title_template;
+    }
+
+    public function getProductSkuDescriptionTemplate()
+    {
+        return $this->product_sku_description_template;
+    }
 }
