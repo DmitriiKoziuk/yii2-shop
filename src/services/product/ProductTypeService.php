@@ -1,16 +1,17 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace DmitriiKoziuk\yii2Shop\services\product;
 
+use yii\base\Event;
 use yii\db\Connection;
 use yii\queue\cli\Queue;
 use yii\helpers\Inflector;
-use DmitriiKoziuk\yii2Base\services\DBActionService;
-use DmitriiKoziuk\yii2Shop\repositories\ProductTypeRepository;
 use DmitriiKoziuk\yii2Shop\entities\ProductType;
 use DmitriiKoziuk\yii2Shop\data\ProductTypeData;
-use DmitriiKoziuk\yii2Shop\data\product\ProductSkuSearchParams;
+use DmitriiKoziuk\yii2Base\services\DBActionService;
+use DmitriiKoziuk\yii2Shop\repositories\ProductTypeRepository;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductTypeInputForm;
-use DmitriiKoziuk\yii2Shop\jobs\UpdateProductSkuSellPriceJob;
+use DmitriiKoziuk\yii2Shop\events\ProductTypeUpdateEvent;
 
 class ProductTypeService extends DBActionService
 {
@@ -72,16 +73,14 @@ class ProductTypeService extends DBActionService
             }
             $changedAttributes = $productType->getDirtyAttributes();
             $this->_productTypeRepository->save($productType);
-            if (
-                array_key_exists('margin_strategy', $changedAttributes) &&
-                $changedAttributes['margin_strategy'] != ProductType::MARGIN_STRATEGY_NOT_SET
-            ) {
-                $this->_queue->push(new UpdateProductSkuSellPriceJob([
-                    'productSkuSearchParams' => new ProductSkuSearchParams([
-                        'type_id' => $productType->id,
-                    ]),
-                ]));
-            }
+            Event::trigger(
+                ProductTypeUpdateEvent::class,
+                ProductTypeUpdateEvent::EVENT_PRODUCT_TYPE_UPDATE,
+                new ProductTypeUpdateEvent([
+                    'changedAttributes' => $changedAttributes,
+                    'productTypeAttributes' => $productType->getAttributes(),
+                ])
+            );
             return $productType;
         } catch (\Throwable $e) {
             throw $e;

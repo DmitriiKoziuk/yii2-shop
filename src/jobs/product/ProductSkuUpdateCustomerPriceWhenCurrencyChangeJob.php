@@ -9,7 +9,7 @@ use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 use DmitriiKoziuk\yii2Shop\services\product\ProductService;
 use DmitriiKoziuk\yii2Shop\repositories\CurrencyRepository;
 
-class ProductSkuUpdateCustomerPriceWhenCurrencyChange extends BaseObject implements JobInterface
+class ProductSkuUpdateCustomerPriceWhenCurrencyChangeJob extends BaseObject implements JobInterface
 {
     public $currencyId;
 
