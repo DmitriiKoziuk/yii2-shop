@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace DmitriiKoziuk\yii2Shop\entities\search;
 
@@ -17,7 +17,15 @@ class ProductTypeAttributeEntitySearch extends ProductTypeAttributeEntity
     public function rules()
     {
         return [
-            [['product_type_id', 'attribute_id', 'view_attribute_at_product_preview', 'sort'], 'integer'],
+            [
+                [
+                    'product_type_id',
+                    'attribute_id',
+                    'view_attribute_at_product_preview',
+                    'sort',
+                    'sort_at_product_sku_page',
+                ], 'integer'
+            ],
         ];
     }
 

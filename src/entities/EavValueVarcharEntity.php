@@ -73,4 +73,9 @@ class EavValueVarcharEntity extends ActiveRecord implements ProductEavValueInter
     {
         return $this->eavAttribute->id;
     }
+
+    public function getEavAttributeEntity(): ?EavAttributeEntity
+    {
+        return $this->eavAttribute;
+    }
 }

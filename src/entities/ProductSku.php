@@ -395,7 +395,37 @@ class ProductSku extends ActiveRecord
                     $values[] = $value;
                 }
             }
-            $this->sortPreviewValues($values, $this->previewAttributes);
+            $this->sortEavValues(
+                $values,
+                $this->previewAttributes,
+                ProductTypeAttributeEntity::SORT_AT_PRODUCT_SKU_PREVIEW_PROPERTY_NAME
+            );
+        }
+        return $values;
+    }
+
+    /**
+     * @return ProductEavValueInterface[]
+     */
+    public function getEavValues(): array
+    {
+        $values = [];
+        if ($this->product->isTypeSet()) {
+            $attributesSort = $this->getAttributeSortForProductPage();
+            foreach ($this->eavVarcharValues as $value) {
+                $values[] = $value;
+            }
+            foreach ($this->eavDoubleValues as $value) {
+                $values[] = $value;
+            }
+            foreach ($this->eavTextValues as $value) {
+                $values[] = $value;
+            }
+            $this->sortEavValues(
+                $values,
+                $attributesSort,
+                ProductTypeAttributeEntity::SORT_AT_PRODUCT_SKU_PAGE_PROPERTY_NAME
+            );
         }
         return $values;
     }
@@ -427,21 +457,32 @@ class ProductSku extends ActiveRecord
             ->all();
     }
 
+    private function getAttributeSortForProductPage(): array
+    {
+        return ProductTypeAttributeEntity::find()
+            ->where([
+                'product_type_id' => $this->product->type->id,
+            ])
+            ->indexBy('attribute_id')
+            ->all();
+    }
+
     /**
      * @param array $values
      * @param ProductTypeAttributeEntity[] $previewAttributes
+     * @param string $byAttribute
      * @return void
      */
-    private function sortPreviewValues(array &$values, array &$previewAttributes): void
+    private function sortEavValues(array &$values, array &$previewAttributes, string $byAttribute): void
     {
         usort(
             $values,
             function (
                 ProductEavValueInterface $previousValue,
                 ProductEavValueInterface $currentValue
-            ) use ($previewAttributes) {
-                $previousValueSort = $previewAttributes[ $previousValue->getEavAttributeId() ]->sort;
-                $currentValueSort = $previewAttributes[ $currentValue->getEavAttributeId() ]->sort;
+            ) use ($previewAttributes, $byAttribute) {
+                $previousValueSort = $previewAttributes[ $previousValue->getEavAttributeId() ]->$byAttribute;
+                $currentValueSort = $previewAttributes[ $currentValue->getEavAttributeId() ]->$byAttribute;
                 return $previousValueSort <=> $currentValueSort;
             }
         );

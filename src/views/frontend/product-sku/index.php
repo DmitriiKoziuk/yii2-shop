@@ -61,7 +61,7 @@ $defaultImageUrl = $this->assetManager
       <div class="row">
         <div class="col-md-12">
           <?= ProductSkuViewAttributesWidget::widget([
-              'productSkuId' => $productSkuView->getId(),
+              'values' => $productSkuView->getEavValues(),
           ]) ?>
         </div>
       </div>

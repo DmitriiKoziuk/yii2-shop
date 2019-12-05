@@ -101,6 +101,14 @@ class ProductSkuView extends ProductEntityView
         return $this->productSkuEntity->getPreviewValues();
     }
 
+    /**
+     * @return EavValueVarcharEntity[]|EavValueDoubleEntity[]|EavValueTextEntity[]
+     */
+    public function getEavValues(): array
+    {
+        return $this->productSkuEntity->getEavValues();
+    }
+
     public function getMetaTitle(): string
     {
         return $this->productSkuEntity->meta_title;
