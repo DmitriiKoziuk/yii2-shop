@@ -451,7 +451,7 @@ class ProductSku extends ActiveRecord
         return ProductTypeAttributeEntity::find()
             ->where([
                 'product_type_id' => $this->product->type->id,
-                'view_attribute_at_product_preview' => ProductTypeAttributeEntity::PREVIEW_YES,
+                'view_attribute_at_product_sku_preview' => ProductTypeAttributeEntity::PREVIEW_YES,
             ])
             ->indexBy('attribute_id')
             ->all();

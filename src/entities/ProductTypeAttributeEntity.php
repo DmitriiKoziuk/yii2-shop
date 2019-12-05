@@ -9,7 +9,7 @@ use yii\db\ActiveRecord;
  *
  * @property int $product_type_id
  * @property int $attribute_id
- * @property int $view_attribute_at_product_preview
+ * @property int $view_attribute_at_product_sku_preview
  * @property int $sort_at_product_sku_preview
  * @property int $sort_at_product_sku_page
  *
@@ -43,13 +43,13 @@ class ProductTypeAttributeEntity extends ActiveRecord
                 [
                     'product_type_id',
                     'attribute_id',
-                    'view_attribute_at_product_preview',
+                    'view_attribute_at_product_sku_preview',
                     'sort_at_product_sku_preview',
                     'sort_at_product_sku_page',
                 ],
                 'integer'
             ],
-            [['view_attribute_at_product_preview'], 'default', 'value' => 0],
+            [['view_attribute_at_product_sku_preview'], 'default', 'value' => 0],
             [['sort_at_product_sku_preview', 'sort_at_product_sku_page'], 'default', 'value' => 1],
             [['product_type_id', 'attribute_id'], 'unique', 'targetAttribute' => ['product_type_id', 'attribute_id']],
             [
@@ -77,7 +77,7 @@ class ProductTypeAttributeEntity extends ActiveRecord
         return [
             'product_type_id' => 'Product Type ID',
             'attribute_id' => 'Attribute ID',
-            'view_attribute_at_product_preview' => 'View attribute at product preview',
+            'view_attribute_at_product_sku_preview' => 'View attribute at product preview',
             'sort_at_product_sku_preview' => 'Sort at product sku preview',
             'sort_at_product_sku_page' => 'Sort at product sku page',
         ];

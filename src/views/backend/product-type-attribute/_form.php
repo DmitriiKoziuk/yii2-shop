@@ -29,7 +29,7 @@ use DmitriiKoziuk\yii2Shop\entities\ProductTypeAttributeEntity;
         'name'
     ))->label('Attribute') ?>
 
-    <?= $form->field($model, 'view_attribute_at_product_preview')->dropDownList([
+    <?= $form->field($model, 'view_attribute_at_product_sku_preview')->dropDownList([
         ProductTypeAttributeEntity::PREVIEW_NO => 'No',
         ProductTypeAttributeEntity::PREVIEW_YES => 'Yes',
     ])->label('Attribute') ?>
