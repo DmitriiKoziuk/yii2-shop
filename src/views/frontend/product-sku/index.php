@@ -1,10 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 use yii\web\View;
 use DmitriiKoziuk\yii2Shop\entityViews\ProductSkuView;
 use DmitriiKoziuk\yii2Shop\assets\frontend\BaseAsset;
 use DmitriiKoziuk\yii2Shop\assets\frontend\ProductSkuAsset;
-use DmitriiKoziuk\yii2FileManager\helpers\FileWebHelper;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 use DmitriiKoziuk\yii2Shop\widgets\frontend\ProductSkuViewAttributesWidget;
 use DmitriiKoziuk\yii2Shop\services\product\ProductSeoService;
@@ -12,7 +11,6 @@ use DmitriiKoziuk\yii2Shop\services\product\ProductSeoService;
 /**
  * @var $this View
  * @var $productSkuView ProductSkuView
- * @var $fileWebHelper FileWebHelper
  * @var $productSeoService ProductSeoService
  */
 
@@ -27,19 +25,18 @@ $this->registerLinkTag(['rel' => 'canonical', 'href' => $productSkuView->getUrl(
 
 $defaultImageUrl = $this->assetManager
     ->getBundle(BaseAsset::class)->baseUrl . BaseAsset::$defaultImageWebPath;
-$productFullName = $productSkuView->getProductName() . ' ' . $productSkuView->getName();
 ?>
 
 <div class="product-sku">
   <div class="row">
     <div class="col-md-12">
-      <h1><?= $productFullName ?></h1>
+      <h1><?= $productSkuView->getFullName() ?></h1>
       <div class="row">
         <div class="col-md-6 image-section">
-          <?php if (! empty($mainImage)): ?>
-          <img src="<?= $fileWebHelper->getFileFullWebPath($mainImage) ?>" alt="<?= $productFullName ?>">
+          <?php if ($productSkuView->isMainImageSet()): ?>
+            <img src="<?= $productSkuView->getMainImage()->getThumbnail(200, 200) ?>" alt="<?= $productSkuView->getFullName() ?>">
           <?php else: ?>
-          <img src="<?= $defaultImageUrl ?>" alt="<?= $productFullName ?>">
+          <img src="<?= $defaultImageUrl ?>" alt="<?= $productSkuView->getFullName() ?>">
           <?php endif; ?>
         </div>
         <div class="col-md-6">
@@ -71,4 +68,3 @@ $productFullName = $productSkuView->getProductName() . ' ' . $productSkuView->ge
     </div>
   </div>
 </div>
-

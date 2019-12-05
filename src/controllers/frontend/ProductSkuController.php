@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace DmitriiKoziuk\yii2Shop\controllers\frontend;
 
 use Yii;
@@ -6,7 +7,6 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\base\Module;
 use DmitriiKoziuk\yii2Base\exceptions\EntityNotFoundException;
-use DmitriiKoziuk\yii2FileManager\helpers\FileWebHelper;
 use DmitriiKoziuk\yii2FileManager\services\FileService;
 use DmitriiKoziuk\yii2UrlIndex\forms\UrlUpdateForm;
 use DmitriiKoziuk\yii2Shop\services\product\ProductSeoService;
@@ -23,17 +23,12 @@ final class ProductSkuController extends Controller
     /**
      * @var ProductSeoService
      */
-    private $_productSeoService;
+    private $productSeoService;
 
     /**
      * @var FileService
      */
-    private $_fileService;
-
-    /**
-     * @var FileWebHelper
-     */
-    private $_fileWebHelper;
+    private $fileService;
 
     public function __construct(
         string $id,
@@ -41,14 +36,12 @@ final class ProductSkuController extends Controller
         ProductSkuRepository $productSkuRepository,
         ProductSeoService $productSeoService,
         FileService $fileService,
-        FileWebHelper $fileWebHelper,
         array $config = []
     ) {
         parent::__construct($id, $module, $config);
         $this->productSkuRepository = $productSkuRepository;
-        $this->_productSeoService = $productSeoService;
-        $this->_fileWebHelper = $fileWebHelper;
-        $this->_fileService = $fileService;
+        $this->productSeoService = $productSeoService;
+        $this->fileService = $fileService;
     }
 
     /**
@@ -71,8 +64,7 @@ final class ProductSkuController extends Controller
         }
         return $this->render('index', [
             'productSkuView' => $productSkuView,
-            'fileWebHelper' => $this->_fileWebHelper,
-            'productSeoService' => $this->_productSeoService,
+            'productSeoService' => $this->productSeoService,
         ]);
     }
 }
