@@ -45,6 +45,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'selectable:boolean',
             'multiple:boolean',
+            'view_at_frontend_faceted_navigation:boolean',
             [
                 'attribute' => 'value_type_id',
                 'label' => 'Value type',

@@ -40,6 +40,11 @@ $this->params['breadcrumbs'][] = $this->title;
         1 => 'Yes',
     ]) ?>
 
+    <?= $form->field($model, 'view_at_frontend_faceted_navigation')->dropDownList([
+        0 => 'No',
+        1 => 'Yes',
+    ]) ?>
+
     <?= $form->field($model, 'value_type_id')->dropDownList(ArrayHelper::map(
         EavValueTypeEntity::find()->all(),
         'id',

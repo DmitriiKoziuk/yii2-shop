@@ -15,6 +15,7 @@ use Exception;
  * @property string $storage_type
  * @property int $selectable
  * @property int $multiple
+ * @property int $view_at_frontend_faceted_navigation
  * @property string $description_backend
  * @property string $description_frontend
  * @property int $value_type_id
@@ -34,6 +35,8 @@ class EavAttributeEntity extends \yii\db\ActiveRecord
 
     const SELECTABLE_YES = 1;
 
+    const VIEW_AT_FRONTEND_FACETED_NAVIGATION_YES = 1;
+
     /**
      * {@inheritdoc}
      */
@@ -50,7 +53,16 @@ class EavAttributeEntity extends \yii\db\ActiveRecord
         return [
             [['name', 'code', 'storage_type'], 'required'],
             [['storage_type'], 'string'],
-            [['selectable', 'multiple', 'value_type_id', 'default_value_type_unit_id'], 'integer'],
+            [
+                [
+                    'selectable',
+                    'multiple',
+                    'view_at_frontend_faceted_navigation',
+                    'value_type_id',
+                    'default_value_type_unit_id'
+                ],
+                'integer'
+            ],
             [['name', 'name_for_product', 'name_for_filter'], 'string', 'max' => 100],
             [['code'], 'string', 'max' => 120],
             [['name_for_product', 'name_for_filter'], 'default', 'value' => null],
@@ -88,6 +100,7 @@ class EavAttributeEntity extends \yii\db\ActiveRecord
             'storage_type' => 'Storage Type',
             'selectable' => 'Selectable',
             'multiple' => 'Multiple',
+            'view_at_frontend_faceted_navigation' => 'View at frontend faceted navigation',
             'description_backend' => 'Description Backend',
             'description_frontend' => 'Description Frontend',
             'value_type_id' => 'Value Type ID',

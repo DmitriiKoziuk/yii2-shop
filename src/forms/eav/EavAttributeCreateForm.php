@@ -10,6 +10,7 @@ class EavAttributeCreateForm extends Model
     public $storage_type;
     public $selectable;
     public $multiple;
+    public $view_at_frontend_faceted_navigation = 1;
     public $value_type_id;
 
     public function rules()
@@ -18,7 +19,7 @@ class EavAttributeCreateForm extends Model
             [['name'], 'required'],
             [['name'], 'string', 'max' => 100],
             [['storage_type'], 'string'],
-            [['selectable', 'multiple', 'value_type_id'], 'integer'],
+            [['selectable', 'multiple', 'view_at_frontend_faceted_navigation', 'value_type_id'], 'integer'],
             [['selectable', 'multiple'], 'default', 'value' => 0],
         ];
     }

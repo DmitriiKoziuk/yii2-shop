@@ -43,6 +43,11 @@ use DmitriiKoziuk\yii2Shop\forms\eav\EavAttributeCreateForm;
         1 => 'Yes',
     ]) ?>
 
+    <?= $form->field($model, 'view_at_frontend_faceted_navigation')->dropDownList([
+        0 => 'No',
+        1 => 'Yes',
+    ]) ?>
+
     <?php if (! $model->isNewRecord): ?>
 
       <?= $form->field($model, 'description_backend')->textarea(['maxlength' => true]) ?>

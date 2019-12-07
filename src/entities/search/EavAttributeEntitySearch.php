@@ -17,7 +17,17 @@ class EavAttributeEntitySearch extends EavAttributeEntity
     public function rules()
     {
         return [
-            [['id', 'selectable', 'multiple', 'value_type_id', 'default_value_type_unit_id'], 'integer'],
+            [
+                [
+                    'id',
+                    'selectable',
+                    'multiple',
+                    'view_at_frontend_faceted_navigation',
+                    'value_type_id',
+                    'default_value_type_unit_id'
+                ],
+                'integer'
+            ],
             [['name', 'code', 'storage_type'], 'safe'],
         ];
     }
