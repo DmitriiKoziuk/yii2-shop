@@ -5,9 +5,10 @@ use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
 use DmitriiKoziuk\yii2Shop\entities\EavValueTypeEntity;
 use DmitriiKoziuk\yii2Shop\entities\EavValueTypeUnitEntity;
+use DmitriiKoziuk\yii2Shop\forms\eav\EavAttributeCreateForm;
 
 /* @var $this yii\web\View */
-/* @var $model DmitriiKoziuk\yii2Shop\entities\EavAttributeEntity */
+/* @var $model EavAttributeCreateForm */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
