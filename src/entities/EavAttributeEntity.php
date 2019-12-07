@@ -24,6 +24,7 @@ use Exception;
  * @property EavValueTypeEntity $valueType
  * @property EavValueTypeUnitEntity $defaultValueTypeUnit
  * @property EavValueDoubleEntity[]|EavValueVarcharEntity[] $selectableValues
+ * @property EavValueVarcharEntity[]|EavValueTextEntity[]|EavValueDoubleEntity[] $values
  */
 class EavAttributeEntity extends \yii\db\ActiveRecord
 {
@@ -35,6 +36,7 @@ class EavAttributeEntity extends \yii\db\ActiveRecord
 
     const SELECTABLE_YES = 1;
 
+    const VIEW_AT_FRONTEND_FACETED_NAVIGATION_NO = 0;
     const VIEW_AT_FRONTEND_FACETED_NAVIGATION_YES = 1;
 
     /**
@@ -68,7 +70,7 @@ class EavAttributeEntity extends \yii\db\ActiveRecord
             [['name_for_product', 'name_for_filter'], 'default', 'value' => null],
             [['description_backend', 'description_frontend'], 'string'],
             [['description_backend', 'description_frontend'], 'default', 'value' => null],
-            [['selectable', 'multiple'], 'default', 'value' => 0],
+            [['selectable', 'multiple', 'view_at_frontend_faceted_navigation'], 'default', 'value' => 0],
             [
                 ['value_type_id'],
                 'exist',
@@ -154,5 +156,19 @@ class EavAttributeEntity extends \yii\db\ActiveRecord
         }
         $query->where(['attribute_id' => $this->id]);
         return $query->count() == 0 ? false : true;
+    }
+
+    public function getValues()
+    {
+        switch ($this->storage_type) {
+            case EavAttributeEntity::STORAGE_TYPE_DOUBLE:
+                return $this->hasMany(EavValueDoubleEntity::class, ['attribute_id' => 'id']);
+            case EavAttributeEntity::STORAGE_TYPE_VARCHAR:
+                return $this->hasMany(EavValueVarcharEntity::class, ['attribute_id' => 'id']);
+            case EavAttributeEntity::STORAGE_TYPE_TEXT:
+                return $this->hasMany(EavValueTextEntity::class, ['attribute_id' => 'id']);
+            default:
+                throw new Exception("Storage type '$this->storage_type' not exist.");
+        }
     }
 }

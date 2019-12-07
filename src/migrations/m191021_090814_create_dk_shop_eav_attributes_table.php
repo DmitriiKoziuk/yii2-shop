@@ -33,7 +33,7 @@ class m191021_090814_create_dk_shop_eav_attributes_table extends Migration
             'storage_type' => 'ENUM("varchar","text","double") NOT NULL',
             'selectable' => $this->boolean()->notNull()->defaultValue(0),
             'multiple' => $this->boolean()->notNull()->defaultValue(0),
-            'view_at_frontend_faceted_navigation' => $this->boolean()->notNull()->defaultValue(1),
+            'view_at_frontend_faceted_navigation' => $this->boolean()->notNull()->defaultValue(0),
             'description_backend' => $this->text()->null()->defaultValue(NULL),
             'description_frontend' => $this->text()->null()->defaultValue(NULL),
             'value_type_id' => $this->integer()->null()->defaultValue(null),
