@@ -6,7 +6,7 @@ use DmitriiKoziuk\yii2Base\services\DBActionService;
 use DmitriiKoziuk\yii2Base\traits\ModelValidatorTrait;
 use DmitriiKoziuk\yii2Base\exceptions\EntityNotFoundException;
 use DmitriiKoziuk\yii2UrlIndex\forms\UrlCreateForm;
-use DmitriiKoziuk\yii2UrlIndex\forms\UrlUpdateForm;
+use DmitriiKoziuk\yii2UrlIndex\forms\UpdateEntityUrlForm;
 use DmitriiKoziuk\yii2UrlIndex\services\UrlIndexService;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 use DmitriiKoziuk\yii2Shop\forms\CategoryInputForm;
@@ -99,6 +99,7 @@ final class CategoryService extends DBActionService
             }
             if (isset($changedAttributesList['parent_id'])) {
                 $category->url = $this->defineUrl($category);
+                $this->_updateCategoryUrlInIndex($category);
                 $this->_categoryRepository->save($category);
                 $this->_updateChildrenUrl($category);
                 $this->_categoryClosureService->updateRelations($category);
@@ -155,6 +156,7 @@ final class CategoryService extends DBActionService
         foreach ($category->directChildren as $child) {
             $child->url = $this->defineUrl($child);
             $this->_categoryRepository->save($child);
+            $this->_updateCategoryUrlInIndex($child);
             $this->_updateChildrenUrl($child);
         }
     }
@@ -174,7 +176,7 @@ final class CategoryService extends DBActionService
 
     private function _updateCategoryUrlInIndex(Category $category): void
     {
-        $this->_urlIndexService->updateUrlInIndex(new UrlUpdateForm([
+        $this->_urlIndexService->updateEntityUrl(new UpdateEntityUrlForm([
             'url' => $category->url,
             'module_name' => ShopModule::ID,
             'controller_name' => Category::FRONTEND_CONTROLLER_NAME,
