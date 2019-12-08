@@ -55,8 +55,6 @@ use DmitriiKoziuk\yii2Shop\forms\CategoryInputForm;
 
             <?= $form->field($categoryInputForm, 'slug')->textInput(['maxlength' => true]) ?>
 
-            <?= $form->field($category, 'url')->textInput(['disabled' => true]) ?>
-
             <?= $form->field($categoryInputForm, 'meta_title')->textInput(['maxlength' => true]) ?>
 
             <?= $form->field($categoryInputForm, 'meta_description')->textarea(['maxlength' => true]) ?>

@@ -8,6 +8,7 @@ use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 use yii\base\InvalidConfigException;
 use DmitriiKoziuk\yii2Shop\ShopModule;
+use DmitriiKoziuk\yii2UrlIndex\entities\UrlEntity;
 
 /**
  * This is the model class for table "{{%dk_shop_categories}}".
@@ -16,7 +17,6 @@ use DmitriiKoziuk\yii2Shop\ShopModule;
  * @property string $name
  * @property string $name_on_site
  * @property string $slug
- * @property string $url
  * @property int    $parent_id
  * @property string $meta_title
  * @property string $meta_description
@@ -34,6 +34,7 @@ use DmitriiKoziuk\yii2Shop\ShopModule;
  * @property Category[]        $directDescendants
  * @property CategoryClosure[] $categoryClosure
  * @property Product[]         $products
+ * @property UrlEntity         $urlEntity
  */
 class Category extends ActiveRecord
 {
@@ -66,10 +67,9 @@ class Category extends ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'slug', 'url'], 'required'],
+            [['name', 'slug'], 'required'],
             [['name', 'name_on_site'], 'string', 'max' => 45],
             [['slug'], 'string', 'max' => 60],
-            [['url'], 'string', 'max' => 255],
             [['description'], 'string'],
             [['meta_title'], 'string', 'max' => 255],
             [['meta_description'], 'string', 'max' => 500],
@@ -107,7 +107,6 @@ class Category extends ActiveRecord
             'name'             => Yii::t(ShopModule::TRANSLATION_CATEGORY, 'Name'),
             'name_on_site'     => Yii::t(ShopModule::TRANSLATION_CATEGORY, 'Name on site'),
             'slug'             => Yii::t(ShopModule::TRANSLATION_CATEGORY, 'Slug'),
-            'url'              => Yii::t(ShopModule::TRANSLATION_CATEGORY, 'Url'),
             'parent_id'        => Yii::t(ShopModule::TRANSLATION_CATEGORY, 'Parent ID'),
             'meta_title'       => Yii::t(ShopModule::TRANSLATION_CATEGORY, 'Meta Title'),
             'meta_description' => Yii::t(ShopModule::TRANSLATION_CATEGORY, 'Meta Description'),
@@ -222,5 +221,14 @@ class Category extends ActiveRecord
     public function getFrontendName(): string
     {
         return $this->name_on_site ?? $this->name;
+    }
+
+    public function getUrlEntity(): ActiveQuery
+    {
+        return $this->hasOne(UrlEntity::class, ['entity_id' => 'id'])
+            ->andWhere([
+                'controller_name' => self::FRONTEND_CONTROLLER_NAME,
+                'action_name' => self::FRONTEND_ACTION_NAME,
+            ]);
     }
 }

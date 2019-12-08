@@ -38,7 +38,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],
             'name',
-            'url',
+            'slug',
+            [
+                'label' => 'Url',
+                'content' => function ($model) {
+                    /** @var $model Category */
+                    return $model->urlEntity->url;
+                },
+            ],
             'is_products_show:boolean',
             'template_name',
 

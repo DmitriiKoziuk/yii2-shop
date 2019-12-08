@@ -15,7 +15,7 @@ use DmitriiKoziuk\yii2Shop\data\CategoryData;
 <ul>
     <?php foreach ($category->getChildrenCategories() as $categoryEntity) ?>
     <li>
-        <a href="<?= $categoryEntity->url ?>"><?= $categoryEntity->getFrontendName() ?></a>
+        <a href="<?= $categoryEntity->urlEntity->url ?>"><?= $categoryEntity->getFrontendName() ?></a>
     </li>
     <?php ?>
 </ul>

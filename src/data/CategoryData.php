@@ -48,7 +48,7 @@ class CategoryData
 
     public function getUrl(): string
     {
-        return $this->_categoryRecord->url;
+        return $this->_categoryRecord->urlEntity->url;
     }
 
     public function getDescription(): string
@@ -76,7 +76,7 @@ class CategoryData
         foreach ($parentCategories as $parentCategory) {
             $breadcrumbs[] = [
                 'label' => $parentCategory->getFrontendName(),
-                'url' => $parentCategory->url,
+                'url' => $parentCategory->urlEntity->url,
             ];
         }
         $breadcrumbs[] = [
