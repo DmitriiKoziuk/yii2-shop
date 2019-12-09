@@ -34,6 +34,7 @@ class EavValueVarcharEntity extends ActiveRecord implements ProductEavValueInter
             [['attribute_id', 'value', 'code'], 'required'],
             [['attribute_id'], 'integer'],
             [['value', 'code'], 'string', 'max' => 255],
+            [['value', 'code'], 'trim'],
             [
                 ['attribute_id'],
                 'exist',

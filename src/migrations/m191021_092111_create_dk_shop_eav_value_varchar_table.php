@@ -29,24 +29,6 @@ class m191021_092111_create_dk_shop_eav_value_varchar_table extends Migration
             'code' => $this->string(255)->notNull(),
         ], $tableOptions);
         $this->createIndex(
-            'dk_shop_eav_value_varchar_uidx_value',
-            $this->eavValueVarcharTableName,
-            [
-                'value',
-                'attribute_id',
-            ],
-            true
-        );
-        $this->createIndex(
-            'dk_shop_eav_value_varchar_uidx_code',
-            $this->eavValueVarcharTableName,
-            [
-                'code',
-                'attribute_id',
-            ],
-            true
-        );
-        $this->createIndex(
             'dk_shop_eav_value_varchar_idx_attribute_id',
             $this->eavValueVarcharTableName,
             'attribute_id'
