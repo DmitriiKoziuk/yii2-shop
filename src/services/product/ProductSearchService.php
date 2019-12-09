@@ -30,8 +30,7 @@ class ProductSearchService
             [
                 ProductSku::tableName() . '.product_id' => new Expression(
                     Product::tableName() . '.id'
-                ),
-                ProductSku::tableName() . '.stock_status' => $params->stock_status,
+                )
             ]
         );
         if (! empty($params->getCategoryId())) {

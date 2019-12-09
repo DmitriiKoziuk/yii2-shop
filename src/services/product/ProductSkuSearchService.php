@@ -36,9 +36,6 @@ class ProductSkuSearchService
                 ),
             ]
         );
-        if (! empty($params->stock_status)) {
-            $query->andWhere([ProductSku::tableName() . '.stock_status' => $params->stock_status]);
-        }
         if (! empty($params->getCategoryId())) {
             $query->innerJoin(
                 CategoryProduct::tableName(),

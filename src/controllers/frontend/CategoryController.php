@@ -85,7 +85,6 @@ final class CategoryController extends Controller
                 );
                 $productSearchParams = new ProductSearchParams([
                     'category_id' => $categoryData->getId(),
-                    'stock_status' => [ProductSku::STOCK_IN, ProductSku::STOCK_AWAIT],
                 ]);
                 if (empty($filteredAttributes)) {
                     $productDataProvider = $this->productSearchService->searchBy(
