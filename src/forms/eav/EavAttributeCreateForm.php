@@ -17,7 +17,7 @@ class EavAttributeCreateForm extends Model
     public function rules()
     {
         return [
-            [['name'], 'required'],
+            [['name', 'storage_type'], 'required'],
             [['name'], 'string', 'max' => 100],
             [['storage_type'], 'string'],
             [['selectable', 'multiple', 'view_at_frontend_faceted_navigation', 'value_type_id'], 'integer'],
