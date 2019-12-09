@@ -2,8 +2,6 @@
 
 namespace DmitriiKoziuk\yii2Shop\repositories;
 
-use DmitriiKoziuk\yii2Shop\entities\EavValueTextProductSkuEntity;
-use Yii;
 use Exception;
 use yii\db\Expression;
 use yii\db\ActiveQuery;
@@ -13,6 +11,7 @@ use DmitriiKoziuk\yii2Shop\entities\categoryFaceted\EavValueDoubleEntity;
 use DmitriiKoziuk\yii2Shop\entities\categoryFaceted\EavValueVarcharEntity;
 use DmitriiKoziuk\yii2Shop\entities\CategoryProductSku;
 use DmitriiKoziuk\yii2Shop\entities\EavValueTextEntity;
+use DmitriiKoziuk\yii2Shop\entities\EavValueTextProductSkuEntity;
 use DmitriiKoziuk\yii2Shop\entities\EavValueDoubleProductSkuEntity;
 use DmitriiKoziuk\yii2Shop\entities\EavValueVarcharProductSkuEntity;
 use DmitriiKoziuk\yii2Shop\entities\ProductSku;
@@ -67,6 +66,8 @@ class EavRepository
             )->where([
                 CategoryProductSku::tableName() . '.category_id' => $categoryId,
                 EavAttributeEntity::tableName() . '.selectable' => EavAttributeEntity::SELECTABLE_YES,
+                EavAttributeEntity::tableName() . '.view_at_frontend_faceted_navigation' =>
+                    EavAttributeEntity::VIEW_AT_FRONTEND_FACETED_NAVIGATION_YES,
             ])->groupBy([
                 EavValueDoubleProductSkuEntity::tableName() . '.value_id',
             ])->orderBy([
@@ -128,6 +129,8 @@ class EavRepository
             )->where([
                 CategoryProductSku::tableName() . '.category_id' => $categoryId,
                 EavAttributeEntity::tableName() . '.selectable' => EavAttributeEntity::SELECTABLE_YES,
+                EavAttributeEntity::tableName() . '.view_at_frontend_faceted_navigation' =>
+                    EavAttributeEntity::VIEW_AT_FRONTEND_FACETED_NAVIGATION_YES,
             ])->groupBy([
                 EavValueVarcharProductSkuEntity::tableName() . '.value_id',
             ])->orderBy([

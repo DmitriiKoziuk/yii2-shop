@@ -3,11 +3,11 @@
 namespace DmitriiKoziuk\yii2Shop\controllers\backend;
 
 use Yii;
-use DmitriiKoziuk\yii2Shop\entities\ProductTypeAttributeEntity;
-use DmitriiKoziuk\yii2Shop\entities\search\ProductTypeAttributeEntitySearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use DmitriiKoziuk\yii2Shop\entities\ProductTypeAttributeEntity;
+use DmitriiKoziuk\yii2Shop\entities\search\ProductTypeAttributeEntitySearch;
 
 /**
  * ProductTypeAttributeController implements the CRUD actions for ProductTypeAttributeEntity model.
@@ -104,6 +104,8 @@ class ProductTypeAttributeController extends Controller
      * @param integer $attribute_id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
      */
     public function actionDelete($product_type_id, $attribute_id)
     {

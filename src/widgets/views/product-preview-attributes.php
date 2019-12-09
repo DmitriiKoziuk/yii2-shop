@@ -1,16 +1,16 @@
 <?php
 
 use yii\web\View;
-use DmitriiKoziuk\yii2Shop\data\frontend\product\ProductData;
-use DmitriiKoziuk\yii2Shop\data\frontend\product\ProductSkuData;
+use DmitriiKoziuk\yii2Shop\entityViews\ProductEntityView;
+use DmitriiKoziuk\yii2Shop\entityViews\ProductSkuView;
 
 /**
  * @var $this View
- * @var $product ProductData|ProductSkuData
+ * @var $product ProductEntityView|ProductSkuView
  */
 ?>
 
-<?php if ($product->isPreviewAttributesSet()): ?>
+<?php if ($product->isPreviewEavValuesSet()): ?>
   <?php foreach ($product->getProductPreviewValues() as $value): ?>
   <div>
     <?= $value->eavAttribute->name ?>: <?= $value->value ?> <?= !empty($value->unit) ? $value->unit->abbreviation : ''; ?>

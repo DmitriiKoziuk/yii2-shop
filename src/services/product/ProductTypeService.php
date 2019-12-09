@@ -1,16 +1,18 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace DmitriiKoziuk\yii2Shop\services\product;
 
+use yii\base\Event;
 use yii\db\Connection;
 use yii\queue\cli\Queue;
 use yii\helpers\Inflector;
-use DmitriiKoziuk\yii2Base\services\DBActionService;
-use DmitriiKoziuk\yii2Shop\repositories\ProductTypeRepository;
 use DmitriiKoziuk\yii2Shop\entities\ProductType;
 use DmitriiKoziuk\yii2Shop\data\ProductTypeData;
-use DmitriiKoziuk\yii2Shop\data\product\ProductSkuSearchParams;
+use DmitriiKoziuk\yii2Base\services\DBActionService;
+use DmitriiKoziuk\yii2Shop\repositories\ProductTypeRepository;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductTypeInputForm;
-use DmitriiKoziuk\yii2Shop\jobs\UpdateProductSkuSellPriceJob;
+use DmitriiKoziuk\yii2Shop\events\ProductTypeUpdateEvent;
+use DmitriiKoziuk\yii2Shop\events\ProductTypeBeforeDeleteEvent;
 
 class ProductTypeService extends DBActionService
 {
@@ -61,7 +63,7 @@ class ProductTypeService extends DBActionService
     public function update(
         ProductType $productType,
         ProductTypeInputForm $productTypeInputForm
-    ): ProductType {   //TODO create event when change product url prefix.
+    ): ProductType {
         try {
             if ($productType->isNewRecord) {
                 throw new \Exception('Save product type before update.');
@@ -72,30 +74,41 @@ class ProductTypeService extends DBActionService
             }
             $changedAttributes = $productType->getDirtyAttributes();
             $this->_productTypeRepository->save($productType);
-            if (
-                array_key_exists('margin_strategy', $changedAttributes) &&
-                $changedAttributes['margin_strategy'] != ProductType::MARGIN_STRATEGY_NOT_SET
-            ) {
-                $this->_queue->push(new UpdateProductSkuSellPriceJob([
-                    'productSkuSearchParams' => new ProductSkuSearchParams([
-                        'type_id' => $productType->id,
-                    ]),
-                ]));
-            }
+            Event::trigger(
+                ProductTypeUpdateEvent::class,
+                ProductTypeUpdateEvent::EVENT_PRODUCT_TYPE_UPDATE,
+                new ProductTypeUpdateEvent([
+                    'changedAttributes' => $changedAttributes,
+                    'productTypeAttributes' => $productType->getAttributes(),
+                ])
+            );
             return $productType;
         } catch (\Throwable $e) {
             throw $e;
         }
     }
 
-    public function delete(ProductType $productType)
+    public function deleteProductType(int $productTypeId): void
     {
-        //TODO make delete method.
+        $productTypeEntity = $this->_productTypeRepository->getProductTypeById($productTypeId);
+        $this->eventBeforeDelete($productTypeEntity->id);
+        $this->_productTypeRepository->delete($productTypeEntity);
     }
 
     public function getProductTypeById(int $productTypeId): ProductTypeData
     {
         $productTypeRecord = $this->_productTypeRepository->getProductTypeById($productTypeId);
         return new ProductTypeData($productTypeRecord);
+    }
+
+    private function eventBeforeDelete(int $productTypeId): void
+    {
+        Event::trigger(
+            ProductTypeBeforeDeleteEvent::class,
+            ProductTypeBeforeDeleteEvent::EVENT_BEFORE_DELETE,
+            new ProductTypeBeforeDeleteEvent([
+                'productTypeId' => $productTypeId,
+            ])
+        );
     }
 }

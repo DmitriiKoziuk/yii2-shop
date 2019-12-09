@@ -1,16 +1,16 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace DmitriiKoziuk\yii2Shop\services\currency;
 
+use yii\base\Event;
 use yii\db\Connection;
-use yii\queue\cli\Queue;
 use DmitriiKoziuk\yii2Base\services\DBActionService;
 use DmitriiKoziuk\yii2Base\exceptions\EntityNotFoundException;
 use DmitriiKoziuk\yii2Shop\entities\Currency;
 use DmitriiKoziuk\yii2Shop\data\CurrencyData;
-use DmitriiKoziuk\yii2Shop\data\product\ProductSkuSearchParams;
 use DmitriiKoziuk\yii2Shop\forms\currency\CurrencyInputForm;
 use DmitriiKoziuk\yii2Shop\repositories\CurrencyRepository;
-use DmitriiKoziuk\yii2Shop\jobs\UpdateProductSkuPriceOnSite;
+use DmitriiKoziuk\yii2Shop\events\CurrencyUpdateEvent;
 
 class CurrencyService extends DBActionService
 {
@@ -19,19 +19,12 @@ class CurrencyService extends DBActionService
      */
     private $_currencyRepository;
 
-    /**
-     * @var Queue
-     */
-    private $_queue;
-
     public function __construct(
         CurrencyRepository $currencyRepository,
-        Queue $queue,
         Connection $db = null
     ) {
         parent::__construct($db);
         $this->_currencyRepository = $currencyRepository;
-        $this->_queue = $queue;
     }
 
     /**
@@ -58,7 +51,7 @@ class CurrencyService extends DBActionService
      * @throws \Throwable
      */
     public function update(int $currencyId, CurrencyInputForm $currencyInputForm): Currency
-    {   //TODO update product sku price when currency changed
+    {
         try {
             $currency = $this->_currencyRepository->getCurrencyById($currencyId);
             if (empty($currency)) {
@@ -71,11 +64,14 @@ class CurrencyService extends DBActionService
                 array_key_exists('rate', $changedAttributes) &&
                 ! empty($changedAttributes['rate'])
             ) {
-                $this->_queue->push(new UpdateProductSkuPriceOnSite([
-                    'productSkuSearchParams' => new ProductSkuSearchParams([
-                        'currency_id' => $currency->id,
-                    ]),
-                ]));
+                Event::trigger(
+                    CurrencyUpdateEvent::class,
+                    CurrencyUpdateEvent::EVENT_CURRENCY_UPDATE,
+                    new CurrencyUpdateEvent([
+                        'changedAttributes' => $changedAttributes,
+                        'currencyAttributes' => $currency->getAttributes(),
+                    ])
+                );
             }
             return $currency;
         } catch (\Throwable $e) {

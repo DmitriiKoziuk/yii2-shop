@@ -1,10 +1,9 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace DmitriiKoziuk\yii2Shop\services\product;
 
-use DmitriiKoziuk\yii2Shop\data\ProductData;
-use DmitriiKoziuk\yii2Shop\data\ProductSkuData;
-use DmitriiKoziuk\yii2Shop\data\ProductTypeData;
 use DmitriiKoziuk\yii2Shop\helpers\StringHelper;
+use DmitriiKoziuk\yii2Shop\entityViews\ProductSkuView;
 
 class ProductSeoService
 {
@@ -15,42 +14,35 @@ class ProductSeoService
         $this->_stringHelper = $stringHelper;
     }
 
-    public function getProductSkuMetaTitle(
-        ProductData $productData,
-        ProductSkuData $productSkuData,
-        ProductTypeData $productTypeData = null
-    ): string {
-        if (empty($productTypeData)) {
-            return $productSkuData->getMetaTitle() ?? '';
+    public function getProductSkuMetaTitle(ProductSkuView $productSkuView): string
+    {
+        if (! $productSkuView->isTypeSet()) {
+            return $productSkuView->getMetaTitle() ?? '';
         } else {
             $string = $this->_stringHelper
                 ->getStringFromTemplate(
-                    $productTypeData->getProductSkuMetaTitleTemplate(),
+                    $productSkuView->getType()->getProductSkuTitleTemplate(),
                     [
-                        'productName' => $productData->getName(),
-                        'productSkuName' => $productSkuData->getName(),
-                        'productSkuSitePrice' => $productSkuData->getPriceOnSite(),
+                        'productName' => $productSkuView->getProductName(),
+                        'productSkuName' => $productSkuView->getName(),
+                        'customerPrice' => $productSkuView->getCustomerPrice(),
                     ]
                 );
             return $string ?? '';
         }
     }
 
-    public function getProductSkuMetaDescription(
-        ProductData $productData,
-        ProductSkuData $productSkuData,
-        ProductTypeData $productTypeData = null
-    ): string {
-        if (empty($productTypeData)) {
-            return $productSkuData->getMetaTitle() ?? '';
+    public function getProductSkuMetaDescription(ProductSkuView $productSkuView): string {
+        if (! $productSkuView->isTypeSet()) {
+            return $productSkuView->getMetaTitle() ?? '';
         } else {
             $string = $this->_stringHelper
                 ->getStringFromTemplate(
-                    $productTypeData->getProductSkuMetaDescriptionTemplate(),
+                    $productSkuView->getType()->getProductSkuDescriptionTemplate(),
                     [
-                        'productName' => $productData->getName(),
-                        'productSkuName' => $productSkuData->getName(),
-                        'productSkuSitePrice' => $productSkuData->getPriceOnSite(),
+                        'productName' => $productSkuView->getProductName(),
+                        'productSkuName' => $productSkuView->getName(),
+                        'customerPrice' => $productSkuView->getCustomerPrice(),
                     ]
                 );
             return $string ?? '';

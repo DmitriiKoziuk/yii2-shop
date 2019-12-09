@@ -6,7 +6,7 @@ use DmitriiKoziuk\yii2Base\services\DBActionService;
 use DmitriiKoziuk\yii2Base\traits\ModelValidatorTrait;
 use DmitriiKoziuk\yii2Base\exceptions\EntityNotFoundException;
 use DmitriiKoziuk\yii2UrlIndex\forms\UrlCreateForm;
-use DmitriiKoziuk\yii2UrlIndex\forms\UrlUpdateForm;
+use DmitriiKoziuk\yii2UrlIndex\forms\UpdateEntityUrlForm;
 use DmitriiKoziuk\yii2UrlIndex\services\UrlIndexService;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 use DmitriiKoziuk\yii2Shop\forms\CategoryInputForm;
@@ -64,7 +64,6 @@ final class CategoryService extends DBActionService
             $category = new Category();
             $category->setAttributes($categoryInputForm->getAttributes());
             $category->slug = $this->defineSlug($category->name);
-            $category->url = $this->defineUrl($category);
             $this->_categoryRepository->save($category);
             $this->_categoryClosureService->updateRelations($category);
             $this->_addCategoryUrlToIndex($category);
@@ -90,7 +89,6 @@ final class CategoryService extends DBActionService
             $changedAttributesList = $category->getDirtyAttributes();
             if (isset($changedAttributesList['slug'])) {
                 $category->slug = $this->defineSlug($category->slug);
-                $category->url  = $this->defineUrl($category);
             }
             $this->_categoryRepository->save($category);
             if (isset($changedAttributesList['slug'])) {
@@ -98,8 +96,8 @@ final class CategoryService extends DBActionService
                 $this->_updateChildrenUrl($category);
             }
             if (isset($changedAttributesList['parent_id'])) {
-                $category->url = $this->defineUrl($category);
                 $this->_categoryRepository->save($category);
+                $this->_updateCategoryUrlInIndex($category);
                 $this->_updateChildrenUrl($category);
                 $this->_categoryClosureService->updateRelations($category);
             }
@@ -139,7 +137,7 @@ final class CategoryService extends DBActionService
         if (empty($category->parent_id)) {
             $url = $category->slug;
         } else {
-            $url = $category->parent->url . '/' . $category->slug;
+            $url = $category->parent->urlEntity->url . '/' . $category->slug;
         }
         return UrlHelper::slugFromString( '/' . $url);
     }
@@ -153,8 +151,8 @@ final class CategoryService extends DBActionService
     private function _updateChildrenUrl(Category $category)
     {
         foreach ($category->directChildren as $child) {
-            $child->url = $this->defineUrl($child);
             $this->_categoryRepository->save($child);
+            $this->_updateCategoryUrlInIndex($child);
             $this->_updateChildrenUrl($child);
         }
     }
@@ -163,7 +161,7 @@ final class CategoryService extends DBActionService
     {
         $this->_urlIndexService->addUrl(
             new UrlCreateForm([
-                'url' => $category->url,
+                'url' => $this->defineUrl($category),
                 'module_name' => ShopModule::ID,
                 'controller_name' => Category::FRONTEND_CONTROLLER_NAME,
                 'action_name' => Category::FRONTEND_ACTION_NAME,
@@ -174,8 +172,8 @@ final class CategoryService extends DBActionService
 
     private function _updateCategoryUrlInIndex(Category $category): void
     {
-        $this->_urlIndexService->updateUrlInIndex(new UrlUpdateForm([
-            'url' => $category->url,
+        $this->_urlIndexService->updateEntityUrl(new UpdateEntityUrlForm([
+            'url' => $this->defineUrl($category),
             'module_name' => ShopModule::ID,
             'controller_name' => Category::FRONTEND_CONTROLLER_NAME,
             'action_name' => Category::FRONTEND_ACTION_NAME,

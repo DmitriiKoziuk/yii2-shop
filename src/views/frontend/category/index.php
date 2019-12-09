@@ -1,9 +1,8 @@
 <?php
 
 use yii\web\View;
+use yii\data\ActiveDataProvider;
 use DmitriiKoziuk\yii2Shop\data\CategoryData;
-use DmitriiKoziuk\yii2Shop\data\product\ProductSearchParams;
-use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 use DmitriiKoziuk\yii2Shop\entities\categoryFaceted\EavAttributeEntity;
 use DmitriiKoziuk\yii2Shop\widgets\SubcategoriesWidget;
 use DmitriiKoziuk\yii2Shop\widgets\ProductWidget;
@@ -17,11 +16,8 @@ use DmitriiKoziuk\yii2Shop\widgets\frontend\CategoryProductFacetedNavigationWidg
  * @var $getParams array|null
  * @var $filterParams array,
  * @var $filteredAttributes EavAttributeEntity[]
+ * @var $productDataProvider ActiveDataProvider
  */
-
-$productSearchParams = new ProductSearchParams();
-$productSearchParams->category_id = $categoryData->getId();
-$productSearchParams->stock_status = [ProductSku::STOCK_IN, ProductSku::STOCK_AWAIT];
 
 $this->title = $categoryData->getMetaTitle();
 $this->registerMetaTag(['name' => 'description', 'content' => $categoryData->getMetaDescription()]);
@@ -44,7 +40,7 @@ $this->params['breadcrumbs'] = $categoryData->getBreadcrumb();
     </div>
     <div class="col-md-7">
       <?= ProductWidget::widget([
-          'searchParams' => $productSearchParams,
+          'productDataProvider' => $productDataProvider,
           'indexPageUrl' => $indexPageUrl,
           'filteredAttributes' => $filteredAttributes,
           'filterParams' => $filterParams,

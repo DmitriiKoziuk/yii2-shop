@@ -11,6 +11,8 @@ use DmitriiKoziuk\yii2Shop\entities\Product;
 use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 use DmitriiKoziuk\yii2Shop\entities\CategoryProduct;
 use DmitriiKoziuk\yii2Shop\entities\categoryFaceted\EavAttributeEntity;
+use DmitriiKoziuk\yii2Shop\entities\EavValueDoubleEntity;
+use DmitriiKoziuk\yii2Shop\entities\EavValueVarcharEntity;
 use DmitriiKoziuk\yii2Shop\entities\EavValueDoubleProductSkuEntity;
 use DmitriiKoziuk\yii2Shop\entities\EavValueVarcharProductSkuEntity;
 
@@ -71,7 +73,7 @@ class ProductSkuSearchService
      * @param EavAttributeEntity[] $filteredAttributes
      * @throws \Exception
      */
-    private function includeEavAttributesToSearchQuery(ActiveQuery $query, array $filteredAttributes)
+    private function includeEavAttributesToSearchQuery(ActiveQuery $query, array $filteredAttributes): void
     {
         foreach ($filteredAttributes as $filteredAttribute) {
             switch ($filteredAttribute->storage_type) {
@@ -82,39 +84,49 @@ class ProductSkuSearchService
                     $this->joinDoubleValues($query, $filteredAttribute->values);
                     break;
                 default:
-                    throw new \Exception('Storage type logic not implement.');
+                    throw new \Exception("Storage type '$filteredAttribute->storage_type' logic not implement.");
                     break;
             }
         }
     }
 
-    private function joinVarcharValues(ActiveQuery $query, array $values)
+    /**
+     * @param ActiveQuery $query
+     * @param EavValueVarcharEntity[] $values
+     */
+    private function joinVarcharValues(ActiveQuery $query, array $values): void
     {
+        $alias = 'alias_vvps_attr_id_' . $values[ array_key_first($values) ]->attribute_id;
         $query->innerJoin(
-            EavValueVarcharProductSkuEntity::tableName(),
+            [$alias => EavValueVarcharProductSkuEntity::tableName()],
             [
-                EavValueVarcharProductSkuEntity::tableName() . '.product_sku_id' => new Expression(
+                $alias . '.product_sku_id' => new Expression(
                     ProductSku::tableName() . '.id'
                 ),
             ]
         );
         $query->andWhere([
-            EavValueVarcharProductSkuEntity::tableName() . '.value_id' => ArrayHelper::map($values, 'id', 'id')
+            $alias . '.value_id' => ArrayHelper::map($values, 'id', 'id')
         ]);
     }
 
-    private function joinDoubleValues(ActiveQuery $query, array $values)
+    /**
+     * @param ActiveQuery $query
+     * @param EavValueDoubleEntity[] $values
+     */
+    private function joinDoubleValues(ActiveQuery $query, array $values): void
     {
+        $alias = 'alias_vvps_attr_id_' . $values[ array_key_first($values) ]->attribute_id;
         $query->innerJoin(
-            EavValueDoubleProductSkuEntity::tableName(),
+            [$alias => EavValueDoubleProductSkuEntity::tableName()],
             [
-                EavValueDoubleProductSkuEntity::tableName() . '.product_sku_id' => new Expression(
+                $alias . '.product_sku_id' => new Expression(
                     ProductSku::tableName() . '.id'
                 ),
             ]
         );
         $query->andWhere([
-            EavValueDoubleProductSkuEntity::tableName() . '.value_id' => ArrayHelper::map($values, 'id', 'id')
+            $alias . '.value_id' => ArrayHelper::map($values, 'id', 'id')
         ]);
     }
 }

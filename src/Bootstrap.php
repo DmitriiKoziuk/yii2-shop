@@ -8,6 +8,8 @@ use yii\base\BootstrapInterface;
 use yii\base\InvalidConfigException;
 use yii\di\NotInstantiableException;
 use DmitriiKoziuk\yii2ConfigManager\ConfigManagerModule;
+use DmitriiKoziuk\yii2ConfigManager\data\Config;
+use DmitriiKoziuk\yii2ConfigManager\data\ValueString;
 use DmitriiKoziuk\yii2ConfigManager\services\ConfigService;
 use DmitriiKoziuk\yii2ModuleManager\services\ModuleRegistrationService;
 
@@ -31,6 +33,17 @@ final class Bootstrap implements BootstrapInterface
         ModuleRegistrationService::addModule(ShopModule::class, function () use ($app) {
             /** @var ConfigService $configService */
             $configService = Yii::$container->get(ConfigService::class);
+            $configService->registerConfig(new Config(
+                ShopModule::getId(),
+                'Shop module',
+                [
+                    new ValueString(
+                        'productsOnCategoryPage',
+                        '20',
+                        'Products on category page'
+                    ),
+                ]
+            ));
             return [
                 'class' => ShopModule::class,
                 'diContainer' => Yii::$container,
