@@ -41,6 +41,8 @@ class EavValueVarcharEntity extends ActiveRecord implements ProductEavValueInter
                 'targetClass' => EavAttributeEntity::class,
                 'targetAttribute' => ['attribute_id' => 'id']
             ],
+            [['value', 'attribute_id'], 'unique', 'targetAttribute' => ['value', 'attribute_id']],
+            [['code', 'attribute_id'], 'unique', 'targetAttribute' => ['code', 'attribute_id']],
         ];
     }
 
