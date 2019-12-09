@@ -5,9 +5,10 @@ use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
 use DmitriiKoziuk\yii2Shop\entities\EavValueTypeEntity;
 use DmitriiKoziuk\yii2Shop\entities\EavValueTypeUnitEntity;
+use DmitriiKoziuk\yii2Shop\forms\eav\EavAttributeCreateForm;
 
 /* @var $this yii\web\View */
-/* @var $model DmitriiKoziuk\yii2Shop\entities\EavAttributeEntity */
+/* @var $model EavAttributeCreateForm */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
@@ -38,6 +39,11 @@ use DmitriiKoziuk\yii2Shop\entities\EavValueTypeUnitEntity;
     ]) ?>
 
     <?= $form->field($model, 'multiple')->dropDownList([
+        0 => 'No',
+        1 => 'Yes',
+    ]) ?>
+
+    <?= $form->field($model, 'view_at_frontend_faceted_navigation')->dropDownList([
         0 => 'No',
         1 => 'Yes',
     ]) ?>

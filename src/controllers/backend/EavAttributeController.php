@@ -3,18 +3,31 @@
 namespace DmitriiKoziuk\yii2Shop\controllers\backend;
 
 use Yii;
-use DmitriiKoziuk\yii2Shop\entities\EavAttributeEntity;
-use DmitriiKoziuk\yii2Shop\entities\search\EavAttributeEntitySearch;
-use yii\helpers\Inflector;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use DmitriiKoziuk\yii2Shop\forms\eav\EavAttributeCreateForm;
+use DmitriiKoziuk\yii2Shop\entities\EavAttributeEntity;
+use DmitriiKoziuk\yii2Shop\entities\search\EavAttributeEntitySearch;
+use DmitriiKoziuk\yii2Shop\services\eav\EavAttributeService;
 
 /**
  * EavAttributeController implements the CRUD actions for EavAttributeEntity model.
  */
 class EavAttributeController extends Controller
 {
+    private $eavAttributeService;
+
+    public function __construct(
+        $id,
+        $module,
+        EavAttributeService $eavAttributeService,
+        $config = []
+    ) {
+        parent::__construct($id, $module, $config);
+        $this->eavAttributeService = $eavAttributeService;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -22,7 +35,7 @@ class EavAttributeController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -65,12 +78,14 @@ class EavAttributeController extends Controller
      */
     public function actionCreate()
     {
-        $model = new EavAttributeEntity();
+        $model = new EavAttributeCreateForm();
 
         if ($model->load(Yii::$app->request->post())) {
-            $model->code = Inflector::slug($model->name);
-            if ($model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+            try {
+                $newAttribute = $this->eavAttributeService->createEavAttribute($model);
+                return $this->redirect(['view', 'id' => $newAttribute->id]);
+            } catch (\Exception $e) {
+
             }
         }
 

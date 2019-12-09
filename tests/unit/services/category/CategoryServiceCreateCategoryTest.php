@@ -65,7 +65,7 @@ class CategoryServiceCreateCategoryTest extends \Codeception\Test\Unit
         );
         $this->assertInstanceOf(Category::class, $createdCategory);
         $this->tester->seeRecord(Category::class, ['name' => $categoryAttributes['name']]);
-        $this->tester->seeRecord(UrlEntity::class, ['url' => $createdCategory->url]);
+        $this->tester->seeRecord(UrlEntity::class, ['url' => $createdCategory->urlEntity]);
     }
 
     public function testCreateSubcategory()
@@ -96,7 +96,7 @@ class CategoryServiceCreateCategoryTest extends \Codeception\Test\Unit
         $this->assertIsArray($parentCategory->children);
         $this->assertArrayHasKey($createdCategory->id, $parentCategory->children);
         $this->assertEquals($createdCategory['name'], $parentCategory->children[ $createdCategory->id ]->name);
-        $this->tester->seeRecord(UrlEntity::class, ['url' => $createdCategory->url]);
+        $this->tester->seeRecord(UrlEntity::class, ['url' => $createdCategory->urlEntity]);
     }
 
     /**

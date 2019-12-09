@@ -34,6 +34,7 @@ class EavValueVarcharEntity extends ActiveRecord implements ProductEavValueInter
             [['attribute_id', 'value', 'code'], 'required'],
             [['attribute_id'], 'integer'],
             [['value', 'code'], 'string', 'max' => 255],
+            [['value', 'code'], 'trim'],
             [
                 ['attribute_id'],
                 'exist',
@@ -41,6 +42,8 @@ class EavValueVarcharEntity extends ActiveRecord implements ProductEavValueInter
                 'targetClass' => EavAttributeEntity::class,
                 'targetAttribute' => ['attribute_id' => 'id']
             ],
+            [['value', 'attribute_id'], 'unique', 'targetAttribute' => ['value', 'attribute_id']],
+            [['code', 'attribute_id'], 'unique', 'targetAttribute' => ['code', 'attribute_id']],
         ];
     }
 
@@ -72,5 +75,10 @@ class EavValueVarcharEntity extends ActiveRecord implements ProductEavValueInter
     public function getEavAttributeId(): int
     {
         return $this->eavAttribute->id;
+    }
+
+    public function getEavAttributeEntity(): ?EavAttributeEntity
+    {
+        return $this->eavAttribute;
     }
 }

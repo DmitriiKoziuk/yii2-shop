@@ -1,17 +1,20 @@
 <?php
 
+use yii\web\View;
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use yii\widgets\ActiveForm;
 use kartik\select2\Select2;
 use DmitriiKoziuk\yii2Shop\ShopModule;
+use DmitriiKoziuk\yii2Shop\entities\Category;
 use DmitriiKoziuk\yii2Shop\helpers\CategoryHelper;
+use DmitriiKoziuk\yii2Shop\forms\CategoryInputForm;
 
 /**
- * @var $this              yii\web\View
- * @var $categoryInputForm \DmitriiKoziuk\yii2Shop\forms\CategoryInputForm
- * @var $category          \DmitriiKoziuk\yii2Shop\entities\Category
- * @var $categories        \DmitriiKoziuk\yii2Shop\entities\Category[]
+ * @var $this              View
+ * @var $categoryInputForm CategoryInputForm
+ * @var $category          Category
+ * @var $categories        Category[]
  */
 ?>
 
@@ -52,13 +55,18 @@ use DmitriiKoziuk\yii2Shop\helpers\CategoryHelper;
 
             <?= $form->field($categoryInputForm, 'slug')->textInput(['maxlength' => true]) ?>
 
-            <?= $form->field($category, 'url')->textInput(['disabled' => true]) ?>
-
             <?= $form->field($categoryInputForm, 'meta_title')->textInput(['maxlength' => true]) ?>
 
             <?= $form->field($categoryInputForm, 'meta_description')->textarea(['maxlength' => true]) ?>
 
             <?= $form->field($categoryInputForm, 'description')->textarea(['maxlength' => true]) ?>
+
+            <?= $form->field($categoryInputForm, 'is_products_show')->dropDownList([
+                Category::IS_PRODUCT_SHOW_FALSE => 'No',
+                Category::IS_PRODUCT_SHOW_TRUE => 'Yes',
+            ]) ?>
+
+            <?= $form->field($categoryInputForm, 'template_name')->textInput(['maxlength' => true]) ?>
         </div>
     </div>
     <?php endif; ?>

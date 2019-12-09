@@ -44,6 +44,16 @@ class EavValueDoubleEntity extends ActiveRecord implements ProductEavValueInterf
                 'targetClass' => EavAttributeEntity::class,
                 'targetAttribute' => ['attribute_id' => 'id']
             ],
+            [
+                ['value', 'attribute_id', 'value_type_unit_id'],
+                'unique',
+                'targetAttribute' => ['value', 'attribute_id', 'value_type_unit_id']
+            ],
+            [
+                ['code', 'attribute_id', 'value_type_unit_id'],
+                'unique',
+                'targetAttribute' => ['code', 'attribute_id', 'value_type_unit_id']
+            ],
         ];
     }
 
@@ -81,5 +91,10 @@ class EavValueDoubleEntity extends ActiveRecord implements ProductEavValueInterf
     public function getEavAttributeId(): int
     {
         return $this->eavAttribute->id;
+    }
+
+    public function getEavAttributeEntity(): ?EavAttributeEntity
+    {
+        return $this->eavAttribute;
     }
 }

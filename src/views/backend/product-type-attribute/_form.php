@@ -1,5 +1,6 @@
 <?php
 
+use yii\web\View;
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use yii\widgets\ActiveForm;
@@ -7,9 +8,9 @@ use DmitriiKoziuk\yii2Shop\entities\ProductType;
 use DmitriiKoziuk\yii2Shop\entities\EavAttributeEntity;
 use DmitriiKoziuk\yii2Shop\entities\ProductTypeAttributeEntity;
 
-/* @var $this yii\web\View */
-/* @var $model DmitriiKoziuk\yii2Shop\entities\ProductTypeAttributeEntity */
-/* @var $form yii\widgets\ActiveForm */
+/* @var $this View */
+/* @var $model ProductTypeAttributeEntity */
+/* @var $form ActiveForm */
 ?>
 
 <div class="product-type-attribute-entity-form">
@@ -28,14 +29,16 @@ use DmitriiKoziuk\yii2Shop\entities\ProductTypeAttributeEntity;
         'name'
     ))->label('Attribute') ?>
 
-    <?= $form->field($model, 'view_attribute_at_product_preview')->dropDownList([
+    <?= $form->field($model, 'view_attribute_at_product_sku_preview')->dropDownList([
         ProductTypeAttributeEntity::PREVIEW_NO => 'No',
         ProductTypeAttributeEntity::PREVIEW_YES => 'Yes',
     ])->label('Attribute') ?>
 
     <?php if (! $model->isNewRecord): ?>
 
-    <?= $form->field($model, 'sort')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'sort_at_product_sku_preview')->textInput(['maxlength' => true]) ?>
+
+    <?= $form->field($model, 'sort_at_product_sku_page')->textInput(['maxlength' => true]) ?>
 
     <?php endif; ?>
 

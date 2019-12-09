@@ -4,12 +4,12 @@ use yii\web\View;
 use DmitriiKoziuk\yii2Shop\entities\EavAttributeEntity;
 use DmitriiKoziuk\yii2Shop\entities\EavValueDoubleEntity;
 use DmitriiKoziuk\yii2Shop\entities\EavValueVarcharEntity;
+use DmitriiKoziuk\yii2Shop\entities\EavValueTextEntity;
 
 /**
  * @var $this View
- * @var int $productSkuId
  * @var $attributes EavAttributeEntity[]
- * @var $attributeValues EavValueDoubleEntity[]|EavValueVarcharEntity[]
+ * @var $values EavValueDoubleEntity[]|EavValueVarcharEntity[]|EavValueTextEntity[]
  */
 
 ?>
@@ -19,7 +19,7 @@ use DmitriiKoziuk\yii2Shop\entities\EavValueVarcharEntity;
   <tr>
     <td><?= $attribute->name ?></td>
     <td>
-    <?php foreach ($attributeValues[ $attribute->id ] as $value): ?>
+    <?php foreach ($values[ $attribute->id ] as $value): ?>
       <?= $value->value ?>
     <?php endforeach; ?>
     </td>

@@ -375,7 +375,7 @@ class ProductSkuEavAttributesService extends DBActionService
      * @return EavValueDoubleEntity
      * @throws Exception
      */
-    private function createDoubleValue(int $attributeId, float $value, int $unitId = null): EavValueDoubleEntity
+    public function createDoubleValue(int $attributeId, float $value, int $unitId = null): EavValueDoubleEntity
     {
         $newValue = new EavValueDoubleEntity();
         $newValue->attribute_id = $attributeId;
@@ -394,7 +394,7 @@ class ProductSkuEavAttributesService extends DBActionService
      * @return EavValueVarcharEntity
      * @throws Exception
      */
-    private function createVarcharValue(int $attributeId, string $value): EavValueVarcharEntity
+    public function createVarcharValue(int $attributeId, string $value): EavValueVarcharEntity
     {
         $newValue = new EavValueVarcharEntity();
         $newValue->attribute_id = $attributeId;
@@ -412,7 +412,7 @@ class ProductSkuEavAttributesService extends DBActionService
      * @return EavValueTextEntity
      * @throws Exception
      */
-    private function createTextValue(int $attributeId, string $value): EavValueTextEntity
+    public function createTextValue(int $attributeId, string $value): EavValueTextEntity
     {
         $newValue = new EavValueTextEntity();
         $newValue->attribute_id = $attributeId;

@@ -72,7 +72,7 @@ class EavValueDoubleController extends Controller
             $b = (int) $model->value;
             $p = 0.0001;
             if (($a - $b) < $p) {
-                $model->code = (int) $model->value;
+                $model->code = (string) $model->value;
             } else {
                 $model->code = $model->value;
             }

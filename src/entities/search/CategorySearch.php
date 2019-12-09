@@ -1,10 +1,13 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace DmitriiKoziuk\yii2Shop\entities\search;
 
+use DmitriiKoziuk\yii2UrlIndex\entities\UrlEntity;
 use yii\base\Model;
 use yii\db\ActiveQuery;
 use yii\data\ActiveDataProvider;
 use DmitriiKoziuk\yii2Shop\entities\Category;
+use yii\db\Expression;
 
 /**
  * CategorySearch represents the model behind the search form about `common\models\Category`.
@@ -20,7 +23,7 @@ class CategorySearch extends Category
     {
         return [
             [['id'], 'integer'],
-            [['name', 'url'], 'safe'],
+            [['name', 'url', 'template_name'], 'safe'],
         ];
     }
 
@@ -64,13 +67,21 @@ class CategorySearch extends Category
         ]);
 
         $query->andFilterWhere(['like', 'name', $this->name]);
+        $query->andFilterWhere(['like', 'template_name', $this->template_name]);
 
         if (! empty($this->url)) {
-            $query->joinWith(['page' => function ($q) {
-                /** @var $q ActiveQuery */
-                $q->where(['controller' => Category::FRONTEND_CONTROLLER_NAME]);
-                $q->andWhere(['like', 'url', $this->url]);
-            }]);
+            $query->innerJoin(
+                UrlEntity::class,
+                [
+                    UrlEntity::tableName() . '.controller_name' =>
+                        new Expression(Category::tableName() . '.' . self::FRONTEND_CONTROLLER_NAME),
+                    UrlEntity::tableName() . '.action_name' =>
+                        new Expression(Category::tableName() . '.' . self::FRONTEND_ACTION_NAME),
+                    UrlEntity::tableName() . '.entity_id' =>
+                        new Expression(Category::tableName() . '.' . $this->id),
+                ]
+            );
+            $query->andWhere(['like', UrlEntity::tableName() . '.url', $this->url]);
         }
 
         return $dataProvider;

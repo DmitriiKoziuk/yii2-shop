@@ -250,13 +250,10 @@ class ProductService extends DBActionService
         }
     }
 
-    public function updateProductPriceOnSite(int $productSkuId): void
+    public function updateProductSkuCustomerPrice(ProductSku $productSku): void
     {
-        $productSkuRecord = $this->_productSkuRepository->getById($productSkuId);
-        if (! empty($productSkuRecord)) {
-            $this->_defineProductSkuCustomerPrice($productSkuRecord);
-            $this->_productSkuRepository->save($productSkuRecord);
-        }
+        $this->_defineProductSkuCustomerPrice($productSku);
+        $this->_productSkuRepository->save($productSku);
     }
 
     /**
@@ -319,13 +316,18 @@ class ProductService extends DBActionService
             $product->isAttributeChanged('slug') ||
             $product->isAttributeChanged('type_id')
         ) {
-            $url = $this->_defineProductUrl($product);
-            $this->_updateProductUrlInIndex($product, $url);
-            $changedAttributes['url'] = $url;
+            $changedAttributes['url'] = $this->updateProductUrl($product);
         }
         $changedAttributes = array_merge($changedAttributes, $product->getDirtyAttributes());
         $this->_productRepository->save($product);
         return $changedAttributes;
+    }
+
+    public function updateProductUrl(Product $productEntity): string
+    {
+        $url = $this->_defineProductUrl($productEntity);
+        $this->_updateProductUrlInIndex($productEntity, $url);
+        return $url;
     }
 
     /**
@@ -425,9 +427,7 @@ class ProductService extends DBActionService
             array_key_exists('slug', $productChangedAttributes) ||
             array_key_exists('url', $productChangedAttributes)
         ) {
-            $url = $this->_defineProductSkuUrl($product, $productSku);
-            $this->_updateProductSkuUrlInIndex($productSku, $url);
-            $changedAttributes['url'] = $url;
+            $changedAttributes['url'] = $this->updateProductSkuUrl($product, $productSku);
         }
         // user can change sell price only if strategy is static.
         if (ProductSku::SELL_PRICE_STRATEGY_STATIC == $productSku->sell_price_strategy) {
@@ -471,6 +471,13 @@ class ProductService extends DBActionService
         $changedAttributes = array_merge($changedAttributes, $productSku->getDirtyAttributes());
         $this->_productSkuRepository->save($productSku);
         return $changedAttributes;
+    }
+
+    public function updateProductSkuUrl(Product $productEntity, ProductSku $productSkuEntity): string
+    {
+        $url = $this->_defineProductSkuUrl($productEntity, $productSkuEntity);
+        $this->_updateProductSkuUrlInIndex($productSkuEntity, $url);
+        return $url;
     }
 
     private function defineProductSlug($string): string

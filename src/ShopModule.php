@@ -57,6 +57,8 @@ use DmitriiKoziuk\yii2Shop\services\brand\BrandService;
 use DmitriiKoziuk\yii2Shop\services\eav\ProductSkuEavAttributesService;
 use DmitriiKoziuk\yii2Shop\services\eav\EavService;
 use DmitriiKoziuk\yii2Shop\helpers\ProductSkuViewHelper;
+use DmitriiKoziuk\yii2Shop\eventListeners\ProductEventListener;
+use DmitriiKoziuk\yii2Shop\eventListeners\ProductEavEventListener;
 
 final class ShopModule extends \yii\base\Module implements ModuleInterface
 {
@@ -112,6 +114,7 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
         $this->initLocalProperties($app);
         $this->registerTranslation($app);
         $this->registerClassesToDIContainer($app);
+        $this->initEventListeners();
     }
 
     public static function getId(): string
@@ -329,7 +332,6 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
             ) {
                 return new CurrencyService(
                     $currencyRepository,
-                    $this->queue,
                     $app->db
                 );
             }
@@ -578,5 +580,11 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
         $this->diContainer->setSingleton(ProductSkuViewHelper::class, function () {
             return new ProductSkuViewHelper();
         });
+    }
+
+    private function initEventListeners()
+    {
+        new ProductEventListener($this->queue);
+        new ProductEavEventListener;
     }
 }

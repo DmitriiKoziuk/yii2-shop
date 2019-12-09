@@ -31,8 +31,9 @@ class m191021_090814_create_dk_shop_eav_attributes_table extends Migration
             'name_for_filter' => $this->string(100)->null()->defaultValue(NULL),
             'code' => $this->string(120)->notNull(),
             'storage_type' => 'ENUM("varchar","text","double") NOT NULL',
-            'selectable' => $this->tinyInteger(1)->notNull()->defaultValue(0),
-            'multiple' => $this->tinyInteger(1)->notNull()->defaultValue(0),
+            'selectable' => $this->boolean()->notNull()->defaultValue(0),
+            'multiple' => $this->boolean()->notNull()->defaultValue(0),
+            'view_at_frontend_faceted_navigation' => $this->boolean()->notNull()->defaultValue(0),
             'description_backend' => $this->text()->null()->defaultValue(NULL),
             'description_frontend' => $this->text()->null()->defaultValue(NULL),
             'value_type_id' => $this->integer()->null()->defaultValue(null),
@@ -47,6 +48,18 @@ class m191021_090814_create_dk_shop_eav_attributes_table extends Migration
             'dk_shop_eav_attributes_idx_default_value_type_unit_id',
             $this->eavAttributeTableName,
             'default_value_type_unit_id'
+        );
+        $this->createIndex(
+            'dk_shop_eav_attributes_uidx_name',
+            $this->eavAttributeTableName,
+            'name',
+            true
+        );
+        $this->createIndex(
+            'dk_shop_eav_attributes_uidx_code',
+            $this->eavAttributeTableName,
+            'code',
+            true
         );
         $this->addForeignKey(
             'dk_shop_eav_attributes_fk_value_type_id',
