@@ -49,6 +49,18 @@ class m191021_090814_create_dk_shop_eav_attributes_table extends Migration
             $this->eavAttributeTableName,
             'default_value_type_unit_id'
         );
+        $this->createIndex(
+            'dk_shop_eav_attributes_uidx_name',
+            $this->eavAttributeTableName,
+            'name',
+            true
+        );
+        $this->createIndex(
+            'dk_shop_eav_attributes_uidx_code',
+            $this->eavAttributeTableName,
+            'code',
+            true
+        );
         $this->addForeignKey(
             'dk_shop_eav_attributes_fk_value_type_id',
             $this->eavAttributeTableName,

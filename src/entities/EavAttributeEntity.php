@@ -71,6 +71,8 @@ class EavAttributeEntity extends \yii\db\ActiveRecord
             [['description_backend', 'description_frontend'], 'string'],
             [['description_backend', 'description_frontend'], 'default', 'value' => null],
             [['selectable', 'multiple', 'view_at_frontend_faceted_navigation'], 'default', 'value' => 0],
+            [['name'], 'unique'],
+            [['code'], 'unique'],
             [
                 ['value_type_id'],
                 'exist',
