@@ -111,7 +111,7 @@ class ProductSkuView extends ProductEntityView
 
     public function getMetaTitle(): string
     {
-        return $this->productSkuEntity->meta_title;
+        return $this->productSkuEntity->meta_title ?? '';
     }
 
     public function getProductName(): string
