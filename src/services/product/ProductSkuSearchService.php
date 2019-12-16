@@ -7,6 +7,7 @@ use yii\db\Expression;
 use yii\helpers\ArrayHelper;
 use yii\data\ActiveDataProvider;
 use DmitriiKoziuk\yii2Shop\data\product\ProductSearchParams;
+use DmitriiKoziuk\yii2Shop\entities\Brand;
 use DmitriiKoziuk\yii2Shop\entities\Product;
 use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 use DmitriiKoziuk\yii2Shop\entities\CategoryProduct;
@@ -21,7 +22,8 @@ class ProductSkuSearchService
     public function searchBy(
         ProductSearchParams $params,
         int $productPerPage,
-        array $filteredAttributes = null
+        array $filteredAttributes = null,
+        array $filterParams = []
     ) {
         if (! $params->validate()) {
             throw new \BadMethodCallException('Search params not valid.');
@@ -56,6 +58,9 @@ class ProductSkuSearchService
         }
         if (! empty($filteredAttributes)) {
             $this->includeEavAttributesToSearchQuery($query, $filteredAttributes);
+        }
+        if (isset($filterParams['brand'])) {
+            $this->joinBrand($query, $filterParams);
         }
         return new ActiveDataProvider([
             'query' => $query,
@@ -124,6 +129,19 @@ class ProductSkuSearchService
         );
         $query->andWhere([
             $alias . '.value_id' => ArrayHelper::map($values, 'id', 'id')
+        ]);
+    }
+
+    /**
+     * @param ActiveQuery $query
+     * @param array $filterParams
+     */
+    private function joinBrand(ActiveQuery $query, array $filterParams): void
+    {
+        $query->innerJoin(Brand::tableName(), [
+            Brand::tableName() . '.id' => new Expression(Product::tableName() . '.brand_id'),
+        ])->andWhere([
+            Brand::tableName() . '.code' => $filterParams['brand'],
         ]);
     }
 }
