@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
 use yii\web\View;
-use DmitriiKoziuk\yii2Shop\entityViews\ProductSkuView;
+use DmitriiKoziuk\yii2Shop\ShopModule;
 use DmitriiKoziuk\yii2Shop\assets\frontend\BaseAsset;
 use DmitriiKoziuk\yii2Shop\assets\frontend\ProductSkuAsset;
-use DmitriiKoziuk\yii2Shop\ShopModule;
-use DmitriiKoziuk\yii2Shop\widgets\frontend\ProductSkuViewAttributesWidget;
+use DmitriiKoziuk\yii2Shop\entityViews\ProductSkuView;
 use DmitriiKoziuk\yii2Shop\services\product\ProductSeoService;
+use DmitriiKoziuk\yii2Shop\widgets\frontend\ProductSkuViewAttributesWidget;
 
 /**
  * @var $this View

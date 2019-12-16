@@ -46,7 +46,7 @@ $this->params['breadcrumbs'] = $categoryData->getBreadcrumb();
           'getParams' => $getParams,
       ]) ?>
     </div>
-    <div class="col-md-7">
+    <div class="col-md-9">
       <?= ProductWidget::widget([
           'productDataProvider' => $productDataProvider,
           'indexPageUrl' => $indexPageUrl,

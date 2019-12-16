@@ -22,42 +22,38 @@ $defaultImageUrl = $this->assetManager
 
 <div class="row">
   <?php foreach ($products as $product): ?>
-    <div class="col-md-4">
-      <div class="thumbnail">
-        <a href="<?= $product->getUrl() ?>">
+    <div class="col-md-4 card" style="padding-left: 0; padding-right: 0; margin-bottom: 30px;">
+      <a href="<?= $product->getUrl() ?>">
           <?php if (! empty($product->isMainImageSet())): ?>
-          <img src="<?= $product->getMainImage()->getThumbnail(200, 200) ?>" alt="<?= $product->getFullName() ?>">
+            <img class="card-img-top" src="<?= $product->getMainImage()->getThumbnail(200, 200) ?>" alt="<?= $product->getFullName() ?>">
           <?php else: ?>
-          <img src="<?= $defaultImageUrl ?>" alt="">
+            <img class="card-img-top" src="<?= $defaultImageUrl ?>" alt="">
           <?php endif; ?>
-        </a>
-        <div class="caption">
-          <h4>
-            <span class="type-name"><?= $product->getTypeName() ?></span>
-              <?= $product->getFullName() ?>
-          </h4>
-          <p>
+      </a>
+      <div class="card-body">
+        <h4 class="card-title">
+          <span class="type-name"><?= $product->getTypeName() ?></span>
+            <?= $product->getFullName() ?>
+        </h4>
+        <p>
             <?php if ($product->isPriceSet() && $product->isCurrencySet()): ?>
-              <?= number_format(
-                  $product->getPrice(),
-                  0,
-                  '.',
-                  ' '
-              ) ?>
+                <?= number_format(
+                    $product->getPrice(),
+                    0,
+                    '.',
+                    ' '
+                ) ?>
               <span class="currency"><?= $product->getCurrencySymbol() ?></span>
             <?php endif; ?>
-          </p>
-          <p>
-            <a href="<?= $product->getUrl() ?>" class="btn btn-primary" role="button">View</a>
-            <a href="/cart/add-product?product=<?= $product->getId() ?>" class="btn btn-default" role="button">Buy</a>
-          </p>
-          <p>
-            <?= ProductPreviewAttributesWidget::widget([
-                'product' => $product,
-            ]) ?>
-          </p>
-        </div>
+        </p>
+        <p>
+          <a href="<?= $product->getUrl() ?>" class="btn btn-primary">View</a>
+          <a href="/cart/add-product?product=<?= $product->getId() ?>" class="btn btn-default">Buy</a>
+        </p>
       </div>
+      <?= ProductPreviewAttributesWidget::widget([
+          'product' => $product,
+      ]) ?>
     </div>
   <?php endforeach; ?>
 </div>
