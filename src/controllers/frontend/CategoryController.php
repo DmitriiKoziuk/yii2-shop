@@ -96,7 +96,7 @@ final class CategoryController extends Controller
                 $productSearchParams = new ProductSearchParams([
                     'category_id' => $categoryData->getId(),
                 ]);
-                if (empty($filteredAttributes)) {
+                if (empty($filterParams)) {
                     $productDataProvider = $this->productSearchService->searchBy(
                         $productSearchParams,
                         $productOnPage,
