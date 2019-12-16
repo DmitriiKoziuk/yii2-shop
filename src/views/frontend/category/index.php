@@ -50,7 +50,6 @@ $this->params['breadcrumbs'] = $categoryData->getBreadcrumb();
       <?= ProductWidget::widget([
           'productDataProvider' => $productDataProvider,
           'indexPageUrl' => $indexPageUrl,
-          'filteredAttributes' => $filteredAttributes,
           'filterParams' => $filterParams,
       ]) ?>
     </div>

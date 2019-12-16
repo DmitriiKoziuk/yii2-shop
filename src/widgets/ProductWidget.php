@@ -23,11 +23,6 @@ class ProductWidget extends Widget
     public $indexPageUrl;
 
     /**
-     * @var EavAttributeEntity[]
-     */
-    public $filteredAttributes;
-
-    /**
      * @var array
      */
     public $filterParams;
