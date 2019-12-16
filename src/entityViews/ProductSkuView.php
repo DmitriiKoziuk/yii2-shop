@@ -133,4 +133,26 @@ class ProductSkuView extends ProductEntityView
     {
         return $this->productSkuEntity->product->type;
     }
+
+    public function getBreadcrumb(): array
+    {
+        $breadcrumb = [];
+        if ($this->productSkuEntity->product->isCategorySet()) {
+            $categoryEntity = $this->productSkuEntity->product->category;
+            foreach ($categoryEntity->parents as $parentCategory) {
+                $breadcrumb[] = [
+                    'label' => $parentCategory->getFrontendName(),
+                    'url' => $parentCategory->urlEntity->url,
+                ];
+            }
+            $breadcrumb[] = [
+                'label' => $categoryEntity->getFrontendName(),
+                'url' => $categoryEntity->urlEntity->url,
+            ];
+            $breadcrumb[] = [
+                'label' => $this->getFullName(),
+            ];
+        }
+        return $breadcrumb;
+    }
 }

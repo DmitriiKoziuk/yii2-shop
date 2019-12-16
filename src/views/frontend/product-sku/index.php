@@ -23,6 +23,8 @@ $this->registerMetaTag([
 ]);
 $this->registerLinkTag(['rel' => 'canonical', 'href' => $productSkuView->getUrl()]);
 
+$this->params['breadcrumbs'] = $productSkuView->getBreadcrumb();
+
 $defaultImageUrl = $this->assetManager
     ->getBundle(BaseAsset::class)->baseUrl . BaseAsset::$defaultImageWebPath;
 ?>
