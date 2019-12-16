@@ -14,6 +14,7 @@ use DmitriiKoziuk\yii2Shop\entities\EavValueTextEntity;
 
 ?>
 
+<h3>Characteristics</h3>
 <table class="table table-condensed">
 <?php foreach ($attributes as $attribute): ?>
   <tr>
