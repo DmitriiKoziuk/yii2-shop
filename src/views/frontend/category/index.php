@@ -4,9 +4,11 @@ use yii\web\View;
 use yii\data\ActiveDataProvider;
 use DmitriiKoziuk\yii2Shop\data\CategoryData;
 use DmitriiKoziuk\yii2Shop\entities\categoryFaceted\EavAttributeEntity;
+use DmitriiKoziuk\yii2Shop\entities\Brand;
 use DmitriiKoziuk\yii2Shop\widgets\SubcategoriesWidget;
 use DmitriiKoziuk\yii2Shop\widgets\ProductWidget;
 use DmitriiKoziuk\yii2Shop\widgets\frontend\CategoryProductFacetedNavigationWidget;
+use DmitriiKoziuk\yii2Shop\widgets\ProductBrandWidget;
 
 /**
  * @var $this View
@@ -17,6 +19,7 @@ use DmitriiKoziuk\yii2Shop\widgets\frontend\CategoryProductFacetedNavigationWidg
  * @var $filterParams array,
  * @var $filteredAttributes EavAttributeEntity[]
  * @var $productDataProvider ActiveDataProvider
+ * @var $brands Brand[]
  */
 
 $this->title = $categoryData->getMetaTitle();
@@ -31,6 +34,11 @@ $this->params['breadcrumbs'] = $categoryData->getBreadcrumb();
           'category' => $categoryData,
       ]) ?>
 
+      <?= ProductBrandWidget::widget([
+          'brands' => $brands,
+          'indexPageUrl' => $indexPageUrl,
+      ]) ?>
+
       <?= CategoryProductFacetedNavigationWidget::widget([
           'facetedAttributes' => $facetedAttributes,
           'filteredAttributes' => $filteredAttributes,
@@ -38,11 +46,10 @@ $this->params['breadcrumbs'] = $categoryData->getBreadcrumb();
           'getParams' => $getParams,
       ]) ?>
     </div>
-    <div class="col-md-7">
+    <div class="col-md-9">
       <?= ProductWidget::widget([
           'productDataProvider' => $productDataProvider,
           'indexPageUrl' => $indexPageUrl,
-          'filteredAttributes' => $filteredAttributes,
           'filterParams' => $filterParams,
       ]) ?>
     </div>

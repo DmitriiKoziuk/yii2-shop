@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
 use yii\web\View;
-use DmitriiKoziuk\yii2Shop\entityViews\ProductSkuView;
+use DmitriiKoziuk\yii2Shop\ShopModule;
 use DmitriiKoziuk\yii2Shop\assets\frontend\BaseAsset;
 use DmitriiKoziuk\yii2Shop\assets\frontend\ProductSkuAsset;
-use DmitriiKoziuk\yii2Shop\ShopModule;
-use DmitriiKoziuk\yii2Shop\widgets\frontend\ProductSkuViewAttributesWidget;
+use DmitriiKoziuk\yii2Shop\entityViews\ProductSkuView;
 use DmitriiKoziuk\yii2Shop\services\product\ProductSeoService;
+use DmitriiKoziuk\yii2Shop\widgets\frontend\ProductSkuViewAttributesWidget;
 
 /**
  * @var $this View
@@ -22,6 +22,8 @@ $this->registerMetaTag([
     'content' => $productSeoService->getProductSkuMetaDescription($productSkuView),
 ]);
 $this->registerLinkTag(['rel' => 'canonical', 'href' => $productSkuView->getUrl()]);
+
+$this->params['breadcrumbs'] = $productSkuView->getBreadcrumb();
 
 $defaultImageUrl = $this->assetManager
     ->getBundle(BaseAsset::class)->baseUrl . BaseAsset::$defaultImageWebPath;
@@ -51,7 +53,7 @@ $defaultImageUrl = $this->assetManager
             <span class="currency">$</span>
           </div>
           <div class="buttons">
-            <a class="btn buy-button" href="/cart/add-product?product=<?= $productSkuView->getId() ?>">
+            <a class="btn btn-primary" href="/cart/add-product?product=<?= $productSkuView->getId() ?>">
               <?= Yii::t(ShopModule::TRANSLATION, 'Buy') ?>
             </a>
           </div>

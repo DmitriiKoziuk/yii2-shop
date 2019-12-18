@@ -111,7 +111,7 @@ class ProductSkuView extends ProductEntityView
 
     public function getMetaTitle(): string
     {
-        return $this->productSkuEntity->meta_title;
+        return $this->productSkuEntity->meta_title ?? '';
     }
 
     public function getProductName(): string
@@ -132,5 +132,27 @@ class ProductSkuView extends ProductEntityView
     public function getType()
     {
         return $this->productSkuEntity->product->type;
+    }
+
+    public function getBreadcrumb(): array
+    {
+        $breadcrumb = [];
+        if ($this->productSkuEntity->product->isCategorySet()) {
+            $categoryEntity = $this->productSkuEntity->product->category;
+            foreach ($categoryEntity->parents as $parentCategory) {
+                $breadcrumb[] = [
+                    'label' => $parentCategory->getFrontendName(),
+                    'url' => $parentCategory->urlEntity->url,
+                ];
+            }
+            $breadcrumb[] = [
+                'label' => $categoryEntity->getFrontendName(),
+                'url' => $categoryEntity->urlEntity->url,
+            ];
+            $breadcrumb[] = [
+                'label' => $this->getFullName(),
+            ];
+        }
+        return $breadcrumb;
     }
 }

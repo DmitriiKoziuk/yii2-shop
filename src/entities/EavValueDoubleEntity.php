@@ -88,6 +88,19 @@ class EavValueDoubleEntity extends ActiveRecord implements ProductEavValueInterf
             ->count();
     }
 
+    public function isUnitSet(): bool
+    {
+        return ! empty($this->unit);
+    }
+
+    public function getUnitAbbreviation(): string
+    {
+        if ($this->isUnitSet()) {
+            return $this->unit->abbreviation;
+        }
+        return '';
+    }
+
     public function getEavAttributeId(): int
     {
         return $this->eavAttribute->id;

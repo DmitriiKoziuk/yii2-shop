@@ -9,6 +9,6 @@ class BaseAsset extends AssetBundle
 
     public $sourcePath = '@DmitriiKoziuk/yii2Shop/web/frontend/base';
     public $depends = [
-        'yii\bootstrap\BootstrapAsset',
+        'yii\bootstrap4\BootstrapAsset',
     ];
 }

@@ -395,11 +395,13 @@ class ProductSku extends ActiveRecord
                     $values[] = $value;
                 }
             }
-            $this->sortEavValues(
-                $values,
-                $this->previewAttributes,
-                ProductTypeAttributeEntity::SORT_AT_PRODUCT_SKU_PREVIEW_PROPERTY_NAME
-            );
+            if (! empty($values)) {
+                $this->sortEavValues(
+                    $values,
+                    $this->previewAttributes,
+                    ProductTypeAttributeEntity::SORT_AT_PRODUCT_SKU_PREVIEW_PROPERTY_NAME
+                );
+            }
         }
         return $values;
     }
@@ -421,11 +423,13 @@ class ProductSku extends ActiveRecord
             foreach ($this->eavTextValues as $value) {
                 $values[] = $value;
             }
-            $this->sortEavValues(
-                $values,
-                $attributesSort,
-                ProductTypeAttributeEntity::SORT_AT_PRODUCT_SKU_PAGE_PROPERTY_NAME
-            );
+            if (! empty($values)) {
+                $this->sortEavValues(
+                    $values,
+                    $attributesSort,
+                    ProductTypeAttributeEntity::SORT_AT_PRODUCT_SKU_PAGE_PROPERTY_NAME
+                );
+            }
         }
         return $values;
     }
