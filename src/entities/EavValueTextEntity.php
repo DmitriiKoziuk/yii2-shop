@@ -61,6 +61,16 @@ class EavValueTextEntity extends ActiveRecord implements ProductEavValueInterfac
             ->count();
     }
 
+    public function isUnitSet(): bool
+    {
+        return false;
+    }
+
+    public function getUnitAbbreviation(): string
+    {
+        return '';
+    }
+
     public function getEavAttributeId(): int
     {
         return $this->eavAttribute->id;

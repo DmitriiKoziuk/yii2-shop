@@ -9,7 +9,8 @@ use DmitriiKoziuk\yii2Shop\entities\EavValueTextEntity;
 /**
  * @var $this View
  * @var $attributes EavAttributeEntity[]
- * @var $values EavValueDoubleEntity[]|EavValueVarcharEntity[]|EavValueTextEntity[]
+ * @var $values array
+ * @var $value EavValueDoubleEntity|EavValueVarcharEntity|EavValueTextEntity
  */
 
 ?>
@@ -21,7 +22,7 @@ use DmitriiKoziuk\yii2Shop\entities\EavValueTextEntity;
     <td><?= $attribute->name ?></td>
     <td>
     <?php foreach ($values[ $attribute->id ] as $value): ?>
-      <?= $value->value ?>
+      <?= $value->value ?> <?= $value->getUnitAbbreviation() ?>
     <?php endforeach; ?>
     </td>
   </tr>
