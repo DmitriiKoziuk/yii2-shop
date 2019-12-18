@@ -53,7 +53,7 @@ $defaultImageUrl = $this->assetManager
             <span class="currency">$</span>
           </div>
           <div class="buttons">
-            <a class="btn buy-button" href="/cart/add-product?product=<?= $productSkuView->getId() ?>">
+            <a class="btn btn-primary" href="/cart/add-product?product=<?= $productSkuView->getId() ?>">
               <?= Yii::t(ShopModule::TRANSLATION, 'Buy') ?>
             </a>
           </div>
