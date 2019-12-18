@@ -15,16 +15,23 @@ use DmitriiKoziuk\yii2Shop\entities\EavValueTextProductSkuEntity;
 use DmitriiKoziuk\yii2Shop\entities\EavValueDoubleProductSkuEntity;
 use DmitriiKoziuk\yii2Shop\entities\EavValueVarcharProductSkuEntity;
 use DmitriiKoziuk\yii2Shop\entities\ProductSku;
+use DmitriiKoziuk\yii2Shop\entities\Product;
+use DmitriiKoziuk\yii2Shop\entities\Brand;
 
 class EavRepository
 {
     /**
      * @param int $categoryId
      * @param EavAttributeEntity[] $filteredAttributes
+     * @param array $filterParams
      * @return EavValueDoubleEntity[]
      * @throws Exception
      */
-    public function getFacetedDoubleValues(int $categoryId, array $filteredAttributes): array
+    public function getFacetedDoubleValues(
+        int $categoryId,
+        array $filteredAttributes,
+        array $filterParams
+    ): array
     {
         $countedField = EavValueDoubleProductSkuEntity::tableName() . '.value_id';
         $query = EavValueDoubleEntity::find()
@@ -79,17 +86,24 @@ class EavRepository
         if (! empty($filteredAttributes)) {
             $this->joinFilteredAttributes($query, $filteredAttributes);
         }
+        if (isset($filterParams['brand'])) {
+            $this->joinBrand($query, $filterParams);
+        }
         return $query->all();
     }
 
     /**
      * @param int $categoryId
      * @param EavAttributeEntity[] $filteredAttributes
+     * @param array $filterParams
      * @return EavValueVarcharEntity[]
      * @throws Exception
      */
-    public function getFacetedVarcharValues(int $categoryId, array $filteredAttributes): array
-    {
+    public function getFacetedVarcharValues(
+        int $categoryId,
+        array $filteredAttributes,
+        array $filterParams
+    ): array {
         $countedField = EavValueVarcharProductSkuEntity::tableName() . '.value_id';
         $query = EavValueVarcharEntity::find()
             ->select([
@@ -140,6 +154,9 @@ class EavRepository
             ]);
         if (! empty($filteredAttributes)) {
             $this->joinFilteredAttributes($query, $filteredAttributes);
+        }
+        if (isset($filterParams['brand'])) {
+            $this->joinBrand($query, $filterParams);
         }
         return $query->all();
     }
@@ -235,5 +252,20 @@ class EavRepository
                 'filtered_double.value_id' => $doubleValueIds,
             ]);
         }
+    }
+
+    /**
+     * @param ActiveQuery $query
+     * @param array $filterParams
+     */
+    private function joinBrand(ActiveQuery $query, array $filterParams): void
+    {
+        $query->innerJoin(Product::tableName(), [
+            Product::tableName() . '.id' => new Expression(ProductSku::tableName() . '.product_id'),
+        ])->innerJoin(Brand::tableName(), [
+            Brand::tableName() . '.id' => new Expression(Product::tableName() . '.brand_id'),
+        ])->andWhere([
+            Brand::tableName() . '.code' => $filterParams['brand'],
+        ]);
     }
 }

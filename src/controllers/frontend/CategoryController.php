@@ -10,12 +10,12 @@ use DmitriiKoziuk\yii2Base\exceptions\EntityNotFoundException;
 use DmitriiKoziuk\yii2UrlIndex\forms\UrlUpdateForm;
 use DmitriiKoziuk\yii2ConfigManager\services\ConfigService;
 use DmitriiKoziuk\yii2Shop\ShopModule;
-use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 use DmitriiKoziuk\yii2Shop\services\category\CategoryService;
 use DmitriiKoziuk\yii2Shop\services\product\ProductSearchService;
 use DmitriiKoziuk\yii2Shop\services\product\ProductSkuSearchService;
 use DmitriiKoziuk\yii2Shop\services\eav\EavService;
 use DmitriiKoziuk\yii2Shop\data\product\ProductSearchParams;
+use DmitriiKoziuk\yii2Shop\repositories\BrandRepository;
 
 final class CategoryController extends Controller
 {
@@ -35,6 +35,11 @@ final class CategoryController extends Controller
     private $productSkuSearchService;
 
     /**
+     * @var BrandRepository
+     */
+    private $brandRepository;
+
+    /**
      * @var EavService
      */
     private $eavService;
@@ -50,6 +55,7 @@ final class CategoryController extends Controller
         CategoryService $categoryService,
         ProductSearchService $productSearchService,
         ProductSkuSearchService $productSkuSearchService,
+        BrandRepository $brandRepository,
         EavService $eavService,
         ConfigService $configService,
         array $config = []
@@ -58,6 +64,7 @@ final class CategoryController extends Controller
         $this->_categoryService = $categoryService;
         $this->productSearchService = $productSearchService;
         $this->productSkuSearchService = $productSkuSearchService;
+        $this->brandRepository = $brandRepository;
         $this->eavService = $eavService;
         $this->configService = $configService;
     }
@@ -75,29 +82,33 @@ final class CategoryController extends Controller
             $categoryData = $this->_categoryService->getCategoryById((int) $url->entity_id);
             $filteredAttributes = [];
             $facetedAttributes = [];
+            $brands = [];
             $productDataProvider = null;
             if ($categoryData->isProductsShow()) {
                 $productOnPage = (int) $this->configService->getValue(ShopModule::getId(), 'productsOnCategoryPage');
                 $filteredAttributes = $this->eavService->getFilteredAttributesWithValues($filterParams);
                 $facetedAttributes = $this->eavService->getFacetedAttributesWithValues(
                     $categoryData->getId(),
-                    $filteredAttributes
+                    $filteredAttributes,
+                    $filterParams
                 );
+                $brands = $this->brandRepository->getFilteredBrands($categoryData->getId(), $filteredAttributes);
                 $productSearchParams = new ProductSearchParams([
                     'category_id' => $categoryData->getId(),
-                    'stock_status' => [ProductSku::STOCK_IN, ProductSku::STOCK_AWAIT],
                 ]);
-                if (empty($filteredAttributes)) {
+                if (empty($filterParams)) {
                     $productDataProvider = $this->productSearchService->searchBy(
                         $productSearchParams,
                         $productOnPage,
-                        $filteredAttributes
+                        $filteredAttributes,
+                        $filterParams
                     );
                 } else {
                     $productDataProvider = $this->productSkuSearchService->searchBy(
                         $productSearchParams,
                         $productOnPage,
-                        $filteredAttributes
+                        $filteredAttributes,
+                        $filterParams
                     );
                 }
             }
@@ -114,6 +125,7 @@ final class CategoryController extends Controller
             'facetedAttributes' => $facetedAttributes,
             'filteredAttributes' => $filteredAttributes,
             'productDataProvider' => $productDataProvider,
+            'brands' => $brands,
         ];
         if (
             $categoryData->isTemplateNameSet() &&

@@ -66,7 +66,7 @@ class Product extends ActiveRecord
         return [
             [['name'], 'required'],
             [['name'], 'string', 'max' => 110],
-            ['name', 'unique'],
+            ['name', 'unique', 'targetAttribute' => ['type_id', 'name']],
             [['slug'], 'required'],
             [['slug'], 'string', 'max' => 130],
             [['name', 'slug'], 'trim'],

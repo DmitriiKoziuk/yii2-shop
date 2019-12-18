@@ -34,8 +34,7 @@ class m190101_155004_create_dk_shop_products_table extends Migration
         $this->createIndex(
             'idx_products_name',
             $this->_productsTable,
-            'name',
-            true
+            'name'
         );
         $this->createIndex(
             'idx_products_category_id',

@@ -11,9 +11,11 @@ use DmitriiKoziuk\yii2Shop\entityViews\ProductSkuView;
 ?>
 
 <?php if ($product->isPreviewEavValuesSet()): ?>
+<ul class="list-group list-group-flush">
   <?php foreach ($product->getProductPreviewValues() as $value): ?>
-  <div>
-    <?= $value->eavAttribute->name ?>: <?= $value->value ?> <?= !empty($value->unit) ? $value->unit->abbreviation : ''; ?>
-  </div>
+  <li class="list-group-item">
+      <?= $value->eavAttribute->name ?>: <?= $value->value ?> <?= !empty($value->unit) ? $value->unit->abbreviation : ''; ?>
+  </li>
   <?php endforeach; ?>
+</ul>
 <?php endif; ?>

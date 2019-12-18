@@ -23,11 +23,6 @@ class ProductWidget extends Widget
     public $indexPageUrl;
 
     /**
-     * @var EavAttributeEntity[]
-     */
-    public $filteredAttributes;
-
-    /**
      * @var array
      */
     public $filterParams;
@@ -45,7 +40,7 @@ class ProductWidget extends Widget
     public function run()
     {
         if (! empty($this->productDataProvider)) {
-            if (empty($this->filteredAttributes)) {
+            if (empty($this->filterParams)) {
                 $this->_products = $this->productModelsToData($this->productDataProvider->getModels());
             } else {
                 $this->_products = $this->productSkuModelsToData($this->productDataProvider->getModels());
