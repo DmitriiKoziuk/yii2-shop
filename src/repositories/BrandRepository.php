@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace DmitriiKoziuk\yii2Shop\repositories;
 
 use Exception;
@@ -9,6 +10,7 @@ use DmitriiKoziuk\yii2Base\repositories\AbstractActiveRecordRepository;
 use DmitriiKoziuk\yii2Shop\entities\Brand;
 use DmitriiKoziuk\yii2Shop\entities\Product;
 use DmitriiKoziuk\yii2Shop\entities\ProductSku;
+use DmitriiKoziuk\yii2Shop\entities\CategoryProduct;
 use DmitriiKoziuk\yii2Shop\entities\categoryFaceted\EavAttributeEntity;
 use DmitriiKoziuk\yii2Shop\entities\EavValueDoubleProductSkuEntity;
 use DmitriiKoziuk\yii2Shop\entities\EavValueVarcharProductSkuEntity;
@@ -36,14 +38,20 @@ class BrandRepository extends AbstractActiveRecordRepository
         $query = Brand::find()
             ->innerJoin(Product::tableName(), [
                 Product::tableName() . '.brand_id' => new Expression(Brand::tableName() . '.id'),
-            ])
-            ->innerJoin(ProductSku::tableName(), [
+            ])->innerJoin(ProductSku::tableName(), [
                 ProductSku::tableName() . '.product_id' => new Expression(Product::tableName() . '.id'),
+            ])->innerJoin(CategoryProduct::tableName(), [
+                CategoryProduct::tableName() . '.product_id' =>
+                    new Expression(Product::tableName() . '.id'),
+            ])->where([
+                CategoryProduct::tableName() . '.category_id' => $categoryId,
             ]);
         if (! empty($filteredAttributes)) {
             $this->joinFilteredAttributes($query, $filteredAttributes);
         }
-        return $query->all();
+        return $query->orderBy([
+            Brand::tableName() . '.name' => SORT_ASC,
+        ])->all();
     }
 
     /**

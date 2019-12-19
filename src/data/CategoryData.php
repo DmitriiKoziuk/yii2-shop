@@ -93,6 +93,11 @@ class CategoryData
         return $this->_categoryRecord->children;
     }
 
+    public function getDirectoryChildrenCategories(): array
+    {
+        return $this->_categoryRecord->directChildren;
+    }
+
     public function getTemplateName(): string
     {
         return $this->_categoryRecord->template_name;
