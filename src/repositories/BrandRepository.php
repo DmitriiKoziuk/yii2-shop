@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace DmitriiKoziuk\yii2Shop\repositories;
 
 use Exception;
@@ -48,7 +49,9 @@ class BrandRepository extends AbstractActiveRecordRepository
         if (! empty($filteredAttributes)) {
             $this->joinFilteredAttributes($query, $filteredAttributes);
         }
-        return $query->all();
+        return $query->orderBy([
+            Brand::tableName() . '.name' => SORT_ASC,
+        ])->all();
     }
 
     /**
