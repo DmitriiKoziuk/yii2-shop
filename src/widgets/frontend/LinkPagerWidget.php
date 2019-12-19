@@ -34,6 +34,9 @@ class LinkPagerWidget extends Widget
 
     private function getPageButtons()
     {
+        $maxLeftPageLinksNumber = 3;
+        $maxRightPageLinksNumber = 4;
+        $isActivePageSelected = false;
         $pageCount = $this->pagination->getPageCount();
         if ($pageCount < 2) {
             return [];
@@ -42,27 +45,61 @@ class LinkPagerWidget extends Widget
         $currentPage = $this->pagination->getPage();
         $buttons = [];
         for ($i = 1; $i <= $pageCount; $i++) {
+            $isCurrentPageActive = ($i == ($currentPage + 1) ? true : false);
+
             if ($i == 1) {
                 $url = Url::to([
                     '/customUrl/create',
                     'url' => $this->indexPageUrl,
                     'filterParams' => $this->filterParams,
                 ]);
-            } else {
-                $url = Url::to([
-                    '/customUrl/create',
-                    'url' => $this->indexPageUrl,
-                    'filterParams' => $this->filterParams,
-                    'getParams' => [
-                        'page' => $i,
-                    ],
-                ]);
+                $buttons[] = [
+                    'label' => $i,
+                    'url' => $url,
+                    'active' => $isCurrentPageActive,
+                ];
             }
-            $isActive = $i == ($currentPage + 1) ? true : false;
+
+            if ($i >= ($currentPage - $maxLeftPageLinksNumber)) {
+                if ($i != $currentPage && $i != 1) {
+                    $url = Url::to([
+                        '/customUrl/create',
+                        'url' => $this->indexPageUrl,
+                        'filterParams' => $this->filterParams,
+                        'getParams' => [
+                            'page' => $i,
+                        ],
+                    ]);
+                    $buttons[] = [
+                        'label' => $i,
+                        'url' => $url,
+                        'active' => $isCurrentPageActive,
+                    ];
+                }
+            }
+            if ($isCurrentPageActive) {
+                $isActivePageSelected = true;
+            }
+            if ($isActivePageSelected) {
+                if (0 == --$maxRightPageLinksNumber) {
+                    break;
+                }
+            }
+        }
+
+        if (($i - 1) != $pageCount) {
+            $url = Url::to([
+                '/customUrl/create',
+                'url' => $this->indexPageUrl,
+                'filterParams' => $this->filterParams,
+                'getParams' => [
+                    'page' => $pageCount,
+                ],
+            ]);
             $buttons[] = [
-                'label' => $i,
+                'label' => $pageCount,
                 'url' => $url,
-                'active' => $isActive,
+                'active' => false,
             ];
         }
 
