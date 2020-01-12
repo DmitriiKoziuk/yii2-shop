@@ -47,6 +47,13 @@ class ProductSearchService
             $query->andWhere([
                 CategoryProduct::tableName() . '.category_id' => $params->getCategoryId(),
             ]);
+            $query->orderBy([
+                CategoryProduct::tableName() . '.sort' => SORT_ASC,
+            ]);
+            $query->addSelect([
+                Product::tableName() . '.*',
+                CategoryProduct::tableName() . '.sort',
+            ]);
         }
         if (! empty($params->stock_status)) {
             $query->andWhere([
