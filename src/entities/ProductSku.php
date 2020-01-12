@@ -186,7 +186,12 @@ class ProductSku extends ActiveRecord
 
     public function isCustomerPriceSet(): bool
     {
-        return empty($this->customer_price) ? false : true;
+        return !empty($this->customer_price);
+    }
+
+    public function isOldPriceSet(): bool
+    {
+        return !empty($this->old_price);
     }
 
     public function isCurrencySet(): bool
@@ -197,6 +202,11 @@ class ProductSku extends ActiveRecord
     public function isPreviewEavValuesSet(): bool
     {
         return empty($this->getPreviewEavValues()) ? false : true;
+    }
+
+    public function isInStock(): bool
+    {
+        return $this->stock_status === self::STOCK_IN;
     }
 
     /**
@@ -469,6 +479,22 @@ class ProductSku extends ActiveRecord
             ])
             ->indexBy('attribute_id')
             ->all();
+    }
+
+    public function getSaving(): float
+    {
+        $value = 0;
+        if (
+            ! empty($this->old_price) &&
+            ! empty($this->sell_price) &&
+            $this->sell_price < $this->old_price
+        ) {
+            $value = ($this->old_price - $this->sell_price) / 100;
+            if (! empty($value) && ! empty($this->currency)) {
+                $value = $value * $this->currency->rate;
+            }
+        }
+        return (float) $value;
     }
 
     /**

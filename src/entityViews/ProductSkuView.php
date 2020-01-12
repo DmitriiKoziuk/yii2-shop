@@ -31,6 +31,11 @@ class ProductSkuView extends ProductEntityView
         return $this->productSkuEntity->isCustomerPriceSet();
     }
 
+    public function isOldPriceSet(): bool
+    {
+        return $this->productSkuEntity->isOldPriceSet();
+    }
+
     public function isCurrencySet(): bool
     {
         return $this->productSkuEntity->isCurrencySet();
@@ -39,6 +44,11 @@ class ProductSkuView extends ProductEntityView
     public function isPreviewEavValuesSet(): bool
     {
         return $this->productSkuEntity->isPreviewEavValuesSet();
+    }
+
+    public function isInStock(): bool
+    {
+        return $this->productSkuEntity->isInStock();
     }
 
     public function isMetaTitleSet(): bool
@@ -86,6 +96,23 @@ class ProductSkuView extends ProductEntityView
             $price = $this->productSkuEntity->customer_price / 100;
         }
         return (string) $price;
+    }
+
+    public function getOldPrice(): string
+    {
+        $price = '';
+        if (! is_null($this->productSkuEntity->old_price)) {
+            $price = $this->productSkuEntity->old_price / 100;
+            if ($this->productSkuEntity->isCurrencySet()) {
+                $price *= $this->productSkuEntity->currency->rate;
+            }
+        }
+        return (string) $price;
+    }
+
+    public function getSaving(): float
+    {
+        return $this->productSkuEntity->getSaving();
     }
 
     public function getCurrencySymbol(): string
