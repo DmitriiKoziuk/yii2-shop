@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
+use DmitriiKoziuk\yii2Shop\entities\EavAttributeEntity;
 use DmitriiKoziuk\yii2Shop\entities\EavValueTypeEntity;
 use DmitriiKoziuk\yii2Shop\entities\EavValueTypeUnitEntity;
 use DmitriiKoziuk\yii2Shop\forms\eav\EavAttributeCreateForm;
@@ -56,13 +57,13 @@ use DmitriiKoziuk\yii2Shop\forms\eav\EavAttributeCreateForm;
 
     <?php endif; ?>
 
-    <?= $form->field($model, 'value_type_id')->dropDownList(ArrayHelper::map(
-        EavValueTypeEntity::find()->all(),
-        'id',
-        'fullName'
-    ), ['prompt' => ''])->label('Default value type') ?>
+    <?php if (! $model->isNewRecord && ! empty($model->storage_type == EavAttributeEntity::STORAGE_TYPE_DOUBLE)): ?>
 
-    <?php if (! $model->isNewRecord && ! empty($model->value_type_id)): ?>
+      <?= $form->field($model, 'value_type_id')->dropDownList(ArrayHelper::map(
+          EavValueTypeEntity::find()->all(),
+          'id',
+          'fullName'
+      ), ['prompt' => ''])->label('Default value type') ?>
 
       <?= $form->field($model, 'default_value_type_unit_id')->dropDownList(ArrayHelper::map(
           EavValueTypeUnitEntity::find()->where(['value_type_id' => $model->value_type_id])->all(),
