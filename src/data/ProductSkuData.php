@@ -69,9 +69,9 @@ class ProductSkuData
         return $this->_productSku->product->type->name;
     }
 
-    public function getPriceOnSite(): int
+    public function getPriceOnSite(): float
     {
-        return is_null($this->_productSku->customer_price) ? 0 : $this->_productSku->customer_price;
+        return (float) is_null($this->_productSku->getCustomerPrice()) ? 0 : $this->_productSku->getCustomerPrice();
     }
 
     public function isHasImages(): bool
