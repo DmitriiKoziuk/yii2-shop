@@ -186,7 +186,12 @@ class ProductSku extends ActiveRecord
 
     public function isCustomerPriceSet(): bool
     {
-        return empty($this->customer_price) ? false : true;
+        return !empty($this->customer_price);
+    }
+
+    public function isOldPriceSet(): bool
+    {
+        return !empty($this->old_price);
     }
 
     public function isCurrencySet(): bool
@@ -197,6 +202,11 @@ class ProductSku extends ActiveRecord
     public function isPreviewEavValuesSet(): bool
     {
         return empty($this->getPreviewEavValues()) ? false : true;
+    }
+
+    public function isInStock(): bool
+    {
+        return $this->stock_status === self::STOCK_IN;
     }
 
     /**
@@ -290,6 +300,9 @@ class ProductSku extends ActiveRecord
     }
 
 
+    /**
+     * @return FileEntity[]
+     */
     public function getImages(): array
     {
         if (is_null($this->images)) {
@@ -445,6 +458,37 @@ class ProductSku extends ActiveRecord
             );
         }
         return $this->urlEntity->url;
+    }
+
+    public function getOldPrice(): float
+    {
+        return $this->old_price / 100;
+    }
+
+    public function getSellPrice(): float
+    {
+        return $this->sell_price / 100;
+    }
+
+    public function getCustomerPrice(): float
+    {
+        return $this->customer_price / 100;
+    }
+
+    public function getSaving(): float
+    {
+        $value = 0;
+        if (
+            ! empty($this->old_price) &&
+            ! empty($this->sell_price) &&
+            $this->sell_price < $this->old_price
+        ) {
+            $value = ($this->getOldPrice() - $this->getSellPrice());
+            if (! empty($value) && ! empty($this->currency)) {
+                $value = $value * $this->currency->rate;
+            }
+        }
+        return (float) $value;
     }
 
     /**

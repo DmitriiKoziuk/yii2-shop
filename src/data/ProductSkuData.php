@@ -1,7 +1,7 @@
 <?php
 namespace DmitriiKoziuk\yii2Shop\data;
 
-use DmitriiKoziuk\yii2FileManager\entities\File;
+use DmitriiKoziuk\yii2FileManager\entities\FileEntity;
 use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 
 class ProductSkuData
@@ -12,7 +12,7 @@ class ProductSkuData
     private $_productSku;
 
     /**
-     * @var File[]
+     * @var FileEntity[]
      */
     private $_productSkuImages;
 
@@ -42,12 +42,12 @@ class ProductSkuData
         return $this->_productSku->product_id;
     }
 
-    public function getMainImage(): ?File
+    public function getMainImage(): ?FileEntity
     {
         if (empty($this->_productSkuImages)) {
             return null;
         } else {
-            /** @var File[] $allImages */
+            /** @var FileEntity[] $allImages */
             $allImages = $this->_productSkuImages;
             $oneImage = array_slice($allImages, 0, 1);
             return array_shift($oneImage);
@@ -69,9 +69,9 @@ class ProductSkuData
         return $this->_productSku->product->type->name;
     }
 
-    public function getPriceOnSite(): int
+    public function getPriceOnSite(): float
     {
-        return is_null($this->_productSku->customer_price) ? 0 : $this->_productSku->customer_price;
+        return (float) is_null($this->_productSku->getCustomerPrice()) ? 0 : $this->_productSku->getCustomerPrice();
     }
 
     public function isHasImages(): bool

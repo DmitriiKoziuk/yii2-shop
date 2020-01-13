@@ -1,33 +1,36 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace DmitriiKoziuk\yii2Shop\data\product;
 
 use yii\base\Model;
 
 class ProductSearchParams extends Model
 {
-    public $category_id;
+    /**
+     * @var array
+     */
+    public $categoryIDs = [];
 
     /**
-     * @var int|array of ProductSku entity stock statuses.
+     * @var array of ProductSku entity stock statuses.
      */
-    public $stock_status;
+    public $stockStatus = [];
 
     public function rules()
     {
         return [
-            [['category_id'], 'integer'],
-            [['category_id'], 'filter', 'filter' => function ($value) {
-                return is_null($value) ? null : intval($value);
-            }],
-            [['stock_status'], 'safe'],
+            [['categoryIDs'], 'each', 'rule' => ['integer']],
+            [['stockStatus'], 'each', 'rule' => ['integer']],
         ];
     }
 
-    /**
-     * @return int|null
-     */
-    public function getCategoryId()
+    public function getCategoryIDs(): array
     {
-        return $this->category_id;
+        return $this->categoryIDs;
+    }
+
+    public function getStockStatuses(): array
+    {
+        return $this->stockStatus;
     }
 }

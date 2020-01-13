@@ -32,6 +32,11 @@ class ProductEntityView
         return $this->productEntity->getMainSku()->isCustomerPriceSet();
     }
 
+    public function isOldPriceSet(): bool
+    {
+        return $this->productEntity->getMainSku()->isOldPriceSet();
+    }
+
     public function isCurrencySet(): bool
     {
         return $this->productEntity->getMainSku()->isCurrencySet();
@@ -40,6 +45,11 @@ class ProductEntityView
     public function isPreviewEavValuesSet(): bool
     {
         return $this->productEntity->getMainSku()->isPreviewEavValuesSet();
+    }
+
+    public function isInStock(): bool
+    {
+        return $this->productEntity->getMainSku()->isInStock();
     }
 
     public function getId(): int
@@ -77,6 +87,23 @@ class ProductEntityView
             $price = $this->productEntity->getMainSku()->customer_price / 100;
         }
         return (string) $price;
+    }
+
+    public function getOldPrice(): string
+    {
+        $price = '';
+        if (! is_null($this->productEntity->getMainSku()->old_price)) {
+            $price = $this->productEntity->getMainSku()->old_price / 100;
+            if ($this->productEntity->getMainSku()->isCurrencySet()) {
+                $price *= $this->productEntity->getMainSku()->currency->rate;
+            }
+        }
+        return (string) $price;
+    }
+
+    public function getSaving(): float
+    {
+        return $this->productEntity->getMainSku()->getSaving();
     }
 
     public function getCurrencySymbol(): string
