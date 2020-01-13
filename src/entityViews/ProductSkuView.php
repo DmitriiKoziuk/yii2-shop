@@ -2,6 +2,7 @@
 
 namespace DmitriiKoziuk\yii2Shop\entityViews;
 
+use yii\helpers\Url;
 use DmitriiKoziuk\yii2FileManager\entities\FileEntity;
 use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 use DmitriiKoziuk\yii2Shop\entities\EavValueDoubleEntity;
@@ -187,10 +188,24 @@ class ProductSkuView extends ProductEntityView
                 'label' => $categoryEntity->getFrontendName(),
                 'url' => $categoryEntity->urlEntity->url,
             ];
-            $breadcrumb[] = [
-                'label' => $this->getFullName(),
-            ];
+            if ($this->productSkuEntity->product->isBrandSet()) {
+                $breadcrumb[] = [
+                    'label' => $this->productSkuEntity->product->brand->name,
+                    'url' => Url::to([
+                        '/customUrl/create',
+                        'url' => $categoryEntity->urlEntity->url,
+                        'filterParams' => [
+                            'brand' => [
+                                $this->productSkuEntity->product->brand->code,
+                            ],
+                        ]
+                    ]),
+                ];
+            }
         }
+        $breadcrumb[] = [
+            'label' => $this->getFullName(),
+        ];
         return $breadcrumb;
     }
 
