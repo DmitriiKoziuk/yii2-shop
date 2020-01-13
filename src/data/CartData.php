@@ -1,7 +1,7 @@
 <?php
 namespace DmitriiKoziuk\yii2Shop\data;
 
-use DmitriiKoziuk\yii2FileManager\entities\File;
+use DmitriiKoziuk\yii2FileManager\entities\FileEntity;
 use DmitriiKoziuk\yii2Shop\entities\Cart;
 use DmitriiKoziuk\yii2Shop\entities\CartProduct;
 
@@ -25,7 +25,7 @@ class CartData
 
     /**
      * @param CartProduct[] $cartProducts
-     * @param File[] $productSkusImages
+     * @param FileEntity[] $productSkusImages
      */
     private function _setCartProducts(array $cartProducts, array $productSkusImages)
     {

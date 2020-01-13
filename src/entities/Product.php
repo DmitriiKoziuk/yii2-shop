@@ -27,6 +27,7 @@ use DmitriiKoziuk\yii2UrlIndex\repositories\UrlRepository;
  * @property Currency     $currency
  * @property Category     $category
  * @property ProductType  $type;
+ * @property Brand        $brand
  */
 class Product extends ActiveRecord
 {
@@ -143,6 +144,14 @@ class Product extends ActiveRecord
         return $this->hasOne(ProductType::class, ['id' => 'type_id']);
     }
 
+    /**
+     * @return ActiveQuery
+     */
+    public function getBrand()
+    {
+        return $this->hasOne(Brand::class, ['id' => 'brand_id']);
+    }
+
     public function getUrlEntity(): UrlEntity
     {
         if (empty($this->urlEntity)) {
@@ -183,16 +192,21 @@ class Product extends ActiveRecord
 
     public function isMainSkuSet(): bool
     {
-        return empty($this->main_sku_id) ? false : true;
+        return ! empty($this->main_sku_id);
     }
 
     public function isCategorySet(): bool
     {
-        return empty($this->category_id) ? false : true;
+        return ! empty($this->category_id);
     }
 
-    public function isTypeSet()
+    public function isTypeSet(): bool
     {
-        return empty($this->type_id) ? false : true;
+        return ! empty($this->type_id);
+    }
+
+    public function isBrandSet(): bool
+    {
+        return ! empty($this->brand_id);
     }
 }
