@@ -53,12 +53,12 @@ class ProductSkuView extends ProductEntityView
 
     public function isMetaTitleSet(): bool
     {
-        return ! empty($this->productSkuEntity->meta_title);
+        return !empty($this->productSkuEntity->meta_title);
     }
 
     public function isCustomerPriceSet(): bool
     {
-        return ! empty($this->productSkuEntity->customer_price);
+        return !empty($this->productSkuEntity->customer_price);
     }
 
     public function getId(): int
@@ -81,6 +81,17 @@ class ProductSkuView extends ProductEntityView
         return $this->productSkuEntity->getMainImage();
     }
 
+    /**
+     * @return FileEntity[]
+     */
+    public function getImages(): array
+    {
+        $images = $this->productSkuEntity->getImages();
+        $firstIDx = array_key_first($images);
+        unset($images[$firstIDx]);
+        return $images;
+    }
+
     public function getTypeName(): string
     {
         if ($this->isTypeSet()) {
@@ -92,22 +103,22 @@ class ProductSkuView extends ProductEntityView
     public function getPrice(): string
     {
         $price = '';
-        if (! is_null($this->productSkuEntity->customer_price)) {
+        if (!is_null($this->productSkuEntity->customer_price)) {
             $price = $this->productSkuEntity->customer_price / 100;
         }
-        return (string) $price;
+        return (string)$price;
     }
 
     public function getOldPrice(): string
     {
         $price = '';
-        if (! is_null($this->productSkuEntity->old_price)) {
+        if (!is_null($this->productSkuEntity->old_price)) {
             $price = $this->productSkuEntity->old_price / 100;
             if ($this->productSkuEntity->isCurrencySet()) {
                 $price *= $this->productSkuEntity->currency->rate;
             }
         }
-        return (string) $price;
+        return (string)$price;
     }
 
     public function getSaving(): float
@@ -117,7 +128,7 @@ class ProductSkuView extends ProductEntityView
 
     public function getCurrencySymbol(): string
     {
-        return  $this->productSkuEntity->currency->symbol;
+        return $this->productSkuEntity->currency->symbol;
     }
 
     /**
@@ -181,5 +192,10 @@ class ProductSkuView extends ProductEntityView
             ];
         }
         return $breadcrumb;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->productSkuEntity->description;
     }
 }
