@@ -35,7 +35,7 @@ class ProductSearchService
                 )
             ]
         );
-        if (! empty($params->getCategoryId())) {
+        if (! empty($params->getCategoryIDs())) {
             $query->innerJoin(
                 CategoryProduct::tableName(),
                 [
@@ -45,7 +45,7 @@ class ProductSearchService
                 ]
             );
             $query->andWhere([
-                CategoryProduct::tableName() . '.category_id' => $params->getCategoryId(),
+                CategoryProduct::tableName() . '.category_id' => $params->getCategoryIDs(),
             ]);
             $query->orderBy([
                 CategoryProduct::tableName() . '.sort' => SORT_ASC,
@@ -55,9 +55,9 @@ class ProductSearchService
                 CategoryProduct::tableName() . '.sort',
             ]);
         }
-        if (! empty($params->stock_status)) {
+        if (! empty($params->stockStatus)) {
             $query->andWhere([
-                ProductSku::tableName() . '.stock_status' => $params->stock_status
+                ProductSku::tableName() . '.stock_status' => $params->getStockStatuses()
             ]);
         }
         if (! empty($filteredAttributes)) {

@@ -94,7 +94,7 @@ final class CategoryController extends Controller
                 );
                 $brands = $this->brandRepository->getFilteredBrands($categoryData->getId(), $filteredAttributes);
                 $productSearchParams = new ProductSearchParams([
-                    'category_id' => $categoryData->getId(),
+                    'categoryIDs' => [$categoryData->getId()],
                 ]);
                 if (empty($filterParams)) {
                     $productDataProvider = $this->productSearchService->searchBy(
