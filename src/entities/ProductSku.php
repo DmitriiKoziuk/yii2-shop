@@ -300,6 +300,9 @@ class ProductSku extends ActiveRecord
     }
 
 
+    /**
+     * @return FileEntity[]
+     */
     public function getImages(): array
     {
         if (is_null($this->images)) {
