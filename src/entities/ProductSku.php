@@ -460,6 +460,37 @@ class ProductSku extends ActiveRecord
         return $this->urlEntity->url;
     }
 
+    public function getOldPrice(): float
+    {
+        return $this->old_price / 100;
+    }
+
+    public function getSellPrice(): float
+    {
+        return $this->sell_price / 100;
+    }
+
+    public function getCustomerPrice(): float
+    {
+        return $this->customer_price / 100;
+    }
+
+    public function getSaving(): float
+    {
+        $value = 0;
+        if (
+            ! empty($this->old_price) &&
+            ! empty($this->sell_price) &&
+            $this->sell_price < $this->old_price
+        ) {
+            $value = ($this->getOldPrice() - $this->getSellPrice());
+            if (! empty($value) && ! empty($this->currency)) {
+                $value = $value * $this->currency->rate;
+            }
+        }
+        return (float) $value;
+    }
+
     /**
      * @return ProductTypeAttributeEntity[]
      */
@@ -482,22 +513,6 @@ class ProductSku extends ActiveRecord
             ])
             ->indexBy('attribute_id')
             ->all();
-    }
-
-    public function getSaving(): float
-    {
-        $value = 0;
-        if (
-            ! empty($this->old_price) &&
-            ! empty($this->sell_price) &&
-            $this->sell_price < $this->old_price
-        ) {
-            $value = ($this->old_price - $this->sell_price) / 100;
-            if (! empty($value) && ! empty($this->currency)) {
-                $value = $value * $this->currency->rate;
-            }
-        }
-        return (float) $value;
     }
 
     /**
