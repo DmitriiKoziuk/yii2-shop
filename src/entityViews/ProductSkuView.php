@@ -129,7 +129,18 @@ class ProductSkuView extends ProductEntityView
 
     public function getCurrencySymbol(): string
     {
-        return $this->productSkuEntity->currency->symbol;
+        if ($this->isCurrencySet()) {
+            return $this->productSkuEntity->currency->symbol;
+        }
+        return '';
+    }
+
+    public function getCurrencyRate(): float
+    {
+        if ($this->isCurrencySet()) {
+            return (float) $this->productSkuEntity->currency->rate;
+        }
+        return 1.0;
     }
 
     /**
