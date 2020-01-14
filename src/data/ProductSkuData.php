@@ -22,6 +22,27 @@ class ProductSkuData
         $this->_productSkuImages = $productSkuImages;
     }
 
+    public function isCurrencySet(): bool
+    {
+        return $this->_productSku->isCurrencySet();
+    }
+
+    public function getCurrencySymbol(): string
+    {
+        if ($this->isCurrencySet()) {
+            return $this->_productSku->currency->symbol;
+        }
+        return '';
+    }
+
+    public function getCurrencyRate(): float
+    {
+        if ($this->isCurrencySet()) {
+            return (float) $this->_productSku->currency->rate;
+        }
+        return 1.0;
+    }
+
     public function getId(): int
     {
         return $this->_productSku->id;
