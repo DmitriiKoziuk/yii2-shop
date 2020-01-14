@@ -108,7 +108,18 @@ class ProductEntityView
 
     public function getCurrencySymbol(): string
     {
-        return  $this->productEntity->getMainSku()->currency->symbol;
+        if ($this->isCurrencySet()) {
+            return  $this->productEntity->getMainSku()->currency->symbol;
+        }
+        return '';
+    }
+
+    public function getCurrencyRate(): float
+    {
+        if ($this->isCurrencySet()) {
+            return (float) $this->productEntity->getMainSku()->currency->rate;
+        }
+        return 1.0;
     }
 
     /**

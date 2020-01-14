@@ -44,7 +44,7 @@ class CustomerCartWidget extends Widget
             $totalPrice = 0;
             foreach ($cartProducts as $cartProduct) {
                 $totalProducts += $cartProduct->quantity;
-                $totalPrice += $cartProduct->productSku->getSellPrice() * $cartProduct->quantity;
+                $totalPrice += $cartProduct->productSku->getCustomerPrice() * $cartProduct->quantity;
             }
         } catch (EntityNotFoundException $e) {
             Yii::$app->response->cookies->remove('cart');
