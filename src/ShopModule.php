@@ -181,6 +181,7 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
                 '/cart/thanks' => self::ID . '/cart/thanks',
                 '/cart/add-product' => self::ID . '/cart/add-product',
                 '/cart/remove-product' => self::ID . '/cart/remove-product',
+                '/product-search/json-response' => self::ID . '/product-search/json-response',
             ]);
         }
         if ($app instanceof ConsoleApp) {
