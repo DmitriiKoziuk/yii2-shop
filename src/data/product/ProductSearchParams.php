@@ -16,12 +16,23 @@ class ProductSearchParams extends Model
      */
     public $stockStatus = [];
 
+    /**
+     * @var string
+     */
+    public $name;
+
     public function rules()
     {
         return [
             [['categoryIDs'], 'each', 'rule' => ['integer']],
             [['stockStatus'], 'each', 'rule' => ['integer']],
+            [['name'], 'string'],
         ];
+    }
+
+    public function isNameSet(): bool
+    {
+        return ! empty($this->name);
     }
 
     public function getCategoryIDs(): array
@@ -32,5 +43,10 @@ class ProductSearchParams extends Model
     public function getStockStatuses(): array
     {
         return $this->stockStatus;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
     }
 }
