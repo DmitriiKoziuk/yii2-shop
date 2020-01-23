@@ -4,18 +4,22 @@ namespace DmitriiKoziuk\yii2Shop\widgets;
 
 use yii\base\Widget;
 use yii\data\Pagination;
-use yii\data\ActiveDataProvider;
 use DmitriiKoziuk\yii2Shop\entities\Product;
-use DmitriiKoziuk\yii2Shop\entities\categoryFaceted\EavAttributeEntity;
+use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 use DmitriiKoziuk\yii2Shop\entityViews\ProductEntityView;
 use DmitriiKoziuk\yii2Shop\entityViews\ProductSkuView;
 
 class ProductWidget extends Widget
 {
     /**
-     * @var ActiveDataProvider|null
+     * @var Product[]|ProductSku[]
      */
-    public $productDataProvider;
+    public $products;
+
+    /**
+     * @var Pagination
+     */
+    public $pagination;
 
     /**
      * @var string
@@ -32,23 +36,17 @@ class ProductWidget extends Widget
      */
     private $_products = [];
 
-    /**
-     * @var Pagination
-     */
-    private $_pagination;
-
     public function run()
     {
-        if (! empty($this->productDataProvider)) {
+        if (! empty($this->products)) {
             if (empty($this->filterParams)) {
-                $this->_products = $this->productModelsToData($this->productDataProvider->getModels());
+                $this->_products = $this->productModelsToData($this->products);
             } else {
-                $this->_products = $this->productSkuModelsToData($this->productDataProvider->getModels());
+                $this->_products = $this->productSkuModelsToData($this->products);
             }
-            $this->_pagination = $this->productDataProvider->getPagination();
             return $this->render('product', [
                 'products' => $this->_products,
-                'pagination' => $this->_pagination,
+                'pagination' => $this->pagination,
                 'indexPageUrl' => $this->indexPageUrl,
                 'filterParams' => $this->filterParams,
             ]);
