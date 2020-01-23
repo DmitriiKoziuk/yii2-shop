@@ -56,13 +56,24 @@ class ProductRepository extends AbstractActiveRecordRepository
     public function search(
         ProductSearchParams $params,
         array $filteredAttributes = null,
-        array $filterParams = []
+        array $filterParams = [],
+        array $with = [
+            'mainSkuEntity.product',
+            'mainSkuEntity.product.type',
+            'mainSkuEntity.currency',
+            'mainSkuEntity.eavVarcharValues',
+            'mainSkuEntity.eavTextValues',
+            'mainSkuEntity.eavDoubleValues',
+        ]
     ): RepositorySearchMethodResponseInterface {
         if (! $params->validate()) {
             throw new \BadMethodCallException('Search params not valid.');
         }
 
         $query = Product::find();
+        if (! empty($with)) {
+            $query->with($with);
+        }
         $query->innerJoin(
             ProductSku::tableName(),
             [
