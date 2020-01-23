@@ -10,19 +10,20 @@ use DmitriiKoziuk\yii2Base\exceptions\EntityNotFoundException;
 use DmitriiKoziuk\yii2UrlIndex\forms\UrlUpdateForm;
 use DmitriiKoziuk\yii2ConfigManager\services\ConfigService;
 use DmitriiKoziuk\yii2Shop\ShopModule;
-use DmitriiKoziuk\yii2Shop\services\category\CategoryService;
+use DmitriiKoziuk\yii2Shop\data\CategoryData;
 use DmitriiKoziuk\yii2Shop\services\product\ProductSearchService;
 use DmitriiKoziuk\yii2Shop\services\product\ProductSkuSearchService;
 use DmitriiKoziuk\yii2Shop\services\eav\EavService;
 use DmitriiKoziuk\yii2Shop\data\product\ProductSearchParams;
 use DmitriiKoziuk\yii2Shop\repositories\BrandRepository;
+use DmitriiKoziuk\yii2Shop\repositories\CategoryRepository;
 
 final class CategoryController extends Controller
 {
     /**
-     * @var CategoryService
+     * @var CategoryRepository
      */
-    private $_categoryService;
+    private $categoryRepository;
 
     /**
      * @var ProductSearchService
@@ -52,7 +53,7 @@ final class CategoryController extends Controller
     public function __construct(
         string $id,
         Module $module,
-        CategoryService $categoryService,
+        CategoryRepository $categoryRepository,
         ProductSearchService $productSearchService,
         ProductSkuSearchService $productSkuSearchService,
         BrandRepository $brandRepository,
@@ -61,7 +62,7 @@ final class CategoryController extends Controller
         array $config = []
     ) {
         parent::__construct($id, $module, $config);
-        $this->_categoryService = $categoryService;
+        $this->categoryRepository = $categoryRepository;
         $this->productSearchService = $productSearchService;
         $this->productSkuSearchService = $productSkuSearchService;
         $this->brandRepository = $brandRepository;
@@ -79,7 +80,12 @@ final class CategoryController extends Controller
     public function actionIndex(UrlUpdateForm $url, array $getParams = null, array $filterParams = [])
     {
         try {
-            $categoryData = $this->_categoryService->getCategoryById((int) $url->entity_id);
+            $categoryEntity = $this->categoryRepository->getById((int) $url->entity_id);
+            if (empty($categoryEntity)) {
+                Yii::error("Exist link with id '{$url->id}' to not existing category.", __METHOD__);
+                throw new NotFoundHttpException(Yii::t('app', 'Category not found.'));
+            }
+            $categoryData = new CategoryData($categoryEntity);
             $filteredAttributes = [];
             $facetedAttributes = [];
             $brands = [];
