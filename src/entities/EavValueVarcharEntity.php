@@ -60,6 +60,10 @@ class EavValueVarcharEntity extends ActiveRecord implements ProductEavValueInter
         ];
     }
 
+    public function init()
+    {
+    }
+
     public function getEavAttribute()
     {
         return $this->hasOne(EavAttributeEntity::class, ['id' => 'attribute_id']);

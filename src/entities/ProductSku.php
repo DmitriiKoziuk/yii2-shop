@@ -177,7 +177,6 @@ class ProductSku extends ActiveRecord
      */
     public function init()
     {
-        parent::init();
         /** @var FileRepository fileRepository */
         $this->fileRepository = Yii::$container->get(FileRepository::class);
         /** @var UrlRepository urlIndexService */

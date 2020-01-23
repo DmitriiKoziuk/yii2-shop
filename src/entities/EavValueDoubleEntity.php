@@ -71,6 +71,10 @@ class EavValueDoubleEntity extends ActiveRecord implements ProductEavValueInterf
         ];
     }
 
+    public function init()
+    {
+    }
+
     public function getEavAttribute()
     {
         return $this->hasOne(EavAttributeEntity::class, ['id' => 'attribute_id']);

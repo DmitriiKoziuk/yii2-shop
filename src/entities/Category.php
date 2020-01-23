@@ -118,6 +118,10 @@ class Category extends ActiveRecord
         ];
     }
 
+    public function init()
+    {
+    }
+
     /**
      * @return ActiveQuery
      */

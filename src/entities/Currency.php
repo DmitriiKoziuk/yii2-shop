@@ -64,4 +64,8 @@ class Currency extends ActiveRecord
             'updated_at' => Yii::t(ShopModule::TRANSLATION_CURRENCY, 'Updated at'),
         ];
     }
+
+    public function init()
+    {
+    }
 }

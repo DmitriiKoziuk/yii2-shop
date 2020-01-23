@@ -114,7 +114,6 @@ class Product extends ActiveRecord
 
     public function init()
     {
-        parent::init();
         /** @var UrlRepository urlIndexService */
         $this->urlRepository = Yii::$container->get(UrlRepository::class);
     }

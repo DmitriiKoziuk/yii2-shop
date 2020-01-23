@@ -83,6 +83,10 @@ class ProductTypeAttributeEntity extends ActiveRecord
         ];
     }
 
+    public function init()
+    {
+    }
+
     public function getProductType()
     {
         return $this->hasOne(ProductType::class, ['id' => 'product_type_id']);

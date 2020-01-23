@@ -47,6 +47,10 @@ class EavValueTypeEntity extends \yii\db\ActiveRecord
         ];
     }
 
+    public function init()
+    {
+    }
+
     /**
      * @return \yii\db\ActiveQuery|EavValueTypeUnitEntity[]
      */

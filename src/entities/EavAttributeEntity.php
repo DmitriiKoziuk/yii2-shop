@@ -112,6 +112,10 @@ class EavAttributeEntity extends \yii\db\ActiveRecord
         ];
     }
 
+    public function init()
+    {
+    }
+
     public function getValueType()
     {
         return $this->hasOne(EavValueTypeEntity::class, ['id' => 'value_type_id']);

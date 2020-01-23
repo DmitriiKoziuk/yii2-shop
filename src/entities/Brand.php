@@ -58,4 +58,8 @@ class Brand extends \yii\db\ActiveRecord
             'updated_at' => Yii::t('app', 'Updated at'),
         ];
     }
+
+    public function init()
+    {
+    }
 }

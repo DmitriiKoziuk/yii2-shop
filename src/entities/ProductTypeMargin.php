@@ -76,4 +76,8 @@ class ProductTypeMargin extends \yii\db\ActiveRecord
             'updated_at'      => Yii::t('app', 'Updated At'),
         ];
     }
+
+    public function init()
+    {
+    }
 }

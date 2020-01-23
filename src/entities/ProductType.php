@@ -112,6 +112,10 @@ class ProductType extends ActiveRecord
         ];
     }
 
+    public function init()
+    {
+    }
+
     /**
      * @return ActiveQuery|Product[]
      */
