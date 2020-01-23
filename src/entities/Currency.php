@@ -68,4 +68,8 @@ class Currency extends ActiveRecord
     public function init()
     {
     }
+
+    public function afterFind()
+    {
+    }
 }

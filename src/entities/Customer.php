@@ -3,6 +3,7 @@
 namespace DmitriiKoziuk\yii2Shop\entities;
 
 use Yii;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 
@@ -74,10 +75,15 @@ class Customer extends ActiveRecord
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCarts()
+    public function init()
+    {
+    }
+
+    public function afterFind()
+    {
+    }
+
+    public function getCarts(): ActiveQuery
     {
         return $this->hasMany(Cart::class, ['customer_id' => 'id']);
     }

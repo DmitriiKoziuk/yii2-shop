@@ -122,6 +122,10 @@ class Category extends ActiveRecord
     {
     }
 
+    public function afterFind()
+    {
+    }
+
     /**
      * @return ActiveQuery
      */

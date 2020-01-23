@@ -44,4 +44,12 @@ class EavValueTextProductSkuEntity extends \yii\db\ActiveRecord
             'product_sku_id' => 'Product Sku ID',
         ];
     }
+
+    public function init()
+    {
+    }
+
+    public function afterFind()
+    {
+    }
 }

@@ -118,6 +118,10 @@ class Product extends ActiveRecord
         $this->urlRepository = Yii::$container->get(UrlRepository::class);
     }
 
+    public function afterFind()
+    {
+    }
+
     public function getMainSkuEntity(): ActiveQuery
     {
         return $this->hasOne(ProductSku::class, ['id' => 'main_sku_id']);

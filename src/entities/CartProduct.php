@@ -1,7 +1,9 @@
 <?php
+
 namespace DmitriiKoziuk\yii2Shop\entities;
 
 use Yii;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 
@@ -74,18 +76,16 @@ class CartProduct extends ActiveRecord
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCart()
+    public function init()
+    {
+    }
+
+    public function getCart(): ActiveQuery
     {
         return $this->hasOne(Cart::class, ['id' => 'cart_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getProductSku()
+    public function getProductSku(): ActiveQuery
     {
         return $this->hasOne(ProductSku::class, ['id' => 'product_sku_id']);
     }

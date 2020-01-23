@@ -3,6 +3,7 @@
 namespace DmitriiKoziuk\yii2Shop\entities;
 
 use Exception;
+use yii\db\ActiveQuery;
 
 /**
  * This is the model class for table "{{%dk_shop_eav_attributes}}".
@@ -116,12 +117,16 @@ class EavAttributeEntity extends \yii\db\ActiveRecord
     {
     }
 
-    public function getValueType()
+    public function afterFind()
+    {
+    }
+
+    public function getValueType(): ActiveQuery
     {
         return $this->hasOne(EavValueTypeEntity::class, ['id' => 'value_type_id']);
     }
 
-    public function getDefaultValueTypeUnit()
+    public function getDefaultValueTypeUnit(): ActiveQuery
     {
         return $this->hasOne(EavValueTypeUnitEntity::class, ['id' => 'default_value_type_unit_id']);
     }

@@ -2,7 +2,7 @@
 
 namespace DmitriiKoziuk\yii2Shop\entities;
 
-use Yii;
+use yii\db\ActiveQuery;
 
 /**
  * This is the model class for table "{{%dk_shop_eav_value_types}}".
@@ -51,10 +51,11 @@ class EavValueTypeEntity extends \yii\db\ActiveRecord
     {
     }
 
-    /**
-     * @return \yii\db\ActiveQuery|EavValueTypeUnitEntity[]
-     */
-    public function getUnits()
+    public function afterFind()
+    {
+    }
+
+    public function getUnits(): ActiveQuery
     {
         return $this->hasMany(EavValueTypeUnitEntity::class, ['value_type_id' => 'id']);
     }

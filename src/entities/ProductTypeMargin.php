@@ -80,4 +80,8 @@ class ProductTypeMargin extends \yii\db\ActiveRecord
     public function init()
     {
     }
+
+    public function afterFind()
+    {
+    }
 }

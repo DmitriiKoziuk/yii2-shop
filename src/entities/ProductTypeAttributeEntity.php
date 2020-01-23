@@ -2,6 +2,7 @@
 
 namespace DmitriiKoziuk\yii2Shop\entities;
 
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -87,12 +88,16 @@ class ProductTypeAttributeEntity extends ActiveRecord
     {
     }
 
-    public function getProductType()
+    public function afterFind()
+    {
+    }
+
+    public function getProductType(): ActiveQuery
     {
         return $this->hasOne(ProductType::class, ['id' => 'product_type_id']);
     }
 
-    public function getAttributeData()
+    public function getAttributeData(): ActiveQuery
     {
         return $this->hasOne(EavAttributeEntity::class, ['id' => 'attribute_id']);
     }

@@ -76,4 +76,12 @@ class Cart extends ActiveRecord
     {
         return $this->hasOne(Customer::class, ['id' => 'customer_id']);
     }
+
+    public function init()
+    {
+    }
+
+    public function afterFind()
+    {
+    }
 }

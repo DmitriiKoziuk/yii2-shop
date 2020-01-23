@@ -2,6 +2,7 @@
 
 namespace DmitriiKoziuk\yii2Shop\entities;
 
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use DmitriiKoziuk\yii2Shop\interfaces\productEav\ProductEavValueInterface;
 
@@ -53,7 +54,11 @@ class EavValueTextEntity extends ActiveRecord implements ProductEavValueInterfac
     {
     }
 
-    public function getEavAttribute()
+    public function afterFind()
+    {
+    }
+
+    public function getEavAttribute(): ActiveQuery
     {
         return $this->hasOne(EavAttributeEntity::class, ['id' => 'attribute_id']);
     }

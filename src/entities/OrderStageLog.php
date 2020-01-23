@@ -78,4 +78,12 @@ class OrderStageLog extends ActiveRecord
             'created_at' => Yii::t(ShopModule::TRANSLATION_ORDER, 'Created At'),
         ];
     }
+
+    public function init()
+    {
+    }
+
+    public function afterFind()
+    {
+    }
 }

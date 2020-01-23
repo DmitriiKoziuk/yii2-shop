@@ -183,6 +183,10 @@ class ProductSku extends ActiveRecord
         $this->urlRepository = Yii::$container->get(UrlRepository::class);
     }
 
+    public function afterFind()
+    {
+    }
+
     public function isCustomerPriceSet(): bool
     {
         return !empty($this->customer_price);
