@@ -13,6 +13,11 @@ class ProductViewWidget extends Widget
     public $categoryIDs = [];
 
     /**
+     * @var int
+     */
+    public $limit = 20;
+
+    /**
      * @var ProductSkuRepository
      */
     private $productSkuRepository;
@@ -29,7 +34,7 @@ class ProductViewWidget extends Widget
     {
         $searchParams = new ProductSearchParams([
             'categoryIDs' => $this->categoryIDs,
-            'limit' => 20,
+            'limit' => $this->limit,
         ]);
         $searchResponse = $this->productSkuRepository->search($searchParams);
         $products = $this->productSkuModelsToData($searchResponse->getItems());
