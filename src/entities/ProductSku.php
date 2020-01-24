@@ -5,8 +5,9 @@ namespace DmitriiKoziuk\yii2Shop\entities;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
-use yii\behaviors\TimestampBehavior;
+use yii\base\InvalidConfigException;
 use yii\helpers\ArrayHelper;
+use yii\behaviors\TimestampBehavior;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 use DmitriiKoziuk\yii2FileManager\entities\FileEntity;
 use DmitriiKoziuk\yii2FileManager\repositories\FileRepository;
@@ -172,7 +173,7 @@ class ProductSku extends ActiveRecord
     }
 
     /**
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      * @throws \yii\di\NotInstantiableException
      */
     public function init()
@@ -185,6 +186,46 @@ class ProductSku extends ActiveRecord
 
     public function afterFind()
     {
+    }
+
+    public function getCurrency(): ActiveQuery
+    {
+        return $this->hasOne(Currency::class, ['id' => 'currency_id']);
+    }
+
+    public function getProduct(): ActiveQuery
+    {
+        return $this->hasOne(Product::class, ['id' => 'product_id']);
+    }
+
+    /**
+     * @throws InvalidConfigException
+     */
+    public function getEavVarcharValues(): ActiveQuery
+    {
+        return $this->hasMany(EavValueVarcharEntity::class, ['id' => 'value_id'])
+            ->viaTable(EavValueVarcharProductSkuEntity::tableName(), ['product_sku_id' => 'id'])
+            ->indexBy('id');
+    }
+
+    /**
+     * @throws InvalidConfigException
+     */
+    public function getEavTextValues(): ActiveQuery
+    {
+        return $this->hasMany(EavValueTextEntity::class, ['id' => 'value_id'])
+            ->viaTable(EavValueTextProductSkuEntity::tableName(), ['product_sku_id' => 'id'])
+            ->indexBy('id');
+    }
+
+    /**
+     * @throws InvalidConfigException
+     */
+    public function getEavDoubleValues(): ActiveQuery
+    {
+        return $this->hasMany(EavValueDoubleEntity::class, ['id' => 'value_id'])
+            ->viaTable(EavValueDoubleProductSkuEntity::tableName(), ['product_sku_id' => 'id'])
+            ->indexBy('id');
     }
 
     public function isCustomerPriceSet(): bool
@@ -210,22 +251,6 @@ class ProductSku extends ActiveRecord
     public function isInStock(): bool
     {
         return $this->stock_status === self::STOCK_IN;
-    }
-
-    /**
-     * @return ActiveQuery
-     */
-    public function getCurrency(): ActiveQuery
-    {
-        return $this->hasOne(Currency::class, ['id' => 'currency_id']);
-    }
-
-    /**
-     * @return ActiveQuery
-     */
-    public function getProduct(): ActiveQuery
-    {
-        return $this->hasOne(Product::class, ['id' => 'product_id']);
     }
 
     /**
@@ -363,27 +388,6 @@ class ProductSku extends ActiveRecord
             $this->eavTextValues,
             $this->eavDoubleValues
         );
-    }
-
-    public function getEavVarcharValues()
-    {
-        return $this->hasMany(EavValueVarcharEntity::class, ['id' => 'value_id'])
-            ->viaTable(EavValueVarcharProductSkuEntity::tableName(), ['product_sku_id' => 'id'])
-            ->indexBy('id');
-    }
-
-    public function getEavTextValues()
-    {
-        return $this->hasMany(EavValueTextEntity::class, ['id' => 'value_id'])
-            ->viaTable(EavValueTextProductSkuEntity::tableName(), ['product_sku_id' => 'id'])
-            ->indexBy('id');
-    }
-
-    public function getEavDoubleValues()
-    {
-        return $this->hasMany(EavValueDoubleEntity::class, ['id' => 'value_id'])
-            ->viaTable(EavValueDoubleProductSkuEntity::tableName(), ['product_sku_id' => 'id'])
-            ->indexBy('id');
     }
 
     /**
