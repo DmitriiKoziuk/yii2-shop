@@ -58,6 +58,7 @@ class ProductRepository extends AbstractActiveRecordRepository
         array $filteredAttributes = null,
         array $filterParams = [],
         array $with = [
+            'mainSkuEntity.urlEntity',
             'mainSkuEntity.product',
             'mainSkuEntity.product.type',
             'mainSkuEntity.currency',
