@@ -3,6 +3,7 @@
 namespace DmitriiKoziuk\yii2Shop\entities;
 
 use Yii;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -64,18 +65,20 @@ class CategoryProduct extends ActiveRecord
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCategory()
+    public function init()
+    {
+    }
+
+    public function afterFind()
+    {
+    }
+
+    public function getCategory(): ActiveQuery
     {
         return $this->hasOne(Category::class, ['id' => 'category_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getProduct()
+    public function getProduct(): ActiveQuery
     {
         return $this->hasOne(Product::class, ['id' => 'product_id']);
     }

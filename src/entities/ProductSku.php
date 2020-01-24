@@ -5,8 +5,10 @@ namespace DmitriiKoziuk\yii2Shop\entities;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
-use yii\behaviors\TimestampBehavior;
+use yii\base\InvalidConfigException;
+use yii\di\NotInstantiableException;
 use yii\helpers\ArrayHelper;
+use yii\behaviors\TimestampBehavior;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 use DmitriiKoziuk\yii2FileManager\entities\FileEntity;
 use DmitriiKoziuk\yii2FileManager\repositories\FileRepository;
@@ -35,11 +37,12 @@ use DmitriiKoziuk\yii2UrlIndex\repositories\UrlRepository;
  * @property int    $updated_at
  * @property int    $currency_id
  *
- * @property Currency $currency
- * @property Product  $product
+ * @property Currency                $currency
+ * @property Product                 $product
  * @property EavValueVarcharEntity[] $eavVarcharValues
- * @property EavValueTextEntity[] $eavTextValues
- * @property EavValueDoubleEntity[] $eavDoubleValues
+ * @property EavValueTextEntity[]    $eavTextValues
+ * @property EavValueDoubleEntity[]  $eavDoubleValues
+ * @property UrlEntity               $urlEntity
  */
 class ProductSku extends ActiveRecord
 {
@@ -75,11 +78,6 @@ class ProductSku extends ActiveRecord
      * @var UrlRepository
      */
     private $urlRepository;
-
-    /**
-     * @var UrlEntity
-     */
-    private $urlEntity;
 
     /**
      * {@inheritdoc}
@@ -172,16 +170,69 @@ class ProductSku extends ActiveRecord
     }
 
     /**
-     * @throws \yii\base\InvalidConfigException
-     * @throws \yii\di\NotInstantiableException
+     * @throws InvalidConfigException
+     * @throws NotInstantiableException
      */
     public function init()
     {
-        parent::init();
         /** @var FileRepository fileRepository */
         $this->fileRepository = Yii::$container->get(FileRepository::class);
         /** @var UrlRepository urlIndexService */
         $this->urlRepository = Yii::$container->get(UrlRepository::class);
+    }
+
+    public function afterFind()
+    {
+    }
+
+    public function getCurrency(): ActiveQuery
+    {
+        return $this->hasOne(Currency::class, ['id' => 'currency_id']);
+    }
+
+    public function getProduct(): ActiveQuery
+    {
+        return $this->hasOne(Product::class, ['id' => 'product_id']);
+    }
+
+    /**
+     * @throws InvalidConfigException
+     */
+    public function getEavVarcharValues(): ActiveQuery
+    {
+        return $this->hasMany(EavValueVarcharEntity::class, ['id' => 'value_id'])
+            ->viaTable(EavValueVarcharProductSkuEntity::tableName(), ['product_sku_id' => 'id'])
+            ->indexBy('id');
+    }
+
+    /**
+     * @throws InvalidConfigException
+     */
+    public function getEavTextValues(): ActiveQuery
+    {
+        return $this->hasMany(EavValueTextEntity::class, ['id' => 'value_id'])
+            ->viaTable(EavValueTextProductSkuEntity::tableName(), ['product_sku_id' => 'id'])
+            ->indexBy('id');
+    }
+
+    /**
+     * @throws InvalidConfigException
+     */
+    public function getEavDoubleValues(): ActiveQuery
+    {
+        return $this->hasMany(EavValueDoubleEntity::class, ['id' => 'value_id'])
+            ->viaTable(EavValueDoubleProductSkuEntity::tableName(), ['product_sku_id' => 'id'])
+            ->indexBy('id');
+    }
+
+    public function getUrlEntity(): ActiveQuery
+    {
+        return $this->hasOne(UrlEntity::class, ['entity_id' => 'id'])
+            ->andWhere([
+                'module_name' => ShopModule::getId(),
+                'controller_name' => self::FRONTEND_CONTROLLER_NAME,
+                'action_name' => self::FRONTEND_ACTION_NAME,
+            ]);
     }
 
     public function isCustomerPriceSet(): bool
@@ -207,22 +258,6 @@ class ProductSku extends ActiveRecord
     public function isInStock(): bool
     {
         return $this->stock_status === self::STOCK_IN;
-    }
-
-    /**
-     * @return ActiveQuery
-     */
-    public function getCurrency(): ActiveQuery
-    {
-        return $this->hasOne(Currency::class, ['id' => 'currency_id']);
-    }
-
-    /**
-     * @return ActiveQuery
-     */
-    public function getProduct(): ActiveQuery
-    {
-        return $this->hasOne(Product::class, ['id' => 'product_id']);
     }
 
     /**
@@ -362,27 +397,6 @@ class ProductSku extends ActiveRecord
         );
     }
 
-    public function getEavVarcharValues()
-    {
-        return $this->hasMany(EavValueVarcharEntity::class, ['id' => 'value_id'])
-            ->viaTable(EavValueVarcharProductSkuEntity::tableName(), ['product_sku_id' => 'id'])
-            ->indexBy('id');
-    }
-
-    public function getEavTextValues()
-    {
-        return $this->hasMany(EavValueTextEntity::class, ['id' => 'value_id'])
-            ->viaTable(EavValueTextProductSkuEntity::tableName(), ['product_sku_id' => 'id'])
-            ->indexBy('id');
-    }
-
-    public function getEavDoubleValues()
-    {
-        return $this->hasMany(EavValueDoubleEntity::class, ['id' => 'value_id'])
-            ->viaTable(EavValueDoubleProductSkuEntity::tableName(), ['product_sku_id' => 'id'])
-            ->indexBy('id');
-    }
-
     /**
      * @return ProductEavValueInterface[]
      */
@@ -449,14 +463,6 @@ class ProductSku extends ActiveRecord
 
     public function getUrl(): string
     {
-        if (empty($this->urlEntity)) {
-            $this->urlEntity = $this->urlRepository->getEntityUrl(
-                ShopModule::getId(),
-                self::FRONTEND_CONTROLLER_NAME,
-                self::FRONTEND_ACTION_NAME,
-                (string) $this->id
-            );
-        }
         return $this->urlEntity->url;
     }
 

@@ -21,18 +21,34 @@ class ProductSearchParams extends Model
      */
     public $name;
 
+    /**
+     * @var int
+     */
+    public $limit = 20;
+
+    /**
+     * @var null|int
+     */
+    public $offset;
+
     public function rules()
     {
         return [
             [['categoryIDs'], 'each', 'rule' => ['integer']],
             [['stockStatus'], 'each', 'rule' => ['integer']],
             [['name'], 'string'],
+            [['limit', 'offset'], 'integer'],
         ];
     }
 
     public function isNameSet(): bool
     {
         return ! empty($this->name);
+    }
+
+    public function isOffsetSet(): bool
+    {
+        return ! empty($this->offset);
     }
 
     public function getCategoryIDs(): array
@@ -48,5 +64,15 @@ class ProductSearchParams extends Model
     public function getName(): ?string
     {
         return $this->name;
+    }
+
+    public function getLimit(): int
+    {
+        return $this->limit;
+    }
+
+    public function getOffset(): ?int
+    {
+        return $this->offset;
     }
 }

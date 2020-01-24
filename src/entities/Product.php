@@ -23,6 +23,7 @@ use DmitriiKoziuk\yii2UrlIndex\repositories\UrlRepository;
  * @property int    $main_sku_id
  * @property int    $brand_id
  *
+ * @property ProductSku   $mainSkuEntity
  * @property ProductSku[] $skus
  * @property Currency     $currency
  * @property Category     $category
@@ -113,41 +114,37 @@ class Product extends ActiveRecord
 
     public function init()
     {
-        parent::init();
         /** @var UrlRepository urlIndexService */
         $this->urlRepository = Yii::$container->get(UrlRepository::class);
     }
 
-    /**
-     * @return ActiveQuery
-     */
-    public function getSkus()
+    public function afterFind()
+    {
+    }
+
+    public function getMainSkuEntity(): ActiveQuery
+    {
+        return $this->hasOne(ProductSku::class, ['id' => 'main_sku_id']);
+    }
+
+    public function getSkus(): ActiveQuery
     {
         return $this->hasMany(ProductSku::class, ['product_id' => 'id'])
             ->orderBy('sort')
             ->indexBy('id');
     }
 
-    /**
-     * @return ActiveQuery
-     */
-    public function getCategory()
+    public function getCategory(): ActiveQuery
     {
         return $this->hasOne(Category::class, ['id' => 'category_id']);
     }
 
-    /**
-     * @return ActiveQuery
-     */
-    public function getType()
+    public function getType(): ActiveQuery
     {
         return $this->hasOne(ProductType::class, ['id' => 'type_id']);
     }
 
-    /**
-     * @return ActiveQuery
-     */
-    public function getBrand()
+    public function getBrand(): ActiveQuery
     {
         return $this->hasOne(Brand::class, ['id' => 'brand_id']);
     }
@@ -187,7 +184,7 @@ class Product extends ActiveRecord
 
     public function getMainSku(): ProductSku
     {
-        return $this->skus[ $this->main_sku_id ];
+        return $this->mainSkuEntity;
     }
 
     public function isMainSkuSet(): bool

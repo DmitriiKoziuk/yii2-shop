@@ -39,8 +39,6 @@ use DmitriiKoziuk\yii2Shop\services\currency\CurrencyService;
 use DmitriiKoziuk\yii2Shop\services\product\ProductService;
 use DmitriiKoziuk\yii2Shop\services\product\ProductTypeService;
 use DmitriiKoziuk\yii2Shop\services\product\ProductMarginService;
-use DmitriiKoziuk\yii2Shop\services\product\ProductSearchService;
-use DmitriiKoziuk\yii2Shop\services\product\ProductSkuSearchService;
 use DmitriiKoziuk\yii2Shop\services\category\CategoryProductService;
 use DmitriiKoziuk\yii2Shop\services\category\CategoryProductSkuService;
 use DmitriiKoziuk\yii2Shop\services\category\CategoryClosureService;
@@ -488,12 +486,6 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
                 );
             }
         );
-        $this->diContainer->setSingleton(ProductSearchService::class, function () {
-            return new ProductSearchService();
-        });
-        $this->diContainer->setSingleton(ProductSkuSearchService::class, function () {
-            return new ProductSkuSearchService();
-        });
         $this->diContainer->setSingleton(
             CartService::class,
             function () use (

@@ -4,34 +4,40 @@ namespace DmitriiKoziuk\yii2Shop\widgets\frontend;
 
 use yii\base\Widget;
 use DmitriiKoziuk\yii2Shop\data\product\ProductSearchParams;
-use DmitriiKoziuk\yii2Shop\services\product\ProductSkuSearchService;
 use DmitriiKoziuk\yii2Shop\entities\Product;
 use DmitriiKoziuk\yii2Shop\entityViews\ProductSkuView;
+use DmitriiKoziuk\yii2Shop\repositories\ProductSkuRepository;
 
 class ProductViewWidget extends Widget
 {
     public $categoryIDs = [];
 
     /**
-     * @var ProductSkuSearchService
+     * @var int
      */
-    private $productSkuSearchService;
+    public $limit = 20;
+
+    /**
+     * @var ProductSkuRepository
+     */
+    private $productSkuRepository;
 
     public function __construct(
-        ProductSkuSearchService $productSkuSearchService,
+        ProductSkuRepository $productSkuRepository,
         $config = []
     ) {
         parent::__construct($config);
-        $this->productSkuSearchService = $productSkuSearchService;
+        $this->productSkuRepository = $productSkuRepository;
     }
 
     public function run()
     {
         $searchParams = new ProductSearchParams([
             'categoryIDs' => $this->categoryIDs,
+            'limit' => $this->limit,
         ]);
-        $dataProvider = $this->productSkuSearchService->searchBy($searchParams, 20);
-        $products = $this->productSkuModelsToData($dataProvider->getModels());
+        $searchResponse = $this->productSkuRepository->search($searchParams);
+        $products = $this->productSkuModelsToData($searchResponse->getItems());
         return $this->render('product-view', [
             'products' => $products,
         ]);

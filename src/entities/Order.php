@@ -1,4 +1,5 @@
 <?php
+
 namespace DmitriiKoziuk\yii2Shop\entities;
 
 use Yii;
@@ -50,5 +51,13 @@ class Order extends ActiveRecord
             'id' => Yii::t(ShopModule::TRANSLATION_ORDER, 'Cart ID'),
             'customer_comment' => Yii::t(ShopModule::TRANSLATION_ORDER, 'Customer comment'),
         ];
+    }
+
+    public function init()
+    {
+    }
+
+    public function afterFind()
+    {
     }
 }

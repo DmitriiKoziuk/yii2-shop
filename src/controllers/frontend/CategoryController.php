@@ -5,34 +5,36 @@ namespace DmitriiKoziuk\yii2Shop\controllers\frontend;
 use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\data\Pagination;
 use yii\base\Module;
 use DmitriiKoziuk\yii2Base\exceptions\EntityNotFoundException;
 use DmitriiKoziuk\yii2UrlIndex\forms\UrlUpdateForm;
 use DmitriiKoziuk\yii2ConfigManager\services\ConfigService;
 use DmitriiKoziuk\yii2Shop\ShopModule;
-use DmitriiKoziuk\yii2Shop\services\category\CategoryService;
-use DmitriiKoziuk\yii2Shop\services\product\ProductSearchService;
-use DmitriiKoziuk\yii2Shop\services\product\ProductSkuSearchService;
+use DmitriiKoziuk\yii2Shop\data\CategoryData;
 use DmitriiKoziuk\yii2Shop\services\eav\EavService;
 use DmitriiKoziuk\yii2Shop\data\product\ProductSearchParams;
 use DmitriiKoziuk\yii2Shop\repositories\BrandRepository;
+use DmitriiKoziuk\yii2Shop\repositories\CategoryRepository;
+use DmitriiKoziuk\yii2Shop\repositories\ProductRepository;
+use DmitriiKoziuk\yii2Shop\repositories\ProductSkuRepository;
 
 final class CategoryController extends Controller
 {
     /**
-     * @var CategoryService
+     * @var CategoryRepository
      */
-    private $_categoryService;
+    private $categoryRepository;
 
     /**
-     * @var ProductSearchService
+     * @var ProductRepository
      */
-    private $productSearchService;
+    private $productRepository;
 
     /**
-     * @var ProductSkuSearchService
+     * @var ProductSkuRepository
      */
-    private $productSkuSearchService;
+    private $productSkuRepository;
 
     /**
      * @var BrandRepository
@@ -52,18 +54,18 @@ final class CategoryController extends Controller
     public function __construct(
         string $id,
         Module $module,
-        CategoryService $categoryService,
-        ProductSearchService $productSearchService,
-        ProductSkuSearchService $productSkuSearchService,
+        CategoryRepository $categoryRepository,
+        ProductRepository $productRepository,
+        ProductSkuRepository $productSkuRepository,
         BrandRepository $brandRepository,
         EavService $eavService,
         ConfigService $configService,
         array $config = []
     ) {
         parent::__construct($id, $module, $config);
-        $this->_categoryService = $categoryService;
-        $this->productSearchService = $productSearchService;
-        $this->productSkuSearchService = $productSkuSearchService;
+        $this->categoryRepository = $categoryRepository;
+        $this->productRepository = $productRepository;
+        $this->productSkuRepository = $productSkuRepository;
         $this->brandRepository = $brandRepository;
         $this->eavService = $eavService;
         $this->configService = $configService;
@@ -78,11 +80,15 @@ final class CategoryController extends Controller
      */
     public function actionIndex(UrlUpdateForm $url, array $getParams = null, array $filterParams = [])
     {
+        $viewParams = [];
         try {
-            $categoryData = $this->_categoryService->getCategoryById((int) $url->entity_id);
-            $filteredAttributes = [];
-            $facetedAttributes = [];
-            $brands = [];
+            $pageNumber = Yii::$app->request->get('page');
+            $categoryEntity = $this->categoryRepository->getById((int) $url->entity_id);
+            if (empty($categoryEntity)) {
+                Yii::error("Exist link with id '{$url->id}' to not existing category.", __METHOD__);
+                throw new NotFoundHttpException(Yii::t('app', 'Category not found.'));
+            }
+            $categoryData = new CategoryData($categoryEntity);
             $productDataProvider = null;
             if ($categoryData->isProductsShow()) {
                 $productOnPage = (int) $this->configService->getValue(ShopModule::getId(), 'productsOnCategoryPage');
@@ -95,38 +101,44 @@ final class CategoryController extends Controller
                 $brands = $this->brandRepository->getFilteredBrands($categoryData->getId(), $filteredAttributes);
                 $productSearchParams = new ProductSearchParams([
                     'categoryIDs' => [$categoryData->getId()],
+                    'limit' => $productOnPage,
+                    'offset' => (int) $pageNumber ?? (($pageNumber - 1) * $productOnPage),
                 ]);
                 if (empty($filterParams)) {
-                    $productDataProvider = $this->productSearchService->searchBy(
+                    $searchResponse = $this->productRepository->search(
                         $productSearchParams,
-                        $productOnPage,
                         $filteredAttributes,
                         $filterParams
                     );
                 } else {
-                    $productDataProvider = $this->productSkuSearchService->searchBy(
+                    $searchResponse = $this->productSkuRepository->search(
                         $productSearchParams,
-                        $productOnPage,
                         $filteredAttributes,
                         $filterParams
                     );
                 }
+
+                $pagination = new Pagination(['totalCount' => $searchResponse->getTotalCount()]);
+
+                $viewParams = [
+                    'categoryData' => $categoryData,
+                    'indexPageUrl' => $url->url,
+                    'getParams' => $getParams,
+                    'filterParams' => $filterParams,
+                    'facetedAttributes' => $facetedAttributes ?? [],
+                    'filteredAttributes' => $filteredAttributes ?? [],
+                    'products' => $searchResponse->getItems(),
+                    'pagination' => $pagination,
+                    'brands' => $brands ?? [],
+                ];
             }
         } catch (EntityNotFoundException $e) {
+            Yii::error('Error', __METHOD__);
             throw new NotFoundHttpException(
                 Yii::t('app', 'Page not found.')
             );
         }
-        $viewParams = [
-            'categoryData' => $categoryData,
-            'indexPageUrl' => $url->url,
-            'getParams' => $getParams,
-            'filterParams' => $filterParams,
-            'facetedAttributes' => $facetedAttributes,
-            'filteredAttributes' => $filteredAttributes,
-            'productDataProvider' => $productDataProvider,
-            'brands' => $brands,
-        ];
+
         if (
             $categoryData->isTemplateNameSet() &&
             $this->isCategoryTemplateExist($categoryData->getTemplateName())
