@@ -63,9 +63,9 @@ class ProductSkuRepository extends AbstractActiveRecordRepository
             'product',
             'product.type',
             'currency',
-            'eavVarcharValues',
-            'eavTextValues',
-            'eavDoubleValues',
+            'eavVarcharValues.eavAttribute',
+            'eavTextValues.eavAttribute',
+            'eavDoubleValues.eavAttribute',
         ]
     ): RepositorySearchMethodResponseInterface {
         if (! $params->validate()) {

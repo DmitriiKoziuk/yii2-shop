@@ -62,9 +62,9 @@ class ProductRepository extends AbstractActiveRecordRepository
             'mainSkuEntity.product',
             'mainSkuEntity.product.type',
             'mainSkuEntity.currency',
-            'mainSkuEntity.eavVarcharValues',
-            'mainSkuEntity.eavTextValues',
-            'mainSkuEntity.eavDoubleValues',
+            'mainSkuEntity.eavVarcharValues.eavAttribute',
+            'mainSkuEntity.eavTextValues.eavAttribute',
+            'mainSkuEntity.eavDoubleValues.eavAttribute',
         ]
     ): RepositorySearchMethodResponseInterface {
         if (! $params->validate()) {
