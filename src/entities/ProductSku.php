@@ -6,6 +6,7 @@ use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\base\InvalidConfigException;
+use yii\di\NotInstantiableException;
 use yii\helpers\ArrayHelper;
 use yii\behaviors\TimestampBehavior;
 use DmitriiKoziuk\yii2Shop\ShopModule;
@@ -36,11 +37,12 @@ use DmitriiKoziuk\yii2UrlIndex\repositories\UrlRepository;
  * @property int    $updated_at
  * @property int    $currency_id
  *
- * @property Currency $currency
- * @property Product  $product
+ * @property Currency                $currency
+ * @property Product                 $product
  * @property EavValueVarcharEntity[] $eavVarcharValues
- * @property EavValueTextEntity[] $eavTextValues
- * @property EavValueDoubleEntity[] $eavDoubleValues
+ * @property EavValueTextEntity[]    $eavTextValues
+ * @property EavValueDoubleEntity[]  $eavDoubleValues
+ * @property UrlEntity               $urlEntity
  */
 class ProductSku extends ActiveRecord
 {
@@ -76,11 +78,6 @@ class ProductSku extends ActiveRecord
      * @var UrlRepository
      */
     private $urlRepository;
-
-    /**
-     * @var UrlEntity
-     */
-    private $urlEntity;
 
     /**
      * {@inheritdoc}
@@ -174,7 +171,7 @@ class ProductSku extends ActiveRecord
 
     /**
      * @throws InvalidConfigException
-     * @throws \yii\di\NotInstantiableException
+     * @throws NotInstantiableException
      */
     public function init()
     {
@@ -226,6 +223,16 @@ class ProductSku extends ActiveRecord
         return $this->hasMany(EavValueDoubleEntity::class, ['id' => 'value_id'])
             ->viaTable(EavValueDoubleProductSkuEntity::tableName(), ['product_sku_id' => 'id'])
             ->indexBy('id');
+    }
+
+    public function getUrlEntity(): ActiveQuery
+    {
+        return $this->hasOne(UrlEntity::class, ['entity_id' => 'id'])
+            ->andWhere([
+                'module_name' => ShopModule::getId(),
+                'controller_name' => self::FRONTEND_CONTROLLER_NAME,
+                'action_name' => self::FRONTEND_ACTION_NAME,
+            ]);
     }
 
     public function isCustomerPriceSet(): bool
@@ -456,14 +463,6 @@ class ProductSku extends ActiveRecord
 
     public function getUrl(): string
     {
-        if (empty($this->urlEntity)) {
-            $this->urlEntity = $this->urlRepository->getEntityUrl(
-                ShopModule::getId(),
-                self::FRONTEND_CONTROLLER_NAME,
-                self::FRONTEND_ACTION_NAME,
-                (string) $this->id
-            );
-        }
         return $this->urlEntity->url;
     }
 
