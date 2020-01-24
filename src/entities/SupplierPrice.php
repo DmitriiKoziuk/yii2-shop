@@ -68,4 +68,8 @@ class SupplierPrice extends \yii\db\ActiveRecord
             'created_at'  => Yii::t('app', 'Created at'),
         ];
     }
+
+    public function init()
+    {
+    }
 }

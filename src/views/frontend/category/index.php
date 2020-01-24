@@ -1,10 +1,12 @@
 <?php
 
 use yii\web\View;
-use yii\data\ActiveDataProvider;
+use yii\data\Pagination;
 use DmitriiKoziuk\yii2Shop\data\CategoryData;
 use DmitriiKoziuk\yii2Shop\entities\categoryFaceted\EavAttributeEntity;
 use DmitriiKoziuk\yii2Shop\entities\Brand;
+use DmitriiKoziuk\yii2Shop\entities\Product;
+use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 use DmitriiKoziuk\yii2Shop\widgets\SubcategoriesWidget;
 use DmitriiKoziuk\yii2Shop\widgets\ProductWidget;
 use DmitriiKoziuk\yii2Shop\widgets\frontend\CategoryProductFacetedNavigationWidget;
@@ -18,7 +20,8 @@ use DmitriiKoziuk\yii2Shop\widgets\ProductBrandWidget;
  * @var $getParams array|null
  * @var $filterParams array,
  * @var $filteredAttributes EavAttributeEntity[]
- * @var $productDataProvider ActiveDataProvider
+ * @var $products Product[]|ProductSku[]
+ * @var $pagination Pagination
  * @var $brands Brand[]
  */
 
@@ -48,7 +51,8 @@ $this->params['breadcrumbs'] = $categoryData->getBreadcrumb();
     </div>
     <div class="col-md-9">
       <?= ProductWidget::widget([
-          'productDataProvider' => $productDataProvider,
+          'products' => $products,
+          'pagination' => $pagination,
           'indexPageUrl' => $indexPageUrl,
           'filterParams' => $filterParams,
       ]) ?>

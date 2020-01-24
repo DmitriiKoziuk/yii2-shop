@@ -60,4 +60,12 @@ class CategoryClosure extends ActiveRecord
             'depth'      => Yii::t(ShopModule::TRANSLATION_CATEGORY, 'Depth'),
         ];
     }
+
+    public function init()
+    {
+    }
+
+    public function afterFind()
+    {
+    }
 }

@@ -49,6 +49,7 @@ class BrandRepository extends AbstractActiveRecordRepository
         if (! empty($filteredAttributes)) {
             $this->joinFilteredAttributes($query, $filteredAttributes);
         }
+        $query->distinct();
         return $query->orderBy([
             Brand::tableName() . '.name' => SORT_ASC,
         ])->all();

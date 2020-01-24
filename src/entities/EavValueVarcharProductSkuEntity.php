@@ -2,8 +2,6 @@
 
 namespace DmitriiKoziuk\yii2Shop\entities;
 
-use Yii;
-
 /**
  * This is the model class for table "dk_shop_eav_value_varchar_product_sku".
  *
@@ -43,5 +41,13 @@ class EavValueVarcharProductSkuEntity extends \yii\db\ActiveRecord
             'value_id' => 'Value ID',
             'product_sku_id' => 'Product Sku ID',
         ];
+    }
+
+    public function init()
+    {
+    }
+
+    public function afterFind()
+    {
     }
 }

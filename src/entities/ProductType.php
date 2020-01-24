@@ -112,16 +112,20 @@ class ProductType extends ActiveRecord
         ];
     }
 
-    /**
-     * @return ActiveQuery|Product[]
-     */
-    public function getProducts()
+    public function init()
+    {
+    }
+
+    public function afterFind()
+    {
+    }
+
+    public function getProducts(): ActiveQuery
     {
         return $this->hasMany(Product::class, ['type_id' => 'id']);
     }
 
     /**
-     * @return ActiveQuery|EavAttributeEntity[]
      * @throws InvalidConfigException
      */
     public function getEavAttributeEntities(): ActiveQuery
