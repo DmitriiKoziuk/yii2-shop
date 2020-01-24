@@ -218,6 +218,16 @@ class Category extends ActiveRecord
             ->viaTable(CategoryProduct::tableName(), ['category_id' => 'id']);
     }
 
+    public function getUrlEntity(): ActiveQuery
+    {
+        return $this->hasOne(UrlEntity::class, ['entity_id' => 'id'])
+            ->andWhere([
+                'module_name' => ShopModule::getId(),
+                'controller_name' => self::FRONTEND_CONTROLLER_NAME,
+                'action_name' => self::FRONTEND_ACTION_NAME,
+            ]);
+    }
+
     public function getParentsNames(): string
     {
         $r = '';
@@ -230,14 +240,5 @@ class Category extends ActiveRecord
     public function getFrontendName(): string
     {
         return $this->name_on_site ?? $this->name;
-    }
-
-    public function getUrlEntity(): ActiveQuery
-    {
-        return $this->hasOne(UrlEntity::class, ['entity_id' => 'id'])
-            ->andWhere([
-                'controller_name' => self::FRONTEND_CONTROLLER_NAME,
-                'action_name' => self::FRONTEND_ACTION_NAME,
-            ]);
     }
 }
