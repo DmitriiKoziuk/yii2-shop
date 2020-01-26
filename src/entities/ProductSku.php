@@ -70,14 +70,14 @@ class ProductSku extends ActiveRecord
     private $images;
 
     /**
-     * @var null|ProductTypeAttributeEntity[]
-     */
-    private $previewAttributes;
-
-    /**
      * @var UrlRepository
      */
     private $urlRepository;
+
+    /**
+     * @var null|ProductEavValueInterface[]
+     */
+    private $previewEavValues;
 
     /**
      * {@inheritdoc}
@@ -402,35 +402,37 @@ class ProductSku extends ActiveRecord
      */
     public function getPreviewEavValues(): array
     {
+        if (! empty($this->previewEavValues)) {
+            return $this->previewEavValues;
+        }
         $values = [];
         if ($this->product->isTypeSet()) {
-            if (is_null($this->previewAttributes)) {
-                $this->previewAttributes = $this->getPreviewAttributes();
-            }
-            foreach ($this->eavVarcharValues as $value) {
-                if (array_key_exists($value->attribute_id, $this->previewAttributes)) {
-                    $values[] = $value;
+            $previewAttributes = $this->product->type->productPreviewEavAttributes;
+            if (! empty($previewAttributes)) {
+                foreach ($this->eavVarcharValues as $value) {
+                    if (array_key_exists($value->attribute_id, $previewAttributes)) {
+                        $values[] = $value;
+                    }
                 }
-            }
-            foreach ($this->eavDoubleValues as $value) {
-                if (array_key_exists($value->attribute_id, $this->previewAttributes)) {
-                    $values[] = $value;
+                foreach ($this->eavDoubleValues as $value) {
+                    if (array_key_exists($value->attribute_id, $previewAttributes)) {
+                        $values[] = $value;
+                    }
                 }
-            }
-            foreach ($this->eavTextValues as $value) {
-                if (array_key_exists($value->attribute_id, $this->previewAttributes)) {
-                    $values[] = $value;
+                foreach ($this->eavTextValues as $value) {
+                    if (array_key_exists($value->attribute_id, $previewAttributes)) {
+                        $values[] = $value;
+                    }
                 }
-            }
-            if (! empty($values)) {
                 $this->sortEavValues(
                     $values,
-                    $this->previewAttributes,
+                    $previewAttributes,
                     ProductTypeAttributeEntity::SORT_AT_PRODUCT_SKU_PREVIEW_PROPERTY_NAME
                 );
+                $this->previewEavValues = &$values;
             }
         }
-        return $values;
+        return $this->previewEavValues;
     }
 
     /**
@@ -495,20 +497,6 @@ class ProductSku extends ActiveRecord
             }
         }
         return (float) $value;
-    }
-
-    /**
-     * @return ProductTypeAttributeEntity[]
-     */
-    private function getPreviewAttributes(): array
-    {
-        return ProductTypeAttributeEntity::find()
-            ->where([
-                'product_type_id' => $this->product->type->id,
-                'view_attribute_at_product_sku_preview' => ProductTypeAttributeEntity::PREVIEW_YES,
-            ])
-            ->indexBy('attribute_id')
-            ->all();
     }
 
     private function getAttributeSortForProductPage(): array
