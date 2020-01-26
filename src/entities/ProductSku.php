@@ -429,10 +429,10 @@ class ProductSku extends ActiveRecord
                     $previewAttributes,
                     ProductTypeAttributeEntity::SORT_AT_PRODUCT_SKU_PREVIEW_PROPERTY_NAME
                 );
-                $this->previewEavValues = &$values;
+                return $this->previewEavValues = &$values;
             }
         }
-        return $this->previewEavValues;
+        return [];
     }
 
     /**
