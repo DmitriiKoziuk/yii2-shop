@@ -60,7 +60,7 @@ class ProductRepository extends AbstractActiveRecordRepository
         array $with = [
             'mainSkuEntity.urlEntity',
             'mainSkuEntity.product',
-            'mainSkuEntity.product.type',
+            'mainSkuEntity.product.type.productPreviewEavAttributes',
             'mainSkuEntity.currency',
             'mainSkuEntity.eavVarcharValues.eavAttribute',
             'mainSkuEntity.eavTextValues.eavAttribute',
