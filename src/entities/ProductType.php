@@ -25,8 +25,9 @@ use DmitriiKoziuk\yii2Shop\ShopModule;
  * @property string  $product_sku_title_template
  * @property string  $product_sku_description_template
  *
- * @property Product[] $products
- * @property EavAttributeEntity[] $eavAttributeEntities
+ * @property Product[]                    $products
+ * @property EavAttributeEntity[]         $eavAttributeEntities
+ * @property ProductTypeAttributeEntity[] $productPreviewEavAttributes
  */
 class ProductType extends ActiveRecord
 {
@@ -132,6 +133,15 @@ class ProductType extends ActiveRecord
     {
         return $this->hasMany(EavAttributeEntity::class, ['id' => 'attribute_id'])
             ->viaTable(ProductTypeAttributeEntity::tableName(), ['product_type_id' => 'id']);
+    }
+
+    public function getProductPreviewEavAttributes(): ActiveQuery
+    {
+        return $this->hasMany(ProductTypeAttributeEntity::class, ['product_type_id' => 'id'])
+            ->andWhere([
+                'view_attribute_at_product_sku_preview' => ProductTypeAttributeEntity::PREVIEW_YES,
+            ])
+            ->indexBy('attribute_id');
     }
 
     public function getProductNumber()
