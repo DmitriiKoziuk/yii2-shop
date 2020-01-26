@@ -55,8 +55,6 @@ class ProductRepository extends AbstractActiveRecordRepository
 
     public function search(
         ProductSearchParams $params,
-        array $filteredAttributes = null,
-        array $filterParams = [],
         array $with = [
             'mainSkuEntity.urlEntity',
             'mainSkuEntity.product',
@@ -75,14 +73,6 @@ class ProductRepository extends AbstractActiveRecordRepository
         if (! empty($with)) {
             $query->with($with);
         }
-        $query->innerJoin(
-            ProductSku::tableName(),
-            [
-                ProductSku::tableName() . '.product_id' => new Expression(
-                    Product::tableName() . '.id'
-                )
-            ]
-        );
         if (! empty($params->getCategoryIDs())) {
             $query->innerJoin(
                 CategoryProduct::tableName(),
@@ -103,88 +93,11 @@ class ProductRepository extends AbstractActiveRecordRepository
                 CategoryProduct::tableName() . '.sort',
             ]);
         }
-        if (! empty($params->stockStatus)) {
-            $query->andWhere([
-                ProductSku::tableName() . '.stock_status' => $params->getStockStatuses()
-            ]);
-        }
-        if (! empty($filteredAttributes)) {
-            $this->includeEavAttributesToSearchQuery($query, $filteredAttributes);
-        }
-        if (isset($filterParams['brand'])) {
-            $this->joinBrand($query, $filterParams);
-        }
-        $query->distinct();
         $productCount = $query->count();
         $query->limit = $params->getLimit();
         if ($params->isOffsetSet()) {
             $query->offset = $params->getOffset();
         }
         return new RepositorySearchMethodResponse((int) $productCount, $query->all());
-    }
-
-    /**
-     * @param ActiveQuery $query
-     * @param EavAttributeEntity[] $filteredAttributes
-     * @throws \Exception
-     */
-    private function includeEavAttributesToSearchQuery(ActiveQuery $query, array $filteredAttributes)
-    {
-        foreach ($filteredAttributes as $filteredAttribute) {
-            switch ($filteredAttribute->storage_type) {
-                case EavAttributeEntity::STORAGE_TYPE_VARCHAR:
-                    $this->joinVarcharValues($query, $filteredAttribute->values);
-                    break;
-                case EavAttributeEntity::STORAGE_TYPE_DOUBLE:
-                    $this->joinDoubleValues($query, $filteredAttribute->values);
-                    break;
-                default:
-                    throw new \Exception('Storage type logic not implement.');
-                    break;
-            }
-        }
-    }
-
-    private function joinVarcharValues(ActiveQuery $query, array $values)
-    {
-        $query->innerJoin(
-            EavValueVarcharProductSkuEntity::tableName(),
-            [
-                EavValueVarcharProductSkuEntity::tableName() . '.product_sku_id' => new Expression(
-                    ProductSku::tableName() . '.id'
-                ),
-            ]
-        );
-        $query->andWhere([
-            EavValueVarcharProductSkuEntity::tableName() . '.value_id' => ArrayHelper::map($values, 'id', 'id')
-        ]);
-    }
-
-    private function joinDoubleValues(ActiveQuery $query, array $values)
-    {
-        $query->innerJoin(
-            EavValueDoubleProductSkuEntity::tableName(),
-            [
-                EavValueDoubleProductSkuEntity::tableName() . '.product_sku_id' => new Expression(
-                    ProductSku::tableName() . '.id'
-                ),
-            ]
-        );
-        $query->andWhere([
-            EavValueDoubleProductSkuEntity::tableName() . '.value_id' => ArrayHelper::map($values, 'id', 'id')
-        ]);
-    }
-
-    /**
-     * @param ActiveQuery $query
-     * @param array $filterParams
-     */
-    private function joinBrand(ActiveQuery $query, array $filterParams): void
-    {
-        $query->innerJoin(Brand::tableName(), [
-            Brand::tableName() . '.id' => new Expression(Product::tableName() . '.brand_id'),
-        ])->andWhere([
-            Brand::tableName() . '.code' => $filterParams['brand'],
-        ]);
     }
 }
