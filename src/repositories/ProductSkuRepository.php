@@ -61,11 +61,12 @@ class ProductSkuRepository extends AbstractActiveRecordRepository
         array $with = [
             'urlEntity',
             'product',
-            'product.type',
+            'product.type.productPreviewEavAttributes',
             'currency',
             'eavVarcharValues.eavAttribute',
             'eavTextValues.eavAttribute',
             'eavDoubleValues.eavAttribute',
+            'mainImageEntity',
         ]
     ): RepositorySearchMethodResponseInterface {
         if (! $params->validate()) {

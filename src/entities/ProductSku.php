@@ -43,6 +43,8 @@ use DmitriiKoziuk\yii2UrlIndex\repositories\UrlRepository;
  * @property EavValueTextEntity[]    $eavTextValues
  * @property EavValueDoubleEntity[]  $eavDoubleValues
  * @property UrlEntity               $urlEntity
+ * @property FileEntity              $mainImageEntity
+ * @property FileEntity[]            $imageEntities
  */
 class ProductSku extends ActiveRecord
 {
@@ -70,14 +72,14 @@ class ProductSku extends ActiveRecord
     private $images;
 
     /**
-     * @var null|ProductTypeAttributeEntity[]
-     */
-    private $previewAttributes;
-
-    /**
      * @var UrlRepository
      */
     private $urlRepository;
+
+    /**
+     * @var null|ProductEavValueInterface[]
+     */
+    private $previewEavValues;
 
     /**
      * {@inheritdoc}
@@ -235,6 +237,23 @@ class ProductSku extends ActiveRecord
             ]);
     }
 
+    public function getMainImageEntity(): ActiveQuery
+    {
+        return $this->hasOne(FileEntity::class, ['entity_id' => 'id'])
+            ->andWhere([FileEntity::tableName() . '.entity_name' => self::FILE_ENTITY_NAME])
+            ->andWhere(['like', FileEntity::tableName() . '.mime_type', 'image%', false])
+            ->orderBy([FileEntity::tableName() . '.sort' => SORT_ASC]);
+    }
+
+    public function getImageEntities(): ActiveQuery
+    {
+        return $this->hasMany(FileEntity::class, ['entity_id' => 'id'])
+            ->andWhere(['entity_name' => self::FILE_ENTITY_NAME])
+            ->andWhere(['like', FileEntity::tableName() . '.mime_type', 'image%', false])
+            ->orderBy([FileEntity::tableName() . '.sort' => SORT_ASC])
+            ->offset(1);
+    }
+
     public function isCustomerPriceSet(): bool
     {
         return !empty($this->customer_price);
@@ -260,43 +279,10 @@ class ProductSku extends ActiveRecord
         return $this->stock_status === self::STOCK_IN;
     }
 
-    /**
-     * Use to find product images.
-     * @return string
-     */
-    public function getImageEntityName()
-    {
-        return self::FILE_ENTITY_NAME;
-    }
-
-    public function getImageName()
-    {
-        return $this->product->slug . '-' . $this->slug;
-    }
-
-    public function getImageSavePath()
-    {
-        $path = \Yii::getAlias('@frontend') .
-            '/web/uploads/' .
-            static::FILE_ENTITY_NAME .
-            '/' .
-            $this->id .
-            '/images/originals';
-        return $path;
-    }
-
     public function getTypeID()
     {
         if (! empty($this->product)) {
             return $this->product->type_id;
-        }
-        return null;
-    }
-
-    public function getCategoryID()
-    {
-        if (! empty($this->product)) {
-            return $this->product->category_id;
         }
         return null;
     }
@@ -340,22 +326,12 @@ class ProductSku extends ActiveRecord
      */
     public function getImages(): array
     {
-        if (is_null($this->images)) {
-            $this->images = $this->fileRepository->getEntityImages(
-                self::FILE_ENTITY_NAME,
-                (string) $this->id
-            );
-        }
-        return $this->images;
+        return $this->imageEntities;
     }
 
     public function getMainImage(): ?FileEntity
     {
-        $idx = array_key_first($this->getImages());
-        if (is_null($idx)) {
-            return null;
-        }
-        return $this->getImages()[ $idx ];
+        return $this->mainImageEntity;
     }
 
     public static function getStockVariation($key = null)
@@ -402,35 +378,37 @@ class ProductSku extends ActiveRecord
      */
     public function getPreviewEavValues(): array
     {
+        if (! empty($this->previewEavValues)) {
+            return $this->previewEavValues;
+        }
         $values = [];
         if ($this->product->isTypeSet()) {
-            if (is_null($this->previewAttributes)) {
-                $this->previewAttributes = $this->getPreviewAttributes();
-            }
-            foreach ($this->eavVarcharValues as $value) {
-                if (array_key_exists($value->attribute_id, $this->previewAttributes)) {
-                    $values[] = $value;
+            $previewAttributes = $this->product->type->productPreviewEavAttributes;
+            if (! empty($previewAttributes)) {
+                foreach ($this->eavVarcharValues as $value) {
+                    if (array_key_exists($value->attribute_id, $previewAttributes)) {
+                        $values[] = $value;
+                    }
                 }
-            }
-            foreach ($this->eavDoubleValues as $value) {
-                if (array_key_exists($value->attribute_id, $this->previewAttributes)) {
-                    $values[] = $value;
+                foreach ($this->eavDoubleValues as $value) {
+                    if (array_key_exists($value->attribute_id, $previewAttributes)) {
+                        $values[] = $value;
+                    }
                 }
-            }
-            foreach ($this->eavTextValues as $value) {
-                if (array_key_exists($value->attribute_id, $this->previewAttributes)) {
-                    $values[] = $value;
+                foreach ($this->eavTextValues as $value) {
+                    if (array_key_exists($value->attribute_id, $previewAttributes)) {
+                        $values[] = $value;
+                    }
                 }
-            }
-            if (! empty($values)) {
                 $this->sortEavValues(
                     $values,
-                    $this->previewAttributes,
+                    $previewAttributes,
                     ProductTypeAttributeEntity::SORT_AT_PRODUCT_SKU_PREVIEW_PROPERTY_NAME
                 );
+                return $this->previewEavValues = &$values;
             }
         }
-        return $values;
+        return [];
     }
 
     /**
@@ -495,20 +473,6 @@ class ProductSku extends ActiveRecord
             }
         }
         return (float) $value;
-    }
-
-    /**
-     * @return ProductTypeAttributeEntity[]
-     */
-    private function getPreviewAttributes(): array
-    {
-        return ProductTypeAttributeEntity::find()
-            ->where([
-                'product_type_id' => $this->product->type->id,
-                'view_attribute_at_product_sku_preview' => ProductTypeAttributeEntity::PREVIEW_YES,
-            ])
-            ->indexBy('attribute_id')
-            ->all();
     }
 
     private function getAttributeSortForProductPage(): array
