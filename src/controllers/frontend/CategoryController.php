@@ -106,9 +106,7 @@ final class CategoryController extends Controller
                 ]);
                 if (empty($filterParams)) {
                     $searchResponse = $this->productRepository->search(
-                        $productSearchParams,
-                        $filteredAttributes,
-                        $filterParams
+                        $productSearchParams
                     );
                 } else {
                     $searchResponse = $this->productSkuRepository->search(
