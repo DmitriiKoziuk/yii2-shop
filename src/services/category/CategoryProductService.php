@@ -1,4 +1,5 @@
 <?php
+
 namespace DmitriiKoziuk\yii2Shop\services\category;
 
 use yii\db\Connection;
@@ -73,7 +74,6 @@ final class CategoryProductService extends DBActionService
             $relation = new CategoryProduct();
             $relation->category_id = $category->id;
             $relation->product_id = $productId;
-            $relation->sort = $this->_defineSort($category);
             $this->_categoryProductRepository->save($relation);
         } catch (\Throwable $e) {
             throw $e;
@@ -101,17 +101,5 @@ final class CategoryProductService extends DBActionService
     private function _deleteRelation(CategoryProduct $categoryProduct): void
     {
         $categoryProduct->delete();
-        CategoryProduct::updateAllCounters(
-            ['sort' => -1],
-            "category_id = {$categoryProduct->category_id} AND sort > {$categoryProduct->sort}"
-        );
-    }
-
-    private function _defineSort(Category $category): int
-    {
-        $count = (int) CategoryProduct::find()
-            ->where(['category_id' => $category->id])
-            ->count();
-        return ++$count;
     }
 }
