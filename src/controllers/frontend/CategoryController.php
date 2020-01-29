@@ -102,7 +102,7 @@ final class CategoryController extends Controller
                 $productSearchParams = new ProductSearchParams([
                     'categoryIDs' => [$categoryData->getId()],
                     'limit' => $productOnPage,
-                    'offset' => (int) $pageNumber ?? (($pageNumber - 1) * $productOnPage),
+                    'offset' => empty($pageNumber) ? null : (int) (($pageNumber - 1) * $productOnPage),
                 ]);
                 if (empty($filterParams)) {
                     $searchResponse = $this->productRepository->search(
