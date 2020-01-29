@@ -2,6 +2,7 @@
 
 namespace DmitriiKoziuk\yii2Shop\repositories;
 
+
 use yii\db\Expression;
 use yii\db\ActiveQuery;
 use yii\helpers\ArrayHelper;
@@ -12,7 +13,7 @@ use DmitriiKoziuk\yii2Shop\entities\Product;
 use DmitriiKoziuk\yii2Shop\entities\ProductSku;
 use DmitriiKoziuk\yii2Shop\entities\Brand;
 use DmitriiKoziuk\yii2Shop\entities\categoryFaceted\EavAttributeEntity;
-use DmitriiKoziuk\yii2Shop\entities\CategoryProduct;
+use DmitriiKoziuk\yii2Shop\entities\CategoryProductSku;
 use DmitriiKoziuk\yii2Shop\entities\EavValueDoubleEntity;
 use DmitriiKoziuk\yii2Shop\entities\EavValueDoubleProductSkuEntity;
 use DmitriiKoziuk\yii2Shop\entities\EavValueVarcharEntity;
@@ -88,21 +89,21 @@ class ProductSkuRepository extends AbstractActiveRecordRepository
         if (! empty($params->getCategoryIDs())) {
             $query->addSelect([
                 ProductSku::tableName() . '.*',
-                CategoryProduct::tableName() . '.sort',
+                CategoryProductSku::tableName() . '.sort',
             ]);
             $query->innerJoin(
-                CategoryProduct::tableName(),
+                CategoryProductSku::tableName(),
                 [
-                    CategoryProduct::tableName() . '.product_id'  => new Expression(
-                        Product::tableName() . '.id'
+                    CategoryProductSku::tableName() . '.product_sku_id'  => new Expression(
+                        ProductSku::tableName() . '.id'
                     ),
                 ]
             );
             $query->andWhere([
-                CategoryProduct::tableName() . '.category_id' => $params->getCategoryIDs(),
+                CategoryProductSku::tableName() . '.category_id' => $params->getCategoryIDs(),
             ]);
             $query->orderBy([
-                CategoryProduct::tableName() . '.sort' => SORT_ASC,
+                CategoryProductSku::tableName() . '.sort' => SORT_ASC,
             ]);
         }
         if (! empty($params->stockStatus)) {
