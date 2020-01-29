@@ -39,12 +39,16 @@ class CustomerCartWidget extends Widget
         $cartKey = $cookies->getValue('cart');
         try {
             $cart = $this->cartRepository->getByKey($cartKey);
-            $cartProducts = $this->cartProductRepository->getCartProducts($cart->id);
-            $totalProducts = 0;
-            $totalPrice = 0;
-            foreach ($cartProducts as $cartProduct) {
-                $totalProducts += $cartProduct->quantity;
-                $totalPrice += $cartProduct->productSku->getCustomerPrice() * $cartProduct->quantity;
+            if (empty($cart)) {
+                Yii::$app->response->cookies->remove('cart');
+            } else {
+                $cartProducts = $this->cartProductRepository->getCartProducts($cart->id);
+                $totalProducts = 0;
+                $totalPrice = 0;
+                foreach ($cartProducts as $cartProduct) {
+                    $totalProducts += $cartProduct->quantity;
+                    $totalPrice += $cartProduct->productSku->getCustomerPrice() * $cartProduct->quantity;
+                }
             }
         } catch (EntityNotFoundException $e) {
             Yii::$app->response->cookies->remove('cart');
@@ -52,8 +56,8 @@ class CustomerCartWidget extends Widget
         }
         return $this->render('customer-cart', [
             'cart' => $cart,
-            'totalProducts' => $totalProducts,
-            'totalPrice' => $totalPrice,
+            'totalProducts' => $totalProducts ?? 0,
+            'totalPrice' => $totalPrice ?? 0,
         ]);
     }
 }
