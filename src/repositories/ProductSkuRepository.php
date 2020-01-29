@@ -86,6 +86,10 @@ class ProductSkuRepository extends AbstractActiveRecordRepository
             ]
         );
         if (! empty($params->getCategoryIDs())) {
+            $query->addSelect([
+                ProductSku::tableName() . '.*',
+                CategoryProduct::tableName() . '.sort',
+            ]);
             $query->innerJoin(
                 CategoryProduct::tableName(),
                 [
@@ -99,10 +103,6 @@ class ProductSkuRepository extends AbstractActiveRecordRepository
             ]);
             $query->orderBy([
                 CategoryProduct::tableName() . '.sort' => SORT_ASC,
-            ]);
-            $query->addSelect([
-                ProductSku::tableName() . '.*',
-                CategoryProduct::tableName() . '.sort',
             ]);
         }
         if (! empty($params->stockStatus)) {
