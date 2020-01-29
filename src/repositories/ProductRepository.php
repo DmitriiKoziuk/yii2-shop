@@ -68,6 +68,10 @@ class ProductRepository extends AbstractActiveRecordRepository
             $query->with($with);
         }
         if (! empty($params->getCategoryIDs())) {
+            $query->addSelect([
+                Product::tableName() . '.*',
+                CategoryProductSku::tableName() . '.sort',
+            ]);
             $query->innerJoin(
                 CategoryProductSku::tableName(),
                 [
@@ -81,10 +85,6 @@ class ProductRepository extends AbstractActiveRecordRepository
             ]);
             $query->orderBy([
                 CategoryProductSku::tableName() . '.sort' => SORT_ASC,
-            ]);
-            $query->addSelect([
-                Product::tableName() . '.*',
-                CategoryProductSku::tableName() . '.sort',
             ]);
         }
         $productCount = $query->count();
