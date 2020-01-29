@@ -11,7 +11,6 @@ use yii\db\ActiveRecord;
  *
  * @property int $category_id
  * @property int $product_id
- * @property int $sort
  *
  * @property Category $category
  * @property Product  $product
@@ -32,9 +31,8 @@ class CategoryProduct extends ActiveRecord
     public function rules()
     {
         return [
-            [['category_id', 'product_id', 'sort'], 'required'],
-            [['category_id', 'product_id', 'sort'], 'integer'],
-            [['category_id', 'sort'], 'unique', 'targetAttribute' => ['category_id', 'sort']],
+            [['category_id', 'product_id'], 'required'],
+            [['category_id', 'product_id'], 'integer'],
             [['category_id', 'product_id'], 'unique', 'targetAttribute' => ['category_id', 'product_id']],
             [
                 ['category_id'],
@@ -61,7 +59,6 @@ class CategoryProduct extends ActiveRecord
         return [
             'category_id' => Yii::t('app', 'Category ID'),
             'product_id' => Yii::t('app', 'Product ID'),
-            'sort' => Yii::t('app', 'Sort'),
         ];
     }
 

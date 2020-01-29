@@ -2,20 +2,13 @@
 
 namespace DmitriiKoziuk\yii2Shop\repositories;
 
-use yii\db\ActiveQuery;
 use yii\db\Expression;
-use yii\helpers\ArrayHelper;
 use DmitriiKoziuk\yii2Base\repositories\AbstractActiveRecordRepository;
 use DmitriiKoziuk\yii2Shop\interfaces\RepositorySearchMethodResponseInterface;
 use DmitriiKoziuk\yii2Shop\data\product\ProductSearchParams;
 use DmitriiKoziuk\yii2Shop\data\RepositorySearchMethodResponse;
-use DmitriiKoziuk\yii2Shop\entities\Brand;
 use DmitriiKoziuk\yii2Shop\entities\Product;
-use DmitriiKoziuk\yii2Shop\entities\ProductSku;
-use DmitriiKoziuk\yii2Shop\entities\CategoryProduct;
-use DmitriiKoziuk\yii2Shop\entities\EavValueDoubleProductSkuEntity;
-use DmitriiKoziuk\yii2Shop\entities\EavValueVarcharProductSkuEntity;
-use DmitriiKoziuk\yii2Shop\entities\categoryFaceted\EavAttributeEntity;
+use DmitriiKoziuk\yii2Shop\entities\CategoryProductSku;
 
 class ProductRepository extends AbstractActiveRecordRepository
 {
@@ -75,23 +68,23 @@ class ProductRepository extends AbstractActiveRecordRepository
             $query->with($with);
         }
         if (! empty($params->getCategoryIDs())) {
+            $query->addSelect([
+                Product::tableName() . '.*',
+                CategoryProductSku::tableName() . '.sort',
+            ]);
             $query->innerJoin(
-                CategoryProduct::tableName(),
+                CategoryProductSku::tableName(),
                 [
-                    CategoryProduct::tableName() . '.product_id'  => new Expression(
-                        Product::tableName() . '.id'
+                    CategoryProductSku::tableName() . '.product_sku_id'  => new Expression(
+                        Product::tableName() . '.main_sku_id'
                     ),
                 ]
             );
             $query->andWhere([
-                CategoryProduct::tableName() . '.category_id' => $params->getCategoryIDs(),
+                CategoryProductSku::tableName() . '.category_id' => $params->getCategoryIDs(),
             ]);
             $query->orderBy([
-                CategoryProduct::tableName() . '.sort' => SORT_ASC,
-            ]);
-            $query->addSelect([
-                Product::tableName() . '.*',
-                CategoryProduct::tableName() . '.sort',
+                CategoryProductSku::tableName() . '.sort' => SORT_DESC,
             ]);
         }
         $productCount = $query->count();
