@@ -468,6 +468,7 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
                 $urlService,
                 $categoryProductService,
                 $categoryProductSkuService,
+                $categoryProductSkuRepository,
                 $currencyService,
                 $eavService
             ) {
@@ -481,6 +482,7 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
                     $urlService,
                     $categoryProductService,
                     $categoryProductSkuService,
+                    $categoryProductSkuRepository,
                     $currencyService,
                     $eavService,
                     $this->dbConnection
