@@ -183,6 +183,7 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
             ]);
         }
         if ($app instanceof ConsoleApp) {
+            $this->controllerNamespace = __NAMESPACE__ . '\controllers\console';
             array_push(
                 $app->controllerMap['migrate']['migrationNamespaces'],
                 __NAMESPACE__ . '\migrations'
@@ -467,6 +468,7 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
                 $urlService,
                 $categoryProductService,
                 $categoryProductSkuService,
+                $categoryProductSkuRepository,
                 $currencyService,
                 $eavService
             ) {
@@ -480,6 +482,7 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
                     $urlService,
                     $categoryProductService,
                     $categoryProductSkuService,
+                    $categoryProductSkuRepository,
                     $currencyService,
                     $eavService,
                     $this->dbConnection

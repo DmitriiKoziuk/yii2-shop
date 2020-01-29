@@ -28,6 +28,7 @@ use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuUpdateForm;
 use DmitriiKoziuk\yii2Shop\forms\product\ProductSkuCreateForm;
 use DmitriiKoziuk\yii2Shop\repositories\ProductRepository;
 use DmitriiKoziuk\yii2Shop\repositories\ProductSkuRepository;
+use DmitriiKoziuk\yii2Shop\repositories\CategoryProductSkuRepository;
 use DmitriiKoziuk\yii2Shop\services\eav\EavService;
 use DmitriiKoziuk\yii2Shop\services\eav\ProductSkuEavAttributesService;
 use DmitriiKoziuk\yii2Shop\services\category\CategoryProductService;
@@ -83,6 +84,11 @@ class ProductService extends DBActionService
     private $_categoryProductSkuService;
 
     /**
+     * @var CategoryProductSkuRepository
+     */
+    private $categoryProductSkuRepository;
+
+    /**
      * @var CurrencyService
      */
     private $_currencyService;
@@ -102,6 +108,7 @@ class ProductService extends DBActionService
         UrlIndexService $urlIndexService,
         CategoryProductService $categoryProductService,
         CategoryProductSkuService $categoryProductSkuService,
+        CategoryProductSkuRepository $categoryProductSkuRepository,
         CurrencyService $currencyService,
         EavService $eavService,
         Connection $db = null
@@ -116,6 +123,7 @@ class ProductService extends DBActionService
         $this->_urlIndexService = $urlIndexService;
         $this->_categoryProductService = $categoryProductService;
         $this->_categoryProductSkuService = $categoryProductSkuService;
+        $this->categoryProductSkuRepository = $categoryProductSkuRepository;
         $this->_currencyService = $currencyService;
         $this->eavService = $eavService;
     }
@@ -468,6 +476,15 @@ class ProductService extends DBActionService
             $this->_defineProductSkuSellPrice($productSku);
             $this->_defineProductSkuCustomerPrice($productSku);
         }
+        if (
+            $productSku->isAttributeChanged('stock_status')
+        ) {
+            if (ProductSku::STOCK_OUT == $productSku->stock_status) {
+                $this->moveProductSkuToCategoriesEnd($productSku);
+            } elseif (ProductSku::STOCK_IN == $productSku->stock_status) {
+                $this->moveProductSkuToCategoriesStart($productSku);
+            }
+        }
         $changedAttributes = array_merge($changedAttributes, $productSku->getDirtyAttributes());
         $this->_productSkuRepository->save($productSku);
         return $changedAttributes;
@@ -758,6 +775,50 @@ class ProductService extends DBActionService
                 $destination->id,
                 $value->id
             );
+        }
+    }
+
+    private function moveProductSkuToCategoriesEnd(ProductSku $productSku)
+    {
+        $category = $productSku->product->category;
+        if (! empty($category)) {
+            $this->categoryProductSkuRepository->updateSort(
+                $category->id,
+                $productSku->id,
+                $this->categoryProductSkuRepository->getMaxSort($category->id)
+            );
+
+            if (! empty($category->parentList)) {
+                foreach ($category->parentList as $parentCategory) {
+                    $this->categoryProductSkuRepository->updateSort(
+                        $parentCategory->id,
+                        $productSku->id,
+                        $this->categoryProductSkuRepository->getMaxSort($parentCategory->id)
+                    );
+                }
+            }
+        }
+    }
+
+    private function moveProductSkuToCategoriesStart(ProductSku $productSku)
+    {
+        $category = $productSku->product->category;
+        if (! empty($category)) {
+            $this->categoryProductSkuRepository->updateSort(
+                $category->id,
+                $productSku->id,
+                1
+            );
+
+            if (! empty($category->parentList)) {
+                foreach ($category->parentList as $parentCategory) {
+                    $this->categoryProductSkuRepository->updateSort(
+                        $parentCategory->id,
+                        $productSku->id,
+                        1
+                    );
+                }
+            }
         }
     }
 }

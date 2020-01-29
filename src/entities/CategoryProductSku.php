@@ -1,23 +1,29 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace DmitriiKoziuk\yii2Shop\entities;
 
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use DmitriiKoziuk\yii2Shop\repositories\CategoryProductSkuRepository;
 
 /**
  * This is the model class for table "{{%dk_shop_category_product_sku}}".
  *
  * @property int $category_id
  * @property int $product_sku_id
- * @property int $sort
+ * @property int $sort           Use getSort() instead direct access
  *
  * @property Category   $category
  * @property ProductSku $productSku
  */
 class CategoryProductSku extends ActiveRecord
 {
+    /**
+     * @var CategoryProductSkuRepository
+     */
+    private $repository;
+
     /**
      * {@inheritdoc}
      */
@@ -67,6 +73,7 @@ class CategoryProductSku extends ActiveRecord
 
     public function init()
     {
+        $this->repository = Yii::$container->get(CategoryProductSkuRepository::class);
     }
 
     public function afterFind()
@@ -81,5 +88,25 @@ class CategoryProductSku extends ActiveRecord
     public function getProductSku(): ActiveQuery
     {
         return $this->hasOne(ProductSku::class, ['id' => 'product_sku_id']);
+    }
+
+    public function getSort()
+    {
+        $maxSort = $this->repository->getMaxSort($this->category_id);
+        $sort = $maxSort - $this->sort;
+        if ($sort == 0) {
+            return 1;
+        }
+        return $sort;
+    }
+
+    public function getMaxSort(): int
+    {
+        return $this->repository->getMaxSort($this->category_id);
+    }
+
+    public function getMinSort(): int
+    {
+        return 1;
     }
 }

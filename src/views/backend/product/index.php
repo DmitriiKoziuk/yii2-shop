@@ -175,13 +175,20 @@ $this->params['breadcrumbs'][] = $this->title;
 
             [
                 'class'    => 'yii\grid\ActionColumn',
-                'template' => '{update}',
+                'template' => '{update} {sort}',
                 'buttons'  => [
                     'update' => function ($url, $model) {
                         /** @var $model ProductSku */
                         return Html::a(
                             '<span class="glyphicon glyphicon-edit"></span>',
                             \yii\helpers\Url::to(['product/update', 'id' => $model->product_id])
+                        );
+                    },
+                    'sort' => function ($url, $model) {
+                        /** @var $model ProductSku */
+                        return Html::a(
+                            '<span class="glyphicon glyphicon-th-list"></span>',
+                            \yii\helpers\Url::to(['category-product/sort', 'id' => $model->product_id])
                         );
                     }
                 ],
