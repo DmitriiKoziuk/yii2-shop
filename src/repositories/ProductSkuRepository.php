@@ -103,7 +103,7 @@ class ProductSkuRepository extends AbstractActiveRecordRepository
                 CategoryProductSku::tableName() . '.category_id' => $params->getCategoryIDs(),
             ]);
             $query->orderBy([
-                CategoryProductSku::tableName() . '.sort' => SORT_ASC,
+                CategoryProductSku::tableName() . '.sort' => SORT_DESC,
             ]);
         }
         if (! empty($params->stockStatus)) {
