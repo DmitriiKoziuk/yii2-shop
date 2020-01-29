@@ -2,7 +2,6 @@
 
 namespace DmitriiKoziuk\yii2Shop\repositories;
 
-
 use yii\db\Expression;
 use yii\db\ActiveQuery;
 use yii\helpers\ArrayHelper;
