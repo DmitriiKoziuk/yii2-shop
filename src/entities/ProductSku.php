@@ -45,6 +45,7 @@ use DmitriiKoziuk\yii2UrlIndex\repositories\UrlRepository;
  * @property UrlEntity               $urlEntity
  * @property FileEntity              $mainImageEntity
  * @property FileEntity[]            $imageEntities
+ * @property CategoryProductSku[]    $categoryProductSkuEntities
  */
 class ProductSku extends ActiveRecord
 {
@@ -252,6 +253,11 @@ class ProductSku extends ActiveRecord
             ->andWhere(['like', FileEntity::tableName() . '.mime_type', 'image%', false])
             ->orderBy([FileEntity::tableName() . '.sort' => SORT_ASC])
             ->offset(1);
+    }
+
+    public function getCategoryProductSkuEntities(): ActiveQuery
+    {
+        return $this->hasMany(CategoryProductSku::class, ['product_sku_id' => 'id']);
     }
 
     public function isCustomerPriceSet(): bool
