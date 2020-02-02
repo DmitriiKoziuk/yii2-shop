@@ -33,7 +33,7 @@ class BrandRepository extends AbstractActiveRecordRepository
      * @return Brand[]
      * @throws Exception
      */
-    public function getFilteredBrands(int $categoryId, array $filteredAttributes): array
+    public function getBrands(int $categoryId, array $filteredAttributes): array
     {
         $query = Brand::find()
             ->innerJoin(Product::tableName(), [
