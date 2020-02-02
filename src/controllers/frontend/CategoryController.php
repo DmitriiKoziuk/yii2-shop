@@ -105,7 +105,11 @@ final class CategoryController extends Controller
                     $filteredAttributes,
                     $filterParams
                 );
-                $brands = $this->brandRepository->getBrands($categoryData->getId(), $filteredAttributes);
+                $brands = $this->brandRepository->getBrands(
+                    $categoryData->getId(),
+                    $filteredAttributes,
+                    $filteredBrand
+                );
                 $productSearchParams = new ProductSearchParams([
                     'categoryIDs' => [$categoryData->getId()],
                     'limit' => $productOnPage,
