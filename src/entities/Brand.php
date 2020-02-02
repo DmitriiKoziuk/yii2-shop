@@ -17,6 +17,11 @@ use yii\behaviors\TimestampBehavior;
 class Brand extends \yii\db\ActiveRecord
 {
     /**
+     * @var int
+     */
+    public $quantity;
+
+    /**
      * {@inheritdoc}
      */
     public static function tableName()
@@ -40,8 +45,9 @@ class Brand extends \yii\db\ActiveRecord
             [['name', 'code'], 'required'],
             [['name'], 'string', 'max' => 45],
             [['code'], 'string', 'max' => 55],
-            [['created_at', 'updated_at'], 'integer'],
+            [['created_at', 'updated_at', 'quantity'], 'integer'],
             [['name'], 'unique'],
+            [['quantity'], 'safe'],
         ];
     }
 

@@ -105,7 +105,11 @@ final class CategoryController extends Controller
                     $filteredAttributes,
                     $filterParams
                 );
-                $brands = $this->brandRepository->getBrands($categoryData->getId(), $filteredAttributes);
+                $brands = $this->brandRepository->getBrands(
+                    $categoryData->getId(),
+                    $filteredAttributes,
+                    $filteredBrand
+                );
                 $productSearchParams = new ProductSearchParams([
                     'categoryIDs' => [$categoryData->getId()],
                     'limit' => $productOnPage,
@@ -123,6 +127,10 @@ final class CategoryController extends Controller
                     );
                 }
 
+                if (0 == $searchResponse->getTotalCount()) {
+                    throw new \InvalidArgumentException("Page without products.");
+                }
+
                 $pagination = new Pagination(['totalCount' => $searchResponse->getTotalCount()]);
 
                 $viewParams = [
@@ -138,20 +146,20 @@ final class CategoryController extends Controller
                     'filteredBrand' => $filteredBrand,
                 ];
             }
-        } catch (EntityNotFoundException $e) {
-            Yii::error('Error', __METHOD__);
+
+            if (
+                $categoryData->isTemplateNameSet() &&
+                $this->isCategoryTemplateExist($categoryData->getTemplateName())
+            ) {
+                return $this->render($categoryData->getTemplateName(), $viewParams);
+            }
+            return $this->render('index', $viewParams);
+        } catch (EntityNotFoundException|\InvalidArgumentException $e) {
+            Yii::error($e->getMessage(), __METHOD__);
             throw new NotFoundHttpException(
                 Yii::t('app', 'Page not found.')
             );
         }
-
-        if (
-            $categoryData->isTemplateNameSet() &&
-            $this->isCategoryTemplateExist($categoryData->getTemplateName())
-        ) {
-            return $this->render($categoryData->getTemplateName(), $viewParams);
-        }
-        return $this->render('index', $viewParams);
     }
 
     private function isCategoryTemplateExist(string $templateName): bool
