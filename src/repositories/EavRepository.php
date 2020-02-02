@@ -174,24 +174,28 @@ class EavRepository
     }
 
     /**
+     * @param array $attributeIDs
      * @param array $codes
      * @return EavValueVarcharEntity[]
      */
-    public function getVarcharValuesByCodes(array $codes): array
+    public function getVarcharValuesByCodes(array $attributeIDs, array $codes): array
     {
         return EavValueVarcharEntity::find()
             ->where(['in', 'code', $codes])
+            ->andWhere(['in', 'attribute_id', $attributeIDs])
             ->all();
     }
 
     /**
+     * @param array $attributeIDs
      * @param array $codes
      * @return EavValueDoubleEntity[]
      */
-    public function getDoubleValuesByCodes(array $codes): array
+    public function getDoubleValuesByCodes(array $attributeIDs, array $codes): array
     {
         return EavValueDoubleEntity::find()
             ->where(['in', 'code', $codes])
+            ->andWhere(['in', 'attribute_id', $attributeIDs])
             ->all();
     }
 
