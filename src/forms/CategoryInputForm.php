@@ -18,6 +18,7 @@ class CategoryInputForm extends Model
     public $filtered_title_template;
     public $filtered_description_template;
     public $filtered_h1_template;
+    public $load_faceted_navigation;
 
     public function rules()
     {
@@ -37,7 +38,7 @@ class CategoryInputForm extends Model
             ],
             [['meta_description'], 'string', 'max' => 500],
             [['template_name'], 'string', 'max' => 100],
-            [['parent_id', 'is_products_show'], 'integer'],
+            [['parent_id', 'is_products_show', 'load_faceted_navigation'], 'integer'],
             [
                 [
                     'name',
@@ -70,6 +71,7 @@ class CategoryInputForm extends Model
             'filtered_title_template',
             'filtered_description_template',
             'filtered_h1_template',
+            'load_faceted_navigation',
         ]);
     }
 }

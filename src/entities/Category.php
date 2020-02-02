@@ -29,6 +29,7 @@ use DmitriiKoziuk\yii2UrlIndex\entities\UrlEntity;
  * @property string $filtered_title_template
  * @property string $filtered_description_template
  * @property string $filtered_h1_template
+ * @property int    $load_faceted_navigation
  *
  * @property Category          $parent
  * @property Category[]        $parents
@@ -47,6 +48,9 @@ class Category extends ActiveRecord
 
     const IS_PRODUCT_SHOW_FALSE = 0;
     const IS_PRODUCT_SHOW_TRUE = 1;
+
+    const LOAD_FACETED_NAVIGATION_NO = 0;
+    const LOAD_FACETED_NAVIGATION_YES = 1;
 
     public $depth;
 
@@ -111,9 +115,18 @@ class Category extends ActiveRecord
                 ],
                 'trim'
             ],
-            [['parent_id', 'is_products_show', 'created_at', 'updated_at'], 'integer'],
+            [
+                [
+                    'parent_id',
+                    'is_products_show',
+                    'created_at',
+                    'updated_at',
+                    'load_faceted_navigation',
+                ],
+                'integer'
+            ],
             [['parent_id'], 'default', 'value' => null],
-            [['is_products_show'], 'default', 'value' => 1],
+            [['is_products_show', 'load_faceted_navigation'], 'default', 'value' => 1],
             [
                 ['parent_id'],
                 'exist',
@@ -145,6 +158,7 @@ class Category extends ActiveRecord
             'filtered_title_template' => 'Filtered title template',
             'filtered_description_template' => 'Filtered description template',
             'filtered_h1_template' => 'Filtered h1 template',
+            'load_faceted_navigation' => 'Load faceted navigation',
         ];
     }
 
@@ -248,6 +262,11 @@ class Category extends ActiveRecord
     public function isFilteredH1TemplateSet(): bool
     {
         return ! empty($this->filtered_h1_template);
+    }
+
+    public function isLoadFacetedNavigation(): bool
+    {
+        return (bool) $this->load_faceted_navigation;
     }
 
     public function getParentsNames(): string
