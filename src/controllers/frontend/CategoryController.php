@@ -100,11 +100,13 @@ final class CategoryController extends Controller
             if ($categoryData->isProductsShow()) {
                 $productOnPage = (int) $this->configService->getValue(ShopModule::getId(), 'productsOnCategoryPage');
                 $filteredAttributes = $this->eavService->getFilteredAttributesWithValues($filterParams);
-                $facetedAttributes = $this->eavService->getFacetedAttributesWithValues(
-                    $categoryData->getId(),
-                    $filteredAttributes,
-                    $filterParams
-                );
+                if ($categoryData->isLoadFacetedNavigation()) {
+                    $facetedAttributes = $this->eavService->getFacetedAttributesWithValues(
+                        $categoryData->getId(),
+                        $filteredAttributes,
+                        $filterParams
+                    );
+                }
                 $brands = $this->brandRepository->getBrands(
                     $categoryData->getId(),
                     $filteredAttributes,

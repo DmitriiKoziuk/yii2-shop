@@ -32,6 +32,11 @@ class CategoryData
         return ! is_null($this->_categoryRecord->template_name);
     }
 
+    public function isLoadFacetedNavigation(): bool
+    {
+        return $this->_categoryRecord->isLoadFacetedNavigation();
+    }
+
     public function getId(): int
     {
         return $this->_categoryRecord->id;
