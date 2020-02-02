@@ -3,6 +3,8 @@
 namespace DmitriiKoziuk\yii2Shop\services\eav;
 
 use Exception;
+use InvalidArgumentException;
+use yii\helpers\ArrayHelper;
 use DmitriiKoziuk\yii2Shop\entities\Product;
 use DmitriiKoziuk\yii2Shop\helpers\EavAttributeHelper;
 use DmitriiKoziuk\yii2Shop\repositories\EavRepository;
@@ -45,14 +47,25 @@ class EavService
         if (! empty($filterParams)) {
             $attributeCodes = $this->mapFilteredAttributeCodes($filterParams);
             $filteredAttributes = $this->eavRepository->getFilteredAttributes($attributeCodes);
+            if (count($attributeCodes) != count($filteredAttributes)) {
+                throw new InvalidArgumentException("One or more attribute not exist.");
+            }
             $varcharValueCodes = $this->mapFilteredAttributesVarcharCodes($filteredAttributes, $filterParams);
             if (! empty($varcharValueCodes)) {
-                $varcharValues = $this->eavRepository->getVarcharValuesByCodes($varcharValueCodes);
+                $attributeIDs = ArrayHelper::map($this->filterVarcharAttributeIDs($filteredAttributes), 'id', 'id');
+                $varcharValues = $this->eavRepository->getVarcharValuesByCodes($attributeIDs, $varcharValueCodes);
+                if (count($varcharValueCodes) != count($varcharValues)) {
+                    throw new InvalidArgumentException("One or more varchar values not exist.");
+                }
                 $this->mergeAttributesAndValues($filteredAttributes, $varcharValues);
             }
             $doubleValueCodes = $this->mapFilteredAttributesDoubleCodes($filteredAttributes, $filterParams);
             if (! empty($doubleValueCodes)) {
-                $doubleValues = $this->eavRepository->getDoubleValuesByCodes($doubleValueCodes);
+                $attributeIDs = ArrayHelper::map($this->filterDoubleAttributeIDs($filteredAttributes), 'id', 'id');
+                $doubleValues = $this->eavRepository->getDoubleValuesByCodes($attributeIDs, $doubleValueCodes);
+                if (count($doubleValueCodes) != count($doubleValues)) {
+                    throw new InvalidArgumentException("One or more double values not exist.");
+                }
                 $this->mergeAttributesAndValues($filteredAttributes, $doubleValues);
             }
         }
@@ -71,7 +84,9 @@ class EavService
     {
         $codes = [];
         foreach ($filterParams as $key => $values) {
-            $codes[] = $key;
+            if ('brand' != $key) {
+                $codes[] = $key;
+            }
         }
         return $codes;
     }
@@ -125,5 +140,29 @@ class EavService
                 $attributes[ $value->attribute_id ]->values[] = $value;
             }
         }
+    }
+
+    /**
+     * @param EavAttributeEntity[] $filteredAttributes
+     * @return array
+     */
+    private function filterVarcharAttributeIDs(array $filteredAttributes): array
+    {
+        return array_filter($filteredAttributes, function ($attribute) {
+            /** @var EavAttributeEntity $attribute */
+            return EavAttributeEntity::STORAGE_TYPE_VARCHAR == $attribute->storage_type;
+        });
+    }
+
+    /**
+     * @param EavAttributeEntity[] $filteredAttributes
+     * @return array
+     */
+    private function filterDoubleAttributeIDs(array $filteredAttributes): array
+    {
+        return array_filter($filteredAttributes, function ($attribute) {
+            /** @var EavAttributeEntity $attribute */
+            return EavAttributeEntity::STORAGE_TYPE_DOUBLE == $attribute->storage_type;
+        });
     }
 }

@@ -7,6 +7,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\data\Pagination;
 use yii\base\Module;
+use InvalidArgumentException;
 use DmitriiKoziuk\yii2Base\exceptions\EntityNotFoundException;
 use DmitriiKoziuk\yii2UrlIndex\forms\UrlUpdateForm;
 use DmitriiKoziuk\yii2ConfigManager\services\ConfigService;
@@ -130,7 +131,7 @@ final class CategoryController extends Controller
                 }
 
                 if (0 == $searchResponse->getTotalCount()) {
-                    throw new \InvalidArgumentException("Page without products.");
+                    throw new InvalidArgumentException("Page without products.");
                 }
 
                 $pagination = new Pagination(['totalCount' => $searchResponse->getTotalCount()]);
@@ -156,7 +157,7 @@ final class CategoryController extends Controller
                 return $this->render($categoryData->getTemplateName(), $viewParams);
             }
             return $this->render('index', $viewParams);
-        } catch (EntityNotFoundException|\InvalidArgumentException $e) {
+        } catch (EntityNotFoundException|InvalidArgumentException $e) {
             Yii::error($e->getMessage(), __METHOD__);
             throw new NotFoundHttpException(
                 Yii::t('app', 'Page not found.')
