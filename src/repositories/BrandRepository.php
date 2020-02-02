@@ -17,6 +17,13 @@ use DmitriiKoziuk\yii2Shop\entities\EavValueVarcharProductSkuEntity;
 
 class BrandRepository extends AbstractActiveRecordRepository
 {
+    public function getByCode(string $code): ?Brand
+    {
+        /** @var Brand $brand */
+        $brand = Brand::find()->where(['code' => $code])->one();
+        return $brand;
+    }
+
     /**
      * @return Brand[]
      */

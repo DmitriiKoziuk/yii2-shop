@@ -82,6 +82,13 @@ final class CategoryController extends Controller
     {
         $viewParams = [];
         try {
+            $filteredBrand = null;
+            if (isset($filterParams['brand'])) {
+                $filteredBrand = $this->brandRepository->getByCode($filterParams['brand'][ array_key_first($filterParams['brand']) ]);
+                if (empty($filteredBrand)) {
+                    throw new NotFoundHttpException(Yii::t('app', 'Page not found.'));
+                }
+            }
             $pageNumber = Yii::$app->request->get('page');
             $categoryEntity = $this->categoryRepository->getById((int) $url->entity_id);
             if (empty($categoryEntity)) {
@@ -98,7 +105,7 @@ final class CategoryController extends Controller
                     $filteredAttributes,
                     $filterParams
                 );
-                $brands = $this->brandRepository->getFilteredBrands($categoryData->getId(), $filteredAttributes);
+                $brands = $this->brandRepository->getBrands($categoryData->getId(), $filteredAttributes);
                 $productSearchParams = new ProductSearchParams([
                     'categoryIDs' => [$categoryData->getId()],
                     'limit' => $productOnPage,
@@ -128,6 +135,7 @@ final class CategoryController extends Controller
                     'products' => $searchResponse->getItems(),
                     'pagination' => $pagination,
                     'brands' => $brands ?? [],
+                    'filteredBrand' => $filteredBrand,
                 ];
             }
         } catch (EntityNotFoundException $e) {
