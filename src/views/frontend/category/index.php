@@ -18,15 +18,16 @@ use DmitriiKoziuk\yii2Shop\widgets\ProductBrandWidget;
  * @var $facetedAttributes EavAttributeEntity[]
  * @var $indexPageUrl string
  * @var $getParams array|null
- * @var $filterParams array,
+ * @var $filterParams array
  * @var $filteredAttributes EavAttributeEntity[]
  * @var $products Product[]|ProductSku[]
  * @var $pagination Pagination
  * @var $brands Brand[]
+ * @var $brandInFilter Brand|null
  */
 
-$this->title = $categoryData->getMetaTitle();
-$this->registerMetaTag(['name' => 'description', 'content' => $categoryData->getMetaDescription()]);
+$this->title = $categoryData->getMetaTitle($filteredAttributes);
+$this->registerMetaTag(['name' => 'description', 'content' => $categoryData->getMetaDescription($filteredAttributes)]);
 $this->registerLinkTag(['rel' => 'canonical', 'href' => $categoryData->getUrl()]);
 $this->params['breadcrumbs'] = $categoryData->getBreadcrumb();
 ?>

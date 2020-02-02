@@ -67,6 +67,17 @@ use DmitriiKoziuk\yii2Shop\forms\CategoryInputForm;
             ]) ?>
 
             <?= $form->field($categoryInputForm, 'template_name')->textInput(['maxlength' => true]) ?>
+
+            <?= $form->field($categoryInputForm, 'filtered_title_template')->textInput(['maxlength' => true]) ?>
+
+            <?= $form->field($categoryInputForm, 'filtered_description_template')->textInput(['maxlength' => true]) ?>
+
+            <?= $form->field($categoryInputForm, 'filtered_h1_template')->textInput(['maxlength' => true]) ?>
+
+            <?= $form->field($categoryInputForm, 'load_faceted_navigation')->dropDownList([
+                Category::LOAD_FACETED_NAVIGATION_NO => 'No',
+                Category::LOAD_FACETED_NAVIGATION_YES => 'Yes',
+            ]) ?>
         </div>
     </div>
     <?php endif; ?>

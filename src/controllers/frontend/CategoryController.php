@@ -7,6 +7,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\data\Pagination;
 use yii\base\Module;
+use InvalidArgumentException;
 use DmitriiKoziuk\yii2Base\exceptions\EntityNotFoundException;
 use DmitriiKoziuk\yii2UrlIndex\forms\UrlUpdateForm;
 use DmitriiKoziuk\yii2ConfigManager\services\ConfigService;
@@ -82,6 +83,13 @@ final class CategoryController extends Controller
     {
         $viewParams = [];
         try {
+            $filteredBrand = null;
+            if (isset($filterParams['brand'])) {
+                $filteredBrand = $this->brandRepository->getByCode($filterParams['brand'][ array_key_first($filterParams['brand']) ]);
+                if (empty($filteredBrand)) {
+                    throw new NotFoundHttpException(Yii::t('app', 'Page not found.'));
+                }
+            }
             $pageNumber = Yii::$app->request->get('page');
             $categoryEntity = $this->categoryRepository->getById((int) $url->entity_id);
             if (empty($categoryEntity)) {
@@ -93,12 +101,18 @@ final class CategoryController extends Controller
             if ($categoryData->isProductsShow()) {
                 $productOnPage = (int) $this->configService->getValue(ShopModule::getId(), 'productsOnCategoryPage');
                 $filteredAttributes = $this->eavService->getFilteredAttributesWithValues($filterParams);
-                $facetedAttributes = $this->eavService->getFacetedAttributesWithValues(
+                if ($categoryData->isLoadFacetedNavigation()) {
+                    $facetedAttributes = $this->eavService->getFacetedAttributesWithValues(
+                        $categoryData->getId(),
+                        $filteredAttributes,
+                        $filterParams
+                    );
+                }
+                $brands = $this->brandRepository->getBrands(
                     $categoryData->getId(),
                     $filteredAttributes,
-                    $filterParams
+                    $filteredBrand
                 );
-                $brands = $this->brandRepository->getFilteredBrands($categoryData->getId(), $filteredAttributes);
                 $productSearchParams = new ProductSearchParams([
                     'categoryIDs' => [$categoryData->getId()],
                     'limit' => $productOnPage,
@@ -116,6 +130,10 @@ final class CategoryController extends Controller
                     );
                 }
 
+                if (0 == $searchResponse->getTotalCount()) {
+                    throw new InvalidArgumentException("Page without products.");
+                }
+
                 $pagination = new Pagination(['totalCount' => $searchResponse->getTotalCount()]);
 
                 $viewParams = [
@@ -128,22 +146,23 @@ final class CategoryController extends Controller
                     'products' => $searchResponse->getItems(),
                     'pagination' => $pagination,
                     'brands' => $brands ?? [],
+                    'filteredBrand' => $filteredBrand,
                 ];
             }
-        } catch (EntityNotFoundException $e) {
-            Yii::error('Error', __METHOD__);
+
+            if (
+                $categoryData->isTemplateNameSet() &&
+                $this->isCategoryTemplateExist($categoryData->getTemplateName())
+            ) {
+                return $this->render($categoryData->getTemplateName(), $viewParams);
+            }
+            return $this->render('index', $viewParams);
+        } catch (EntityNotFoundException|InvalidArgumentException $e) {
+            Yii::error($e->getMessage(), __METHOD__);
             throw new NotFoundHttpException(
                 Yii::t('app', 'Page not found.')
             );
         }
-
-        if (
-            $categoryData->isTemplateNameSet() &&
-            $this->isCategoryTemplateExist($categoryData->getTemplateName())
-        ) {
-            return $this->render($categoryData->getTemplateName(), $viewParams);
-        }
-        return $this->render('index', $viewParams);
     }
 
     private function isCategoryTemplateExist(string $templateName): bool

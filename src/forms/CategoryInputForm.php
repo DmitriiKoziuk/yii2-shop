@@ -15,6 +15,10 @@ class CategoryInputForm extends Model
     public $description;
     public $is_products_show;
     public $template_name;
+    public $filtered_title_template;
+    public $filtered_description_template;
+    public $filtered_h1_template;
+    public $load_faceted_navigation;
 
     public function rules()
     {
@@ -23,11 +27,32 @@ class CategoryInputForm extends Model
             [['name', 'name_on_site'], 'string', 'max' => 45],
             [['slug'], 'string', 'max' => 60],
             [['description'], 'string'],
-            [['meta_title'], 'string', 'max' => 255],
+            [
+                [
+                    'meta_title',
+                    'filtered_title_template',
+                    'filtered_description_template',
+                    'filtered_h1_template',
+                ],
+                'string', 'max' => 255
+            ],
             [['meta_description'], 'string', 'max' => 500],
             [['template_name'], 'string', 'max' => 100],
-            [['parent_id', 'is_products_show'], 'integer'],
-            [['name', 'name_on_site', 'slug', 'meta_title', 'meta_description', 'template_name'], 'trim'],
+            [['parent_id', 'is_products_show', 'load_faceted_navigation'], 'integer'],
+            [
+                [
+                    'name',
+                    'name_on_site',
+                    'slug',
+                    'meta_title',
+                    'meta_description',
+                    'template_name',
+                    'filtered_title_template',
+                    'filtered_description_template',
+                    'filtered_h1_template',
+                ],
+                'trim'
+            ],
         ];
     }
 
@@ -43,6 +68,10 @@ class CategoryInputForm extends Model
             'description',
             'is_products_show',
             'template_name',
+            'filtered_title_template',
+            'filtered_description_template',
+            'filtered_h1_template',
+            'load_faceted_navigation',
         ]);
     }
 }

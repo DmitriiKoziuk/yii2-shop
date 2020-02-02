@@ -2,6 +2,7 @@
 
 namespace DmitriiKoziuk\yii2Shop\data;
 
+use DmitriiKoziuk\yii2Shop\entities\Brand;
 use DmitriiKoziuk\yii2Shop\entities\Category;
 
 class CategoryData
@@ -31,6 +32,11 @@ class CategoryData
         return ! is_null($this->_categoryRecord->template_name);
     }
 
+    public function isLoadFacetedNavigation(): bool
+    {
+        return $this->_categoryRecord->isLoadFacetedNavigation();
+    }
+
     public function getId(): int
     {
         return $this->_categoryRecord->id;
@@ -43,7 +49,7 @@ class CategoryData
 
     public function getNameOnSite(): string
     {
-        return $this->_categoryRecord->name_on_site ?? $this->getName();
+        return ! empty($this->_categoryRecord->name_on_site) ? $this->_categoryRecord->name_on_site : $this->getName();
     }
 
     public function getUrl(): string
@@ -56,14 +62,37 @@ class CategoryData
         return $this->_categoryRecord->description ?? '';
     }
 
-    public function getMetaTitle(): string
+    public function getMetaTitle(array $filteredAttributes, Brand $filteredBrand = null): string
     {
+        if (
+            (! empty($filteredAttributes) || ! empty($filteredBrand)) &&
+            $this->_categoryRecord->isFilteredTitleTemplateSet()
+        ) {
+            return $this->_categoryRecord->getFilteredTitle($filteredAttributes, $filteredBrand);
+        }
         return $this->_categoryRecord->meta_title ?? '';
     }
 
-    public function getMetaDescription(): string
+    public function getMetaDescription(array $filteredAttributes, Brand $filteredBrand = null): string
     {
+        if (
+            (! empty($filteredAttributes) || ! empty($filteredBrand)) &&
+            $this->_categoryRecord->isFilteredDescriptionTemplateSet()
+        ) {
+            return $this->_categoryRecord->getFilteredDescription($filteredAttributes, $filteredBrand);
+        }
         return $this->_categoryRecord->meta_description ?? '';
+    }
+
+    public function getH1(array $filteredAttributes, Brand $filteredBrand = null): string
+    {
+        if (
+            (! empty($filteredAttributes) || ! empty($filteredBrand)) &&
+            $this->_categoryRecord->isFilteredH1TemplateSet()
+        ) {
+            return $this->_categoryRecord->getFilteredH1($filteredAttributes, $filteredBrand);
+        }
+        return $this->getNameOnSite();
     }
 
     /**
