@@ -15,6 +15,7 @@ use DmitriiKoziuk\yii2Shop\interfaces\productEav\ProductEavValueInterface;
  * @property string $code
  *
  * @property EavAttributeEntity $eavAttribute
+ * @property EavValueVarcharSeoValueEntity[] $seoValues
  */
 class EavValueVarcharEntity extends ActiveRecord implements ProductEavValueInterface
 {
@@ -72,6 +73,12 @@ class EavValueVarcharEntity extends ActiveRecord implements ProductEavValueInter
     public function getEavAttribute(): ActiveQuery
     {
         return $this->hasOne(EavAttributeEntity::class, ['id' => 'attribute_id']);
+    }
+
+    public function getSeoValues(): ActiveQuery
+    {
+        return $this->hasMany(EavValueVarcharSeoValueEntity::class, ['varchar_id' => 'id'])
+            ->indexBy('code');
     }
 
     public function getRelatedProductSkuNumber()

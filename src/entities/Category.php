@@ -7,6 +7,7 @@ use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 use yii\base\InvalidConfigException;
+use yii\helpers\ArrayHelper;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 use DmitriiKoziuk\yii2UrlIndex\entities\UrlEntity;
 
@@ -25,6 +26,9 @@ use DmitriiKoziuk\yii2UrlIndex\entities\UrlEntity;
  * @property string $template_name
  * @property int    $created_at
  * @property int    $updated_at
+ * @property string $filtered_title_template
+ * @property string $filtered_description_template
+ * @property string $filtered_h1_template
  *
  * @property Category          $parent
  * @property Category[]        $parents
@@ -71,7 +75,13 @@ class Category extends ActiveRecord
             [['name', 'name_on_site'], 'string', 'max' => 45],
             [['slug'], 'string', 'max' => 60],
             [['description'], 'string'],
-            [['meta_title'], 'string', 'max' => 255],
+            [
+                [
+                    'meta_title',
+                    'filtered_title_template',
+                    'filtered_description_template',
+                    'filtered_h1_template',
+                ], 'string', 'max' => 255],
             [['meta_description'], 'string', 'max' => 500],
             [['template_name'], 'string', 'max' => 100],
             [
@@ -81,8 +91,25 @@ class Category extends ActiveRecord
                     'meta_title',
                     'meta_description',
                     'template_name',
+                    'filtered_title_template',
+                    'filtered_description_template',
+                    'filtered_h1_template',
                 ],
                 'default', 'value' => null
+            ],
+            [
+                [
+                    'name',
+                    'name_on_site',
+                    'slug',
+                    'meta_title',
+                    'meta_description',
+                    'template_name',
+                    'filtered_title_template',
+                    'filtered_description_template',
+                    'filtered_h1_template',
+                ],
+                'trim'
             ],
             [['parent_id', 'is_products_show', 'created_at', 'updated_at'], 'integer'],
             [['parent_id'], 'default', 'value' => null],
@@ -115,6 +142,9 @@ class Category extends ActiveRecord
             'template_name'    => Yii::t(ShopModule::TRANSLATION_CATEGORY, 'Template name'),
             'created_at'       => Yii::t('app', 'Created at'),
             'updated_at'       => Yii::t('app', 'Updated at'),
+            'filtered_title_template' => 'Filtered title template',
+            'filtered_description_template' => 'Filtered description template',
+            'filtered_h1_template' => 'Filtered h1 template',
         ];
     }
 
@@ -126,32 +156,68 @@ class Category extends ActiveRecord
     {
     }
 
-    /**
-     * @return ActiveQuery
-     */
-    public function getParent()
+    public function getParent(): ActiveQuery
     {
         return $this->hasOne(Category::class, ['id' => 'parent_id']);
     }
 
     /**
-     * @return ActiveQuery|self[]
      * @throws InvalidConfigException
      */
-    public function getParentList()
+    public function getParentList(): ActiveQuery
     {
         return $this->hasMany(Category::class, ['id' => 'ancestor'])
             ->viaTable(CategoryClosure::tableName(), ['descendant' => 'id'])
             ->indexBy('id');
     }
 
-    /**
-     * @return ActiveQuery|CategoryClosure[]
-     */
-    public function getCategoryClosure()
+    public function getCategoryClosure(): ActiveQuery
     {
         return $this->hasMany(CategoryClosure::class, ['descendant' => 'id'])
             ->indexBy('depth');
+    }
+
+    /**
+     * @throws InvalidConfigException
+     */
+    public function getChildren(): ActiveQuery
+    {
+        return $this->hasMany(Category::class, ['id' => 'descendant'])
+            ->viaTable(CategoryClosure::tableName(), ['ancestor' => 'id'], function ($q) {
+                /** @var $q ActiveQuery */
+                $q->orderBy('depth');
+            })
+            ->indexBy('id');
+    }
+
+    public function getDirectChildren(): ActiveQuery
+    {
+        return $this->hasMany(Category::class, ['parent_id' => 'id'])
+            ->orderBy(['name' => SORT_ASC]);
+    }
+
+    public function getDirectDescendants(): ActiveQuery
+    {
+        return $this->hasMany(static::class, ['parent_id' => 'id']);
+    }
+
+    /**
+     * @throws InvalidConfigException
+     */
+    public function getProducts(): ActiveQuery
+    {
+        return $this->hasMany(Product::class, ['id' => 'product_id'])
+            ->viaTable(CategoryProduct::tableName(), ['category_id' => 'id']);
+    }
+
+    public function getUrlEntity(): ActiveQuery
+    {
+        return $this->hasOne(UrlEntity::class, ['entity_id' => 'id'])
+            ->andWhere([
+                'module_name' => ShopModule::getId(),
+                'controller_name' => self::FRONTEND_CONTROLLER_NAME,
+                'action_name' => self::FRONTEND_ACTION_NAME,
+            ]);
     }
 
     /**
@@ -169,63 +235,19 @@ class Category extends ActiveRecord
         return $parents;
     }
 
-    /**
-     * @return ActiveQuery|self[]
-     * @throws InvalidConfigException
-     */
-    public function getChildren()
+    public function isFilteredTitleTemplateSet(): bool
     {
-        return $this->hasMany(Category::class, ['id' => 'descendant'])
-            ->viaTable(CategoryClosure::tableName(), ['ancestor' => 'id'], function ($q) {
-                /** @var $q ActiveQuery */
-                $q->orderBy('depth');
-            })
-            ->indexBy('id');
+        return ! empty($this->filtered_title_template);
     }
 
-    /**
-     * @param self[] $children
-     */
-    public function setChildren(array $children): void
+    public function isFilteredDescriptionTemplateSet(): bool
     {
-        $this->children = $children;
+        return ! empty($this->filtered_description_template);
     }
 
-    /**
-     * @return ActiveQuery|self[]
-     */
-    public function getDirectChildren()
+    public function isFilteredH1TemplateSet(): bool
     {
-        return $this->hasMany(Category::class, ['parent_id' => 'id'])
-            ->orderBy(['name' => SORT_ASC]);
-    }
-
-    /**
-     * @return ActiveQuery|self[]
-     */
-    public function getDirectDescendants()
-    {
-        return $this->hasMany(static::class, ['parent_id' => 'id']);
-    }
-
-    /**
-     * @return ActiveQuery|Product[]
-     * @throws InvalidConfigException
-     */
-    public function getProducts()
-    {
-        return $this->hasMany(Product::class, ['id' => 'product_id'])
-            ->viaTable(CategoryProduct::tableName(), ['category_id' => 'id']);
-    }
-
-    public function getUrlEntity(): ActiveQuery
-    {
-        return $this->hasOne(UrlEntity::class, ['entity_id' => 'id'])
-            ->andWhere([
-                'module_name' => ShopModule::getId(),
-                'controller_name' => self::FRONTEND_CONTROLLER_NAME,
-                'action_name' => self::FRONTEND_ACTION_NAME,
-            ]);
+        return ! empty($this->filtered_h1_template);
     }
 
     public function getParentsNames(): string
@@ -240,5 +262,113 @@ class Category extends ActiveRecord
     public function getFrontendName(): string
     {
         return $this->name_on_site ?? $this->name;
+    }
+
+    public function getFilteredTitle(array $filteredAttributes, Brand $filteredBrand = null): string
+    {
+        if ($this->isFilteredTitleTemplateSet()) {
+            return $this->templateParser(
+                $this->filtered_title_template,
+                $filteredAttributes,
+                $filteredBrand
+            );
+        }
+        return $this->name;
+    }
+
+    public function getFilteredDescription(array $filteredAttributes, Brand $filteredBrand = null): string
+    {
+        if ($this->isFilteredDescriptionTemplateSet()) {
+            return $this->templateParser(
+                $this->filtered_description_template,
+                $filteredAttributes,
+                $filteredBrand
+            );
+        }
+        return $this->meta_description;
+    }
+
+    public function getFilteredH1(array $filteredAttributes, Brand $filteredBrand = null): string
+    {
+        if ($this->isFilteredH1TemplateSet()) {
+            return $this->templateParser(
+                $this->filtered_h1_template,
+                $filteredAttributes,
+                $filteredBrand
+            );
+        }
+        return $this->name;
+    }
+
+    /**
+     * @param self[] $children
+     */
+    public function setChildren(array $children): void
+    {
+        $this->children = $children;
+    }
+
+    /**
+     * @param string $template
+     * @param EavAttributeEntity[] $filteredAttributes
+     * @param Brand $filteredBrand
+     * @return string
+     */
+    private function templateParser(
+        string $template,
+        array $filteredAttributes,
+        Brand $filteredBrand = null
+    ): string
+    {
+        $r = '';
+        if (false !== preg_match_all('/{+(.*?)}/', $template, $matches)) {
+            if (empty($matches[0])) {
+                return '';
+            }
+            $elements = array_map(function ($fullMatch, $subPattern) {
+                return [
+                    'fullMatch' => $fullMatch,
+                    'subPattern' => $subPattern,
+                ];
+            }, $matches[0], $matches[1]);
+            $elements = ArrayHelper::map($elements, 'fullMatch', 'subPattern');
+            foreach ($elements as $match => $sub) {
+                $elements[ $match ] = $this->parseElement($sub, $filteredAttributes, $filteredBrand);
+            }
+            $r = trim(preg_replace('/\s{2,}/', ' ', strtr($template, $elements)));
+        }
+        return $r;
+    }
+
+    /**
+     * @param string $element
+     * @param EavAttributeEntity[] $facetedAttributes
+     * @return string
+     */
+    private function parseElement(string $element, array $facetedAttributes, Brand $filteredBrand = null): string
+    {
+        $returnString = '';
+        list($attributeCode, $valueSeoCode) = explode(':', $element);
+        if ('brand' == $attributeCode && ! empty($filteredBrand)) {
+            $returnString = $filteredBrand->name;
+        } else {
+            foreach ($facetedAttributes as $attribute) {
+                if ($attributeCode == $attribute->code && ! empty($attribute->values)) {
+                    foreach ($attribute->values as $value) {
+                        if ($attribute->storage_type == EavAttributeEntity::STORAGE_TYPE_DOUBLE) {
+                            $returnString = ', ' . $value->value;
+                        } elseif ($attribute->storage_type == EavAttributeEntity::STORAGE_TYPE_VARCHAR) {
+                            if (isset($value->seoValues[$valueSeoCode])) {
+                                $returnString = ', ' . $value->seoValues[ $valueSeoCode ]->value;
+                            } else {
+                                $returnString = ', ' . $value->value;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        $returnString = ltrim($returnString, ', ');
+        return $returnString;
     }
 }

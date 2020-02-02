@@ -1,20 +1,43 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace DmitriiKoziuk\yii2Shop\controllers\backend;
 
 use Yii;
-use DmitriiKoziuk\yii2Shop\entities\EavValueVarcharEntity;
-use DmitriiKoziuk\yii2Shop\entities\search\EavValueVarcharEntitySearch;
-use yii\helpers\Inflector;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\Inflector;
+use DmitriiKoziuk\yii2Shop\entities\EavValueVarcharEntity;
+use DmitriiKoziuk\yii2Shop\entities\EavValueVarcharSeoValueEntity;
+use DmitriiKoziuk\yii2Shop\entities\search\EavValueVarcharEntitySearch;
+use DmitriiKoziuk\yii2Shop\forms\eav\EavVarcharSeoValuesCompositeForm;
+use DmitriiKoziuk\yii2Shop\repositories\EavValueVarcharSeoValueRepository;
+use DmitriiKoziuk\yii2Shop\services\eav\EavVarcharValueSeoService;
 
 /**
  * EavValueVarcharController implements the CRUD actions for EavValueVarcharEntity model.
  */
 class EavValueVarcharController extends Controller
 {
+    /**
+     * @var EavValueVarcharSeoValueRepository
+     */
+    private $repository;
+
+    private $varcharValueSeoService;
+
+    public function __construct(
+        $id,
+        $module,
+        EavValueVarcharSeoValueRepository $repository,
+        EavVarcharValueSeoService $varcharValueSeoService,
+        $config = []
+    ) {
+        parent::__construct($id, $module, $config);
+        $this->repository = $repository;
+        $this->varcharValueSeoService = $varcharValueSeoService;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -105,12 +128,53 @@ class EavValueVarcharController extends Controller
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
      */
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
+    }
+
+    /**
+     * Display seo page
+     * @param int $id
+     * @return string
+     * @throws NotFoundHttpException
+     */
+    public function actionSeo(int $id)
+    {
+        $valueEntity = $this->findModel($id);
+        $seoValueForm = new EavVarcharSeoValuesCompositeForm();
+        if (
+            Yii::$app->request->isPost &&
+            $seoValueForm->load(Yii::$app->request->post())
+        ) {
+            if ($seoValueForm->validate()) {
+                $this->varcharValueSeoService->updateSeoValues($valueEntity, $seoValueForm);
+            } else {
+                return $this->render('seo', [
+                    'valueEntity' => $valueEntity,
+                    'seoValueForm' => $seoValueForm,
+                ]);
+            }
+        }
+        $seoValuesEntities = $this->repository->getSeoValues($id);
+        $seoCodeGroups = $this->repository->getCodeGroups();
+        foreach ($seoCodeGroups as $code) {
+            if (! array_key_exists($code['code'], $seoValuesEntities)) {
+                array_push($seoValuesEntities, new EavValueVarcharSeoValueEntity([
+                    'code' => $code['code'],
+                ]));
+            }
+        }
+        $seoValueForm = new EavVarcharSeoValuesCompositeForm(['seoValues' => $seoValuesEntities]);
+        return $this->render('seo', [
+            'valueEntity' => $valueEntity,
+            'seoValueForm' => $seoValueForm,
+        ]);
     }
 
     /**

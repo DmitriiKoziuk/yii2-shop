@@ -55,7 +55,22 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'template' => '{update} {view} {delete} {seo}',
+                'buttons'  => [
+                    'seo' => function ($url, $model) {
+                        /** @var $model EavValueVarcharEntity */
+                        if ($model->eavAttribute->selectable) {
+                            return Html::a(
+                                '<span class="glyphicon glyphicon-th-list"></span>',
+                                $url
+                            );
+                        }
+                        return '';
+                    }
+                ],
+            ],
         ],
     ]); ?>
 

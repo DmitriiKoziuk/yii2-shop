@@ -17,6 +17,13 @@ use DmitriiKoziuk\yii2Shop\entities\EavValueVarcharProductSkuEntity;
 
 class BrandRepository extends AbstractActiveRecordRepository
 {
+    public function getByCode(string $code): ?Brand
+    {
+        /** @var Brand $brand */
+        $brand = Brand::find()->where(['code' => $code])->one();
+        return $brand;
+    }
+
     /**
      * @return Brand[]
      */
@@ -33,7 +40,7 @@ class BrandRepository extends AbstractActiveRecordRepository
      * @return Brand[]
      * @throws Exception
      */
-    public function getFilteredBrands(int $categoryId, array $filteredAttributes): array
+    public function getBrands(int $categoryId, array $filteredAttributes): array
     {
         $query = Brand::find()
             ->innerJoin(Product::tableName(), [
