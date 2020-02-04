@@ -75,6 +75,9 @@ class EavRepository
                 EavAttributeEntity::tableName() . '.selectable' => EavAttributeEntity::SELECTABLE_YES,
                 EavAttributeEntity::tableName() . '.view_at_frontend_faceted_navigation' =>
                     EavAttributeEntity::VIEW_AT_FRONTEND_FACETED_NAVIGATION_YES,
+            ])->andWhere(['OR',
+                [ProductSku::tableName() . '.stock_status' => ProductSku::STOCK_IN],
+                [ProductSku::tableName() . '.stock_status' => ProductSku::STOCK_AWAIT],
             ])->groupBy([
                 EavValueDoubleProductSkuEntity::tableName() . '.value_id',
             ])->orderBy([
@@ -145,6 +148,9 @@ class EavRepository
                 EavAttributeEntity::tableName() . '.selectable' => EavAttributeEntity::SELECTABLE_YES,
                 EavAttributeEntity::tableName() . '.view_at_frontend_faceted_navigation' =>
                     EavAttributeEntity::VIEW_AT_FRONTEND_FACETED_NAVIGATION_YES,
+            ])->andWhere(['OR',
+                [ProductSku::tableName() . '.stock_status' => ProductSku::STOCK_IN],
+                [ProductSku::tableName() . '.stock_status' => ProductSku::STOCK_AWAIT],
             ])->groupBy([
                 EavValueVarcharProductSkuEntity::tableName() . '.value_id',
             ])->orderBy([
