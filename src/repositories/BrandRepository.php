@@ -47,9 +47,9 @@ class BrandRepository extends AbstractActiveRecordRepository
     {
         $tableName = Brand::getTableSchema()->fullName;
         $select = <<<SQL
-            ANY_VALUE(`{$tableName}`.`id`) AS `id`,
-            ANY_VALUE(`{$tableName}`.`name`) AS `name`,
-            ANY_VALUE(`{$tableName}`.`code`) AS `code`,
+            MIN(`{$tableName}`.`id`) AS `id`,
+            MIN(`{$tableName}`.`name`) AS `name`,
+            `{$tableName}`.`code` AS `code`,
             COUNT(`{$tableName}`.`id`) AS `quantity`,
         SQL;
         $query = Brand::find();
