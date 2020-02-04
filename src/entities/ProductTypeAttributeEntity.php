@@ -78,7 +78,7 @@ class ProductTypeAttributeEntity extends ActiveRecord
         return [
             'product_type_id' => 'Product Type ID',
             'attribute_id' => 'Attribute ID',
-            'view_attribute_at_product_sku_preview' => 'View attribute at product preview',
+            'view_attribute_at_product_sku_preview' => 'View attribute at product preview?',
             'sort_at_product_sku_preview' => 'Sort at product sku preview',
             'sort_at_product_sku_page' => 'Sort at product sku page',
         ];
