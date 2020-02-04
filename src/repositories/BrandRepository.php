@@ -2,6 +2,7 @@
 
 namespace DmitriiKoziuk\yii2Shop\repositories;
 
+use DmitriiKoziuk\yii2Shop\entities\CategoryProductSku;
 use Exception;
 use yii\db\ActiveQuery;
 use yii\db\Expression;
@@ -47,9 +48,9 @@ class BrandRepository extends AbstractActiveRecordRepository
     {
         $tableName = Brand::getTableSchema()->fullName;
         $select = <<<SQL
-            ANY_VALUE(`{$tableName}`.`id`) AS `id`,
-            ANY_VALUE(`{$tableName}`.`name`) AS `name`,
-            ANY_VALUE(`{$tableName}`.`code`) AS `code`,
+            MIN(`{$tableName}`.`id`) AS `id`,
+            MIN(`{$tableName}`.`name`) AS `name`,
+            `{$tableName}`.`code` AS `code`,
             COUNT(`{$tableName}`.`id`) AS `quantity`,
         SQL;
         $query = Brand::find();
@@ -63,6 +64,9 @@ class BrandRepository extends AbstractActiveRecordRepository
                     new Expression(Product::tableName() . '.id'),
             ])->where([
                 CategoryProduct::tableName() . '.category_id' => $categoryId,
+            ])->andWhere(['OR',
+                [ProductSku::tableName() . '.stock_status' => ProductSku::STOCK_IN],
+                [ProductSku::tableName() . '.stock_status' => ProductSku::STOCK_AWAIT],
             ]);
         if (! empty($filteredBrand)) {
             $query->andWhere(['!=', Brand::tableName() . '.id', $filteredBrand->id]);

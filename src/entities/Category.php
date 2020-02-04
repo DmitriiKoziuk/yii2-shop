@@ -103,20 +103,6 @@ class Category extends ActiveRecord
             ],
             [
                 [
-                    'name',
-                    'name_on_site',
-                    'slug',
-                    'meta_title',
-                    'meta_description',
-                    'template_name',
-                    'filtered_title_template',
-                    'filtered_description_template',
-                    'filtered_h1_template',
-                ],
-                'trim'
-            ],
-            [
-                [
                     'parent_id',
                     'is_products_show',
                     'created_at',
