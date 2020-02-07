@@ -30,6 +30,11 @@ class CartProductData
         return $this->_productSkuData->isCurrencySet();
     }
 
+    public function isTypeSet(): bool
+    {
+        return $this->_productSkuData->isTypeSet();
+    }
+
     public function getQuantity(): int
     {
         return $this->_cartProduct->quantity;
@@ -63,5 +68,10 @@ class CartProductData
     public function getCurrencySymbol(): string
     {
         return $this->_productSkuData->getCurrencySymbol();
+    }
+
+    public function getTypeName(): string
+    {
+        return $this->_productSkuData->getTypeName();
     }
 }

@@ -27,6 +27,11 @@ class ProductSkuData
         return $this->_productSku->isCurrencySet();
     }
 
+    public function isTypeSet(): bool
+    {
+        return $this->_productSku->product->isTypeSet();
+    }
+
     public function getCurrencySymbol(): string
     {
         if ($this->isCurrencySet()) {
