@@ -32,6 +32,17 @@ OrderIndexAsset::register($this);
                 }
             ],
             [
+                'label' => 'Product types',
+                'content' => function ($order) {
+                    /** @var $order \DmitriiKoziuk\yii2Shop\data\order\OrderData */
+                    $r = '';
+                    foreach ($order->cart()->getProductTypes() as $typeName) {
+                      $r .= $typeName . '<br>';
+                    }
+                    return $r;
+                }
+            ],
+            [
                 'attribute' => 'customerName',
                 'content' => function ($order) {
                     /** @var $order \DmitriiKoziuk\yii2Shop\data\order\OrderData */

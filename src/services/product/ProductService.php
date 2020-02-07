@@ -1,4 +1,5 @@
 <?php
+
 namespace DmitriiKoziuk\yii2Shop\services\product;
 
 use Exception;
@@ -479,11 +480,7 @@ class ProductService extends DBActionService
         if (
             $productSku->isAttributeChanged('stock_status')
         ) {
-            if (ProductSku::STOCK_OUT == $productSku->stock_status) {
-                $this->moveProductSkuToCategoriesEnd($productSku);
-            } elseif (ProductSku::STOCK_IN == $productSku->stock_status) {
-                $this->moveProductSkuToCategoriesStart($productSku);
-            }
+            $this->updateProductSkuStatus($productSku);
         }
         $changedAttributes = array_merge($changedAttributes, $productSku->getDirtyAttributes());
         $this->_productSkuRepository->save($productSku);
@@ -816,6 +813,77 @@ class ProductService extends DBActionService
                         $parentCategory->id,
                         $productSku->id,
                         1
+                    );
+                }
+            }
+        }
+    }
+
+    private function updateProductSkuStatus(ProductSku $productSku): void
+    {
+        switch ($productSku->stock_status) {
+            case ProductSku::STOCK_OUT:
+                if (ProductSku::STOCK_STATUS_DELETED == $productSku->getOldAttribute('stock_status')) {
+                    $this->createProductSkuRelationWithCategories($productSku);
+                    $this->moveProductSkuToCategoriesEnd($productSku);
+                } else {
+                    $this->moveProductSkuToCategoriesEnd($productSku);
+                }
+                break;
+            case ProductSku::STOCK_IN:
+                if (ProductSku::STOCK_STATUS_DELETED == $productSku->getOldAttribute('stock_status')) {
+                    $this->createProductSkuRelationWithCategories($productSku);
+                } else {
+                    $this->moveProductSkuToCategoriesStart($productSku);
+                }
+                break;
+            case ProductSku::STOCK_STATUS_DELETED:
+                $this->deleteProductSkuRelationWithCategories($productSku);
+                break;
+            case ProductSku::STOCK_AWAIT:
+                if (ProductSku::STOCK_STATUS_DELETED == $productSku->getOldAttribute('stock_status')) {
+                    $this->createProductSkuRelationWithCategories($productSku);
+                    $this->moveProductSkuToCategoriesStart($productSku);
+                }
+                break;
+            default: throw new Exception("No action for stock status '{$productSku->stock_status}'.");
+        }
+    }
+
+    private function createProductSkuRelationWithCategories(ProductSku $productSku): void
+    {
+        if ($productSku->product->isCategorySet()) {
+            $category = $productSku->product->category;
+            $this->categoryProductSkuRepository->createRelation(
+                $category->id,
+                $productSku->id
+            );
+
+            if (! empty($category->parentList)) {
+                foreach ($category->parentList as $parentCategory) {
+                    $this->categoryProductSkuRepository->createRelation(
+                        $parentCategory->id,
+                        $productSku->id
+                    );
+                }
+            }
+        }
+    }
+
+    private function deleteProductSkuRelationWithCategories(ProductSku $productSku): void
+    {
+        if ($productSku->product->isCategorySet()) {
+            $category = $productSku->product->category;
+            $this->categoryProductSkuRepository->deleteRelation(
+                $category->id,
+                $productSku->id
+            );
+
+            if (! empty($category->parentList)) {
+                foreach ($category->parentList as $parentCategory) {
+                    $this->categoryProductSkuRepository->deleteRelation(
+                        $parentCategory->id,
+                        $productSku->id
                     );
                 }
             }

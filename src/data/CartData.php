@@ -67,4 +67,15 @@ class CartData
         }
         return $totalProduct;
     }
+
+    public function getProductTypes(): array
+    {
+        $types = [];
+        foreach ($this->_cartProducts as $product) {
+            if($product->isTypeSet()) {
+                $types[] = $product->getTypeName();
+            }
+        }
+        return $types;
+    }
 }
