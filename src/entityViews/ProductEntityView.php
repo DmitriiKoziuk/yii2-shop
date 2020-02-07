@@ -52,6 +52,11 @@ class ProductEntityView
         return $this->productEntity->getMainSku()->isInStock();
     }
 
+    public function isBrandSet(): bool
+    {
+        return isset($this->productEntity->brand);
+    }
+
     public function getId(): int
     {
         return $this->productEntity->getMainSku()->id;
@@ -122,11 +127,23 @@ class ProductEntityView
         return 1.0;
     }
 
+    public function getCurrencyCode(): string
+    {
+        return $this->isCurrencySet() ?
+            $this->productEntity->getMainSku()->currency->code :
+            '';
+    }
+
     /**
      * @return EavValueVarcharEntity[]|EavValueDoubleEntity[]|EavValueTextEntity[]
      */
     public function getProductPreviewValues(): array
     {
         return $this->productEntity->getMainSku()->getPreviewEavValues();
+    }
+
+    public function getBrandName(): string
+    {
+        return $this->isBrandSet() ? $this->productEntity->brand->name : '';
     }
 }

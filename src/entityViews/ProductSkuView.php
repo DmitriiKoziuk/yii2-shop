@@ -62,6 +62,12 @@ class ProductSkuView extends ProductEntityView
         return !empty($this->productSkuEntity->customer_price);
     }
 
+    public function isBrandSet(): bool
+    {
+        return isset($this->productSkuEntity->product->brand);
+    }
+
+
     public function getId(): int
     {
         return $this->productSkuEntity->id;
@@ -110,6 +116,11 @@ class ProductSkuView extends ProductEntityView
         return (string)$price;
     }
 
+    public function getCustomerPrice()
+    {
+        return $this->productSkuEntity->customer_price / 100;
+    }
+
     public function getOldPrice(): string
     {
         $price = '';
@@ -143,6 +154,13 @@ class ProductSkuView extends ProductEntityView
         return 1.0;
     }
 
+    public function getCurrencyCode(): string
+    {
+        return $this->isCurrencySet() ?
+            $this->productSkuEntity->currency->code :
+            '';
+    }
+
     /**
      * @return EavValueVarcharEntity[]|EavValueDoubleEntity[]|EavValueTextEntity[]
      */
@@ -172,11 +190,6 @@ class ProductSkuView extends ProductEntityView
     public function getName(): string
     {
         return $this->productSkuEntity->getName();
-    }
-
-    public function getCustomerPrice()
-    {
-        return $this->productSkuEntity->customer_price / 100;
     }
 
     public function getType()
@@ -223,5 +236,10 @@ class ProductSkuView extends ProductEntityView
     public function getDescription(): ?string
     {
         return $this->productSkuEntity->description;
+    }
+
+    public function getBrandName(): string
+    {
+        return $this->isBrandSet() ? $this->productSkuEntity->product->brand->name : '';
     }
 }

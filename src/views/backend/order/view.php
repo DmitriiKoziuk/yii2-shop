@@ -40,7 +40,7 @@ $stageLog = $orderData->stageLog();
           <td><?= Yii::t(ShopModule::TRANSLATION_ORDER, 'Total product') ?></td><td><?= $cart->getTotalProduct() ?></td>
         </tr>
         <tr>
-          <td><?= Yii::t(ShopModule::TRANSLATION_ORDER, 'Total price') ?></td><td><?= $cart->getTotalPrice() ?></td>
+          <td><?= Yii::t(ShopModule::TRANSLATION_ORDER, 'Total price') ?></td><td><?= number_format($cart->getTotalPrice(), 2, '.', ' ') ?></td>
         </tr>
         <tr>
           <td><?= Yii::t(ShopModule::TRANSLATION_ORDER, 'Order time') ?></td><td><?= $stageLog->getOrderTime() ?></td>
@@ -62,6 +62,12 @@ $stageLog = $orderData->stageLog();
         </thead>
         <tbody>
         <?php foreach ($cart->getProducts() as $productData): ?>
+        <?php
+            $currencySymbol = $productData->getCurrencySymbol();
+            if ($productData->isCurrencySet() && $productData->getCurrencyRate() != 1.0) {
+                $currencySymbol = 'грн.';
+            }
+          ?>
           <tr>
             <td><?= $productData->getSku()->getId() ?></td>
             <td>
@@ -75,13 +81,15 @@ $stageLog = $orderData->stageLog();
             <td>
                 <?= Html::a(
                     $productData->getSku()->getFullName(),
-                    Url::to(['product/update', 'id' => $productData->getSku()->getId()]),
+                    Url::to(['product/update', 'id' => $productData->getProductId()]),
                     ['target' => '_blank']
                     ) ?>
             </td>
-            <td><?= $productData->getSku()->getPriceOnSite() ?></td>
+            <td>
+                <?= number_format($productData->getSku()->getPriceOnSite(), 2, '.', ' '); ?> <?= $currencySymbol ?>
+            </td>
             <td><?= $productData->getQuantity() ?></td>
-            <td><?= $productData->getFinalPrice() ?></td>
+            <td><?= number_format($productData->getFinalPrice(), 2, '.', ' ') ?> <?= $currencySymbol ?></td>
           </tr>
         <?php endforeach; ?>
         </tbody>
