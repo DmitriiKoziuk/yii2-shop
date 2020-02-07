@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace DmitriiKoziuk\yii2Shop\services\order;
 
 use yii\data\ActiveDataProvider;
@@ -12,6 +13,8 @@ class OrderSearchService
         $query = Order::find();
 
         $query->andFilterWhere(['status' => $orderSearchParams->status]);
+
+        $query->orderBy(['id' => SORT_DESC]);
 
         return new ActiveDataProvider([
             'query' => $query,
