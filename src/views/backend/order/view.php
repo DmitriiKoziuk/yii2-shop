@@ -75,7 +75,7 @@ $stageLog = $orderData->stageLog();
             <td>
                 <?= Html::a(
                     $productData->getSku()->getFullName(),
-                    Url::to(['product/update', 'id' => $productData->getSku()->getId()]),
+                    Url::to(['product/update', 'id' => $productData->getProductId()]),
                     ['target' => '_blank']
                     ) ?>
             </td>

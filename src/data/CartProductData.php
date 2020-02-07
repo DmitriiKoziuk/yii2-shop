@@ -43,4 +43,9 @@ class CartProductData
     {
         return $this->_productSkuData;
     }
+
+    public function getProductId(): int
+    {
+        return $this->_productSkuData->getProductId();
+    }
 }
