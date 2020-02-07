@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace DmitriiKoziuk\yii2Shop\data;
 
 use DmitriiKoziuk\yii2Shop\entities\CartProduct;
@@ -24,6 +25,11 @@ class CartProductData
         );
     }
 
+    public function isCurrencySet(): bool
+    {
+        return $this->_productSkuData->isCurrencySet();
+    }
+
     public function getQuantity(): int
     {
         return $this->_cartProduct->quantity;
@@ -47,5 +53,15 @@ class CartProductData
     public function getProductId(): int
     {
         return $this->_productSkuData->getProductId();
+    }
+
+    public function getCurrencyRate(): float
+    {
+        return $this->_productSkuData->getCurrencyRate();
+    }
+
+    public function getCurrencySymbol(): string
+    {
+        return $this->_productSkuData->getCurrencySymbol();
     }
 }
