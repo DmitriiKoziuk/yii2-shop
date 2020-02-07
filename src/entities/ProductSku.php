@@ -58,6 +58,7 @@ class ProductSku extends ActiveRecord
     const STOCK_OUT = 2;
     const STOCK_AWAIT = 3;
     const STOCK_STATUS_NOT_SET = 4;
+    const STOCK_STATUS_DELETED = 5;
 
     const SELL_PRICE_STRATEGY_MARGIN = 1;
     const SELL_PRICE_STRATEGY_STATIC = 2;
@@ -347,6 +348,7 @@ class ProductSku extends ActiveRecord
             static::STOCK_OUT            => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Out of Stock'),
             static::STOCK_AWAIT          => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Await'),
             static::STOCK_STATUS_NOT_SET => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Not set'),
+            static::STOCK_STATUS_DELETED => Yii::t(ShopModule::TRANSLATION_PRODUCT, 'Deleted'),
         ];
 
         if (! empty($key)) {

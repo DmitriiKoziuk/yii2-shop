@@ -67,7 +67,7 @@ class CategoryProductSkuRepository extends AbstractActiveRecordRepository
                     AND sort > {$categoryProductSkuEntity->sort}
                 ORDER BY sort ASC
                 Q;
-                $updatedRowsNumber = CategoryProductSku::updateAllCounters(
+                CategoryProductSku::updateAllCounters(
                     ['sort' => -1],
                     $moveDownAllProductSkuWithHigherSortPosition
                 );
@@ -76,7 +76,7 @@ class CategoryProductSkuRepository extends AbstractActiveRecordRepository
                     AND sort >= {$sort}
                 ORDER BY sort DESC
                 Q;
-                $updatedRowsNumber = CategoryProductSku::updateAllCounters(
+                CategoryProductSku::updateAllCounters(
                     ['sort' => 1],
                     $moveUpAllProductSkuWithHigherSortPosition
                 );
@@ -88,5 +88,41 @@ class CategoryProductSkuRepository extends AbstractActiveRecordRepository
                 throw $e;
             }
         }
+    }
+
+    /**
+     * @param int $categoryId
+     * @param int $productSkuId
+     * @throws \DmitriiKoziuk\yii2Base\exceptions\EntityNotValidException
+     * @throws \DmitriiKoziuk\yii2Base\exceptions\EntitySaveException
+     */
+    public function createRelation(int $categoryId, int $productSkuId): void
+    {
+        $this->save(new CategoryProductSku([
+            'category_id' => $categoryId,
+            'product_sku_id' => $productSkuId,
+            'sort' => $this->getMaxSort($categoryId) + 1,
+        ]));
+    }
+
+    public function deleteRelation(int $categoryId, int $productSkuId): void
+    {
+        /** @var CategoryProductSku|null $categoryProductSkuEntity */
+        $categoryProductSkuEntity = CategoryProductSku::find()
+            ->where(['category_id' => $categoryId, 'product_sku_id' => $productSkuId])
+            ->one();
+        if (empty($categoryProductSkuEntity)) {
+            throw new \Exception("Relation not exist for category id '{$categoryId}' and product sku id {$productSkuId}");
+        }
+        $this->delete($categoryProductSkuEntity);
+        $moveDownAllProductSkuWithHigherSortPosition = <<<Q
+                    category_id = {$categoryId}
+                    AND sort > {$categoryProductSkuEntity->sort}
+                ORDER BY sort ASC
+                Q;
+        CategoryProductSku::updateAllCounters(
+            ['sort' => -1],
+            $moveDownAllProductSkuWithHigherSortPosition
+        );
     }
 }
