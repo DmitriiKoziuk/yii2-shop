@@ -1,8 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace DmitriiKoziuk\yii2Shop\entities;
 
 use Yii;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 
@@ -11,6 +12,11 @@ use DmitriiKoziuk\yii2Shop\ShopModule;
  *
  * @property int    $id
  * @property string $customer_comment
+ *
+ * @property Cart            $cart
+ * @property OrderStageLog[] $fullStageList
+ * @property OrderStageLog   $currentStage
+ * @property OrderStageLog   $firstStage
  */
 class Order extends ActiveRecord
 {
@@ -59,5 +65,30 @@ class Order extends ActiveRecord
 
     public function afterFind()
     {
+    }
+
+    public function getCart(): ActiveQuery
+    {
+        return $this->hasOne(Cart::class, ['id' => 'id']);
+    }
+
+    public function getFullStageList(): ActiveQuery
+    {
+        return $this->hasMany(OrderStageLog::class, ['order_id' => 'id'])
+            ->orderBy(['created_at' => SORT_DESC]);
+    }
+
+    public function getCurrentStage(): ActiveQuery
+    {
+        return $this->hasOne(OrderStageLog::class, ['order_id' => 'id'])
+            ->orderBy(['created_at' => SORT_DESC])
+            ->limit(1);
+    }
+
+    public function getFirstStage(): ActiveQuery
+    {
+        return $this->hasOne(OrderStageLog::class, ['order_id' => 'id'])
+            ->orderBy(['created_at' => SORT_ASC])
+            ->limit(1);
     }
 }

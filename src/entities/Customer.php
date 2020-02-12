@@ -87,4 +87,29 @@ class Customer extends ActiveRecord
     {
         return $this->hasMany(Cart::class, ['customer_id' => 'id']);
     }
+
+    public function getPhoneNumber(): string
+    {
+        $phoneNumber = $this->phone_number;
+        $digitsNumber = mb_strlen($phoneNumber);
+        switch ($digitsNumber) {
+            case 13:
+                return preg_replace(
+                    "/([+]{1})([0-9]{3})([0-9]{2})([0-9]{3})([0-9]{2})([0-9]{2})/",
+                    "$1$2 ($3) $4-$5-$6",
+                    $phoneNumber
+                );
+                break;
+            case 10:
+                return preg_replace(
+                    "/([0-9]{3})([0-9]{3})([0-9]{2})([0-9]{2})/",
+                    "($1) $2-$3-$4",
+                    $phoneNumber
+                );
+                break;
+            default:
+                return $phoneNumber;
+                break;
+        }
+    }
 }

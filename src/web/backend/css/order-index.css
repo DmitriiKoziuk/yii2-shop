@@ -4,3 +4,32 @@ td:nth-child(1) {
 td:nth-child(2) {
   width: 100px;
 }
+.status-name {
+  padding: 5px 10px;
+  border: 1px solid black;
+}
+.status-name.new {
+  color: #fff;
+  background-color: #d9534f;
+  border-color: #d43f3a;
+}
+.status-name.in-work {
+  color: #fff;
+  background-color: #337ab7;
+  border-color: #2e6da4;
+}
+.status-name.suspended {
+  color: #fff;
+  background-color: #f0ad4e;
+  border-color: #eea236;
+}
+.status-name.done {
+  color: #fff;
+  background-color: #5cb85c;
+  border-color: #4cae4c;
+}
+.status-name.deleted {
+  color: #333;
+  background-color: #fff;
+  border-color: #ccc;
+}

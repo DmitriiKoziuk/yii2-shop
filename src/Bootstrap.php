@@ -42,6 +42,11 @@ final class Bootstrap implements BootstrapInterface
                         '20',
                         'Products on category page'
                     ),
+                    new ValueString(
+                        'mainCurrencyCode',
+                        'USD',
+                        'Main currency code'
+                    ),
                 ]
             ));
             return [
