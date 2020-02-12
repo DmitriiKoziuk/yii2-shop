@@ -50,23 +50,29 @@ class OrderSearch extends Order
         $done = OrderStageLog::STATUS_DONE;
         $deleted = OrderStageLog::STATUS_DELETED;
 
-        $ordersTableName = Order::tableName();
         $stageLogTableName = OrderStageLog::tableName();
 
-        $subQueryOrderStage = OrderStageLog::find()
+        $orderStageLogSubQuery = OrderStageLog::find()
             ->select([
-                OrderStageLog::tableName() . '.stage_id'
+                "MAX({$stageLogTableName}.id) AS id",
+                "{$stageLogTableName}.order_id AS order_id"
             ])
-            ->where(["{$stageLogTableName}.order_id" => new Expression("{$ordersTableName}.id")])->limit(1);
+            ->groupBy([OrderStageLog::tableName() . '.order_id']);
+
         $query = Order::find()
-            ->select([
-                "{$ordersTableName}.*",
-                'current_stage' => $subQueryOrderStage,
-            ])
-            ->from([Order::tableName()]);
+            ->innerJoin(
+                ['osl' => $orderStageLogSubQuery],
+                ['osl.order_id' => new Expression(Order::tableName() . '.id')])
+            ->innerJoin(
+                OrderStageLog::tableName(),
+                [
+                    OrderStageLog::tableName() . '.id' => new Expression('osl.id'),
+                ]
+            );
+
         $query->orderBy([
-            "{$ordersTableName}.id" => SORT_ASC,
-            new Expression("FIELD(current_stage, {$new}, {$inWork}, {$suspended}, {$done}, {$deleted})"),
+            new Expression("FIELD({$stageLogTableName}.stage_id, {$new}, {$inWork}, {$suspended}, {$done}, {$deleted})"),
+            OrderStageLog::tableName() . '.created_at' => SORT_ASC,
         ]);
 
         // add conditions that should always apply here
