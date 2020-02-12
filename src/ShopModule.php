@@ -71,6 +71,7 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
     const TRANSLATION_CURRENCY = 'dk-shop-currency';
     const TRANSLATION_CART = 'dk-shop-cart';
     const TRANSLATION_ORDER = 'dk-shop-order';
+    const TRANSLATION_ORDER_STAGES = 'dk-shop-order-statuses';
     const TRANSLATION_SUPPLIER = 'dk-shop-supplier';
     const TRANSLATION_BRAND = 'dk-shop-brand';
 
@@ -210,6 +211,7 @@ final class ShopModule extends \yii\base\Module implements ModuleInterface
         $app->i18n->translations[self::TRANSLATION_CURRENCY] = $translationData;
         $app->i18n->translations[self::TRANSLATION_CART] = $translationData;
         $app->i18n->translations[self::TRANSLATION_ORDER] = $translationData;
+        $app->i18n->translations[self::TRANSLATION_ORDER_STAGES] = $translationData;
         $app->i18n->translations[self::TRANSLATION_SUPPLIER] = $translationData;
         $app->i18n->translations[self::TRANSLATION_BRAND] = $translationData;
     }

@@ -1,9 +1,11 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace DmitriiKoziuk\yii2Shop\entities;
 
 use Yii;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
+use yii\helpers\Inflector;
 use DmitriiKoziuk\yii2Shop\ShopModule;
 use DmitriiKoziuk\yii2UserManager\entities\User;
 
@@ -19,6 +21,12 @@ use DmitriiKoziuk\yii2UserManager\entities\User;
  */
 class OrderStageLog extends ActiveRecord
 {
+    const STATUS_NEW = 1;
+    const STATUS_IN_WORK = 2;
+    const STATUS_DONE = 3;
+    const STATUS_SUSPEND = 4;
+    const STATUS_DELETED = 5;
+
     /**
      * {@inheritdoc}
      */
@@ -70,12 +78,12 @@ class OrderStageLog extends ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t(ShopModule::TRANSLATION_ORDER, 'ID'),
-            'order_id' => Yii::t(ShopModule::TRANSLATION_ORDER, 'Order ID'),
-            'user_id' => Yii::t(ShopModule::TRANSLATION_ORDER, 'User ID'),
-            'stage_id' => Yii::t(ShopModule::TRANSLATION_ORDER, 'Stage ID'),
-            'comment' => Yii::t(ShopModule::TRANSLATION_ORDER, 'Comment'),
-            'created_at' => Yii::t(ShopModule::TRANSLATION_ORDER, 'Created At'),
+            'id' => Yii::t(ShopModule::TRANSLATION_ORDER_STAGES, 'ID'),
+            'order_id' => Yii::t(ShopModule::TRANSLATION_ORDER_STAGES, 'Order ID'),
+            'user_id' => Yii::t(ShopModule::TRANSLATION_ORDER_STAGES, 'User ID'),
+            'stage_id' => Yii::t(ShopModule::TRANSLATION_ORDER_STAGES, 'Stage ID'),
+            'comment' => Yii::t(ShopModule::TRANSLATION_ORDER_STAGES, 'Comment'),
+            'created_at' => Yii::t(ShopModule::TRANSLATION_ORDER_STAGES, 'Created At'),
         ];
     }
 
@@ -85,5 +93,26 @@ class OrderStageLog extends ActiveRecord
 
     public function afterFind()
     {
+    }
+
+    public static function getStatuses(): array
+    {
+        return [
+            self::STATUS_NEW     => Yii::t(ShopModule::TRANSLATION_ORDER_STAGES, 'New'),
+            self::STATUS_IN_WORK => Yii::t(ShopModule::TRANSLATION_ORDER_STAGES, 'In work'),
+            self::STATUS_DONE    => Yii::t(ShopModule::TRANSLATION_ORDER_STAGES, 'Done'),
+            self::STATUS_SUSPEND => Yii::t(ShopModule::TRANSLATION_ORDER_STAGES, 'Suspended'),
+            self::STATUS_DELETED => Yii::t(ShopModule::TRANSLATION_ORDER_STAGES, 'Deleted'),
+        ];
+    }
+
+    public function getStatusName(): string
+    {
+        return self::getStatuses()[ $this->stage_id ];
+    }
+
+    public function getStatusCode(): string
+    {
+        return Inflector::slug(self::getStatuses()[ $this->stage_id ]);
     }
 }

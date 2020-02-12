@@ -1,6 +1,6 @@
 <?php
-namespace DmitriiKoziuk\yii2Shop\data\order;
 
+namespace DmitriiKoziuk\yii2Shop\data\order;
 
 class OrderStage
 {
@@ -29,7 +29,6 @@ class OrderStage
     const DELIVERY_ORDER_DELIVERED = 19;
     const DELIVERY_CUSTOMER_TOOK_THE_ORDER = 20;
     const DELIVERY_CUSTOMER_REFUSED_FROM_ORDER = 21;
-    const DELIVERY_WAIT_FOR_REFUSED_ORDER = 22;
     const DELIVERY_MOVE_REFUSED_ORDER_TO_WAREHOUSE = 22;
     const DELIVERY_MOVE_COMPLETED_ORDER_TO_SALES = 23;
     const WAREHOUSE_RECEIVED_REFUSED_ORDER = 24;
@@ -37,73 +36,4 @@ class OrderStage
     const WAREHOUSE_MOVE_REFUSED_ORDER_TO_SALES = 26;
     const SALES_ORDER_COMPLETED = 27;
     const SALES_REFUSED_ORDER_DELETED = 28;
-
-    const ORDER_STAGE_CHAIN = [
-        self::ORDER_CREATED => [
-            self::SALES_ORDER_IN_WORK,
-        ],
-        self::SALES_ORDER_IN_WORK => [
-            self::SALES_ORDER_CONFIRMED,
-        ],
-        self::SALES_ORDER_CONFIRMED => [
-            self::SALES_WAIT_PAYMENT_FROM_CUSTOMER,
-            self::SALES_WAIT_PREPAYMENT_FROM_CUSTOMER,
-            self::SALES_MOVE_ORDER_TO_WAREHOUSE,
-        ],
-        self::SALES_WAIT_PAYMENT_FROM_CUSTOMER => [
-            self::SALES_PAYMENT_RECEIVED,
-        ],
-        self::SALES_WAIT_PREPAYMENT_FROM_CUSTOMER => [
-            self::SALES_PREPAYMENT_RECEIVED,
-        ],
-        self::SALES_PAYMENT_RECEIVED => [
-            self::SALES_MOVE_ORDER_TO_WAREHOUSE,
-        ],
-        self::SALES_PREPAYMENT_RECEIVED => [
-            self::SALES_MOVE_ORDER_TO_WAREHOUSE,
-        ],
-        self::WAREHOUSE_NEW_ORDER => [
-            self::WAREHOUSE_ORDER_IN_WORK,
-        ],
-        self::WAREHOUSE_ORDER_IN_WORK => [
-            self::WAREHOUSE_ORDER_CONFIRMED,
-        ],
-        self::WAREHOUSE_ORDER_CONFIRMED => [
-            self::WAREHOUSE_ORDER_PROCESSING,
-        ],
-        self::WAREHOUSE_ORDER_PROCESSING => [
-            self::WAREHOUSE_ORDER_COLLECTED,
-        ],
-        self::WAREHOUSE_ORDER_COLLECTED => [
-            self::WAREHOUSE_ORDER_PACKED,
-        ],
-        self::WAREHOUSE_ORDER_PACKED => [
-            self::WAREHOUSE_ORDER_WAITING_TO_BE_SENT,
-        ],
-        self::WAREHOUSE_ORDER_WAITING_TO_BE_SENT => [
-            self::WAREHOUSE_ORDER_HAS_BEEN_SENT,
-        ],
-        self::WAREHOUSE_ORDER_HAS_BEEN_SENT => [
-            self::DELIVERY_ORDER_DELIVERED,
-        ],
-        self::DELIVERY_ORDER_DELIVERED => [
-            self::DELIVERY_CUSTOMER_TOOK_THE_ORDER,
-            self::DELIVERY_CUSTOMER_REFUSED_FROM_ORDER,
-        ],
-        self::DELIVERY_CUSTOMER_TOOK_THE_ORDER => [
-            self::SALES_WAIT_PAYMENT_FROM_CUSTOMER,
-        ],
-        self::SALES_WAIT_PAYMENT_FROM_CUSTOMER => [
-            self::SALES_PAYMENT_RECEIVED,
-        ],
-        self::SALES_PAYMENT_RECEIVED => [
-            self::SALES_ORDER_COMPLETED,
-        ],
-        self::DELIVERY_CUSTOMER_REFUSED_FROM_ORDER => [
-            self::WAREHOUSE_RECEIVED_REFUSED_ORDER,
-        ],
-        self::WAREHOUSE_RECEIVED_REFUSED_ORDER => [
-            self::WAREHOUSE_REFUSED_ORDER_RETURNED,
-        ],
-    ];
 }
