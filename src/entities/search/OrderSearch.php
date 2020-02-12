@@ -94,6 +94,12 @@ class OrderSearch extends Order
             'id' => $this->id,
         ]);
 
+        if (! empty($this->user_id)) {
+            $query->andWhere([
+                OrderStageLog::tableName() . '.user_id' => $this->user_id,
+            ]);
+        }
+
         $query->andFilterWhere(['like', 'customer_comment', $this->customer_comment]);
 
         return $dataProvider;
