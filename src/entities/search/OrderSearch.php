@@ -7,7 +7,6 @@ use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use DmitriiKoziuk\yii2Shop\entities\Order;
 use DmitriiKoziuk\yii2Shop\entities\OrderStageLog;
-use DmitriiKoziuk\yii2UserManager\entities\User;
 
 /**
  * OrderSearch represents the model behind the search form of `DmitriiKoziuk\yii2Shop\entities\Order`.
