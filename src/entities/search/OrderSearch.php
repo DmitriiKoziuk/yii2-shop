@@ -44,12 +44,6 @@ class OrderSearch extends Order
      */
     public function search($params)
     {
-        $new = OrderStageLog::STATUS_NEW;
-        $inWork = OrderStageLog::STATUS_IN_WORK;
-        $suspended = OrderStageLog::STATUS_SUSPEND;
-        $done = OrderStageLog::STATUS_DONE;
-        $deleted = OrderStageLog::STATUS_DELETED;
-
         $stageLogTableName = OrderStageLog::tableName();
 
         $orderStageLogSubQuery = OrderStageLog::find()
@@ -69,11 +63,6 @@ class OrderSearch extends Order
                     OrderStageLog::tableName() . '.id' => new Expression('osl.id'),
                 ]
             );
-
-        $query->orderBy([
-            new Expression("FIELD({$stageLogTableName}.stage_id, {$new}, {$inWork}, {$suspended}, {$done}, {$deleted})"),
-            OrderStageLog::tableName() . '.created_at' => SORT_ASC,
-        ]);
 
         // add conditions that should always apply here
 
@@ -96,6 +85,17 @@ class OrderSearch extends Order
         ]);
 
         $query->andFilterWhere(['like', 'customer_comment', $this->customer_comment]);
+
+        $new = OrderStageLog::STATUS_NEW;
+        $inWork = OrderStageLog::STATUS_IN_WORK;
+        $suspended = OrderStageLog::STATUS_SUSPEND;
+        $done = OrderStageLog::STATUS_DONE;
+        $deleted = OrderStageLog::STATUS_DELETED;
+
+        $query->orderBy([
+            new Expression("FIELD({$stageLogTableName}.stage_id, {$new}, {$inWork}, {$suspended}, {$done}, {$deleted})"),
+            OrderStageLog::tableName() . '.created_at' => SORT_ASC,
+        ]);
 
         return $dataProvider;
     }
