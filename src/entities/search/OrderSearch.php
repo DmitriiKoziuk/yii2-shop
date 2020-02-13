@@ -92,13 +92,8 @@ class OrderSearch extends Order
         // grid filtering conditions
         $query->andFilterWhere([
             Order::tableName() . '.id' => $this->id,
+            OrderStageLog::tableName() . '.user_id' => $this->user_id,
         ]);
-
-        if (! empty($this->user_id)) {
-            $query->andWhere([
-                OrderStageLog::tableName() . '.user_id' => $this->user_id,
-            ]);
-        }
 
         $query->andFilterWhere(['like', 'customer_comment', $this->customer_comment]);
 
