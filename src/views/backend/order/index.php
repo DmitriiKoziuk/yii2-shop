@@ -23,7 +23,7 @@ use DmitriiKoziuk\yii2Shop\assets\backend\OrderIndexAsset;
  * @var $users        User[]
  */
 
-$this->title = 'Orders';
+$this->title = Yii::t(ShopModule::TRANSLATION_ORDER, 'Orders');
 $this->params['breadcrumbs'][] = $this->title;
 OrderIndexAsset::register($this);
 ?>
@@ -50,14 +50,14 @@ OrderIndexAsset::register($this);
 
             'id',
             [
-                'label' => 'Product Types',
+                'label' => Yii::t(ShopModule::TRANSLATION_ORDER, 'Product types in order'),
                 'content' => function ($order) {
                     /** @var Order $order */
                     return join(',', $order->cart->getProductTypes());
                 },
             ],
             [
-                'label' => 'Order status',
+                'label' => Yii::t(ShopModule::TRANSLATION_ORDER, 'Order status'),
                 'content' => function ($order) {
                     /** @var Order $order */
                     return Html::tag(
@@ -68,7 +68,7 @@ OrderIndexAsset::register($this);
                 },
             ],
             [
-                'label' => 'Manager',
+                'label' => Yii::t(ShopModule::TRANSLATION_ORDER, 'Manager'),
                 'attribute' => 'user_id',
                 'content' => function ($order) use ($users) {
                     /** @var Order $order */
@@ -82,14 +82,14 @@ OrderIndexAsset::register($this);
                 'filter' => ArrayHelper::map($users, 'id', 'username'),
             ],
             [
-                'label' => 'Product quantity',
+                'label' => Yii::t(ShopModule::TRANSLATION_ORDER, 'Total product quantity in order'),
                 'content' => function ($order) {
                     /** @var Order $order */
                     return $order->cart->getTotalProducts();
                 },
             ],
             [
-                'label' => 'Total price',
+                'label' => Yii::t(ShopModule::TRANSLATION_ORDER, 'Total order price'),
                 'content' => function ($order) use ($currencies, $mainCurrency) {
                     /** @var Order $order */
                     $price = $order->cart->getTotalPrice();
@@ -98,7 +98,7 @@ OrderIndexAsset::register($this);
                 },
             ],
             [
-                'label' => 'Time / elapsed time',
+                'label' => Yii::t(ShopModule::TRANSLATION_ORDER, 'Update time / Elapsed time'),
                 'content' => function ($order) use ($currencies, $mainCurrency) {
                     /** @var Order $order */
                     if (OrderStageLog::STATUS_NEW == $order->currentStage->stage_id) {
@@ -125,7 +125,7 @@ OrderIndexAsset::register($this);
                         }
                         return '';
                     },
-                    'view' => function ($url, $model, $key) {
+                    'view' => function ($url) {
                         /** @var Order $model */
                         return Html::a(Yii::t(ShopModule::TRANSLATION_ORDER, 'Order info'), $url, [
                             'class' => 'btn btn-info',
