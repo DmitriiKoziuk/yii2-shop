@@ -46,31 +46,39 @@ $currentStage = $order->currentStage;
       <h3><?= Yii::t(ShopModule::TRANSLATION_ORDER, 'Order info') ?></h3>
       <table class="table table-bordered">
         <tr>
-          <td><?= Yii::t(ShopModule::TRANSLATION_ORDER, 'Total product') ?></td><td><?= $cart->getTotalProducts() ?></td>
+          <td><?= Yii::t(ShopModule::TRANSLATION_ORDER, 'Total product ordered') ?></td><td><?= $cart->getTotalProducts() ?></td>
         </tr>
         <tr>
-          <td><?= Yii::t(ShopModule::TRANSLATION_ORDER, 'Total price') ?></td><td><?= number_format($cart->getTotalPrice(), 2, '.', ' ') ?></td>
+          <td><?= Yii::t(ShopModule::TRANSLATION_ORDER, 'Total order price') ?></td><td><?= number_format($cart->getTotalPrice(), 2, '.', ' ') ?></td>
         </tr>
         <tr>
-          <td><?= Yii::t(ShopModule::TRANSLATION_ORDER, 'Order time') ?></td><td><?= date('d-m-Y H:i', $order->firstStage->created_at) ?></td>
+          <td><?= Yii::t(ShopModule::TRANSLATION_ORDER, 'Ordered at') ?></td><td><?= date('d-m-Y H:i', $order->firstStage->created_at) ?></td>
         </tr>
       </table>
+      <h3><?= Yii::t(ShopModule::TRANSLATION_ORDER, 'Current order status') ?></h3>
+      <h4><?= Yii::t(ShopModule::TRANSLATION_ORDER_STAGES, $order->currentStage->getStatusName()) ?></h4>
+      <h3><?= Yii::t(ShopModule::TRANSLATION_ORDER, 'Set order status to') ?></h3>
         <?php $form = ActiveForm::begin(); ?>
 
           <?= $form->field($updateStatusForm, 'stage_id')
               ->dropDownList(
-                  array_filter(
-                      OrderStageLog::getStatuses(),
-                      function ($key) use ($currentStage) {
-                          return $key != $currentStage->stage_id;
+                  array_map(
+                      function ($value) {
+                        return Yii::t(ShopModule::TRANSLATION_ORDER_STAGES, $value);
                       },
-                      ARRAY_FILTER_USE_KEY
+                      array_filter(
+                          OrderStageLog::getStatuses(),
+                          function ($key) use ($currentStage) {
+                              return $key != $currentStage->stage_id;
+                          },
+                          ARRAY_FILTER_USE_KEY
+                      )
                   )
-              )->label('Status') ?>
+              )->label(false) ?>
           <?= $form->field($updateStatusForm, 'comment')->textarea() ?>
 
           <div class="form-group">
-              <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']) ?>
+              <?= Html::submitButton(Yii::t(ShopModule::TRANSLATION, 'Save'), ['class' => 'btn btn-success']) ?>
           </div>
         <?php ActiveForm::end(); ?>
     </div>
@@ -79,7 +87,7 @@ $currentStage = $order->currentStage;
       <table class="table table-bordered">
         <thead>
           <tr>
-            <td><?= Yii::t(ShopModule::TRANSLATION_ORDER, 'Product ID') ?></td>
+            <td><?= Yii::t(ShopModule::TRANSLATION_ORDER, 'Product sku ID') ?></td>
             <td><?= Yii::t(ShopModule::TRANSLATION_ORDER, 'Image') ?></td>
             <td><?= Yii::t(ShopModule::TRANSLATION_ORDER, 'Name') ?></td>
             <td><?= Yii::t(ShopModule::TRANSLATION_ORDER, 'Price per item') ?></td>
@@ -127,22 +135,22 @@ $currentStage = $order->currentStage;
   <div class="row">
     <div class="col-md-3"></div>
     <div class="col-md-9">
-      <h3>Order history</h3>
+      <h3><?= Yii::t(ShopModule::TRANSLATION_ORDER, 'Order history') ?></h3>
       <table class="table table-condensed">
         <thead>
           <tr>
-            <th>#</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th>User</th>
-            <th>Comment</th>
+            <th><?= Yii::t(ShopModule::TRANSLATION_ORDER, '#') ?></th>
+            <th><?= Yii::t(ShopModule::TRANSLATION_ORDER, 'Data') ?></th>
+            <th><?= Yii::t(ShopModule::TRANSLATION_ORDER, 'Status') ?></th>
+            <th><?= Yii::t(ShopModule::TRANSLATION_ORDER, 'User set status') ?></th>
+            <th><?= Yii::t(ShopModule::TRANSLATION_ORDER, 'User comment') ?></th>
           </tr>
         </thead>
         <?php foreach ($order->fullStageList as $key => $stage): ?>
         <tr>
-          <td><?= $key ?></td>
+          <td><?= count($order->fullStageList) - $key ?></td>
           <td><?= date('d-m-Y H:i', $stage->created_at) ?></td>
-          <td><?= OrderStageLog::getStatuses()[ $stage->stage_id ] ?></td>
+          <td><?= Yii::t(ShopModule::TRANSLATION_ORDER_STAGES, OrderStageLog::getStatuses()[ $stage->stage_id ]) ?></td>
           <td><?= isset($stage->user_id) ? $users[ $stage->user_id ]->username : ''; ?></td>
           <td><?= Html::encode($stage->comment) ?></td>
         </tr>
