@@ -64,6 +64,10 @@ class OrderSearch extends Order
                 ]
             );
 
+        $query->with([
+            'cart.cartProductSkus.productSku.product.type',
+        ]);
+
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([

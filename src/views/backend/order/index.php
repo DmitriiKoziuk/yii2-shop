@@ -82,7 +82,7 @@ OrderIndexAsset::register($this);
                 'filter' => ArrayHelper::map($users, 'id', 'username'),
             ],
             [
-                'label' => Yii::t(ShopModule::TRANSLATION_ORDER, 'Total product quantity in order'),
+                'label' => Yii::t(ShopModule::TRANSLATION_ORDER, 'Total product ordered'),
                 'content' => function ($order) {
                     /** @var Order $order */
                     return $order->cart->getTotalProducts();
