@@ -62,7 +62,7 @@ OrderIndexAsset::register($this);
                     /** @var Order $order */
                     return Html::tag(
                             'span',
-                            $order->currentStage->getStatusName(),
+                            Yii::t(ShopModule::TRANSLATION_ORDER_STAGES, $order->currentStage->getStatusName()),
                             ['class' => 'status-name ' . $order->currentStage->getStatusCode()]
                     );
                 },
