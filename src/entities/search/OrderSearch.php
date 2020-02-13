@@ -91,7 +91,7 @@ class OrderSearch extends Order
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
+            Order::tableName() . '.id' => $this->id,
         ]);
 
         if (! empty($this->user_id)) {
