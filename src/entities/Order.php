@@ -54,7 +54,7 @@ class Order extends ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t(ShopModule::TRANSLATION_ORDER, 'Cart ID'),
+            'id' => Yii::t('app', 'ID'),
             'customer_comment' => Yii::t(ShopModule::TRANSLATION_ORDER, 'Customer comment'),
         ];
     }
