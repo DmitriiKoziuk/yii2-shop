@@ -84,8 +84,6 @@ class OrderSearch extends Order
             OrderStageLog::tableName() . '.user_id' => $this->user_id,
         ]);
 
-        $query->andFilterWhere(['like', 'customer_comment', $this->customer_comment]);
-
         $new = OrderStageLog::STATUS_NEW;
         $inWork = OrderStageLog::STATUS_IN_WORK;
         $suspended = OrderStageLog::STATUS_SUSPEND;
