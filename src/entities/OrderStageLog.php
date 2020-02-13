@@ -98,11 +98,11 @@ class OrderStageLog extends ActiveRecord
     public static function getStatuses(): array
     {
         return [
-            self::STATUS_NEW     => Yii::t(ShopModule::TRANSLATION_ORDER_STAGES, 'New'),
-            self::STATUS_IN_WORK => Yii::t(ShopModule::TRANSLATION_ORDER_STAGES, 'In work'),
-            self::STATUS_DONE    => Yii::t(ShopModule::TRANSLATION_ORDER_STAGES, 'Done'),
-            self::STATUS_SUSPEND => Yii::t(ShopModule::TRANSLATION_ORDER_STAGES, 'Suspended'),
-            self::STATUS_DELETED => Yii::t(ShopModule::TRANSLATION_ORDER_STAGES, 'Deleted'),
+            self::STATUS_NEW     => 'New',
+            self::STATUS_IN_WORK => 'In work',
+            self::STATUS_DONE    => 'Done',
+            self::STATUS_SUSPEND => 'Suspended',
+            self::STATUS_DELETED => 'Deleted',
         ];
     }
 
