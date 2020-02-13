@@ -44,30 +44,25 @@ class OrderSearch extends Order
      */
     public function search($params)
     {
-        $new = OrderStageLog::STATUS_NEW;
-        $inWork = OrderStageLog::STATUS_IN_WORK;
-        $suspended = OrderStageLog::STATUS_SUSPEND;
-        $done = OrderStageLog::STATUS_DONE;
-        $deleted = OrderStageLog::STATUS_DELETED;
-
-        $ordersTableName = Order::tableName();
         $stageLogTableName = OrderStageLog::tableName();
 
-        $subQueryOrderStage = OrderStageLog::find()
+        $orderStageLogSubQuery = OrderStageLog::find()
             ->select([
-                OrderStageLog::tableName() . '.stage_id'
+                "MAX({$stageLogTableName}.id) AS id",
+                "{$stageLogTableName}.order_id AS order_id"
             ])
-            ->where(["{$stageLogTableName}.order_id" => new Expression("{$ordersTableName}.id")])->limit(1);
+            ->groupBy([OrderStageLog::tableName() . '.order_id']);
+
         $query = Order::find()
-            ->select([
-                "{$ordersTableName}.*",
-                'current_stage' => $subQueryOrderStage,
-            ])
-            ->from([Order::tableName()]);
-        $query->orderBy([
-            "{$ordersTableName}.id" => SORT_ASC,
-            new Expression("FIELD(current_stage, {$new}, {$inWork}, {$suspended}, {$done}, {$deleted})"),
-        ]);
+            ->innerJoin(
+                ['osl' => $orderStageLogSubQuery],
+                ['osl.order_id' => new Expression(Order::tableName() . '.id')])
+            ->innerJoin(
+                OrderStageLog::tableName(),
+                [
+                    OrderStageLog::tableName() . '.id' => new Expression('osl.id'),
+                ]
+            );
 
         // add conditions that should always apply here
 
@@ -85,10 +80,20 @@ class OrderSearch extends Order
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
+            Order::tableName() . '.id' => $this->id,
+            OrderStageLog::tableName() . '.user_id' => $this->user_id,
         ]);
 
-        $query->andFilterWhere(['like', 'customer_comment', $this->customer_comment]);
+        $new = OrderStageLog::STATUS_NEW;
+        $inWork = OrderStageLog::STATUS_IN_WORK;
+        $suspended = OrderStageLog::STATUS_SUSPEND;
+        $done = OrderStageLog::STATUS_DONE;
+        $deleted = OrderStageLog::STATUS_DELETED;
+
+        $query->orderBy([
+            new Expression("FIELD({$stageLogTableName}.stage_id, {$new}, {$inWork}, {$suspended}, {$done}, {$deleted})"),
+            OrderStageLog::tableName() . '.created_at' => SORT_ASC,
+        ]);
 
         return $dataProvider;
     }
