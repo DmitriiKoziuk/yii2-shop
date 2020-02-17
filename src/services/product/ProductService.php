@@ -846,7 +846,8 @@ class ProductService extends DBActionService
                     $this->moveProductSkuToCategoriesStart($productSku);
                 }
                 break;
-            default: throw new Exception("No action for stock status '{$productSku->stock_status}'.");
+            default :
+                break;
         }
     }
 
